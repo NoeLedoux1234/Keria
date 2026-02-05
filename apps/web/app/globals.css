@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 15% 16%;
+    --foreground: 60 56% 91%;
+    --card: 40 18% 13%;
+    --card-foreground: 60 56% 91%;
+    --primary: 46 70% 47%;
+    --primary-foreground: 40 15% 16%;
+    --muted: 60 7% 50%;
+    --muted-foreground: 60 56% 80%;
+    --border: 60 10% 25%;
+    --ring: 46 70% 47%;
+  }
+
+  * {
+    @apply border-keria-forest/30;
+  }
+
+  body {
+    @apply bg-keria-dark text-keria-cream antialiased;
+  }
+
+  /* Cinematic selection color */
+  ::selection {
+    @apply bg-keria-gold/30 text-keria-cream;
+  }
+}
+
+/* Custom scrollbar for cinematic feel */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-keria-darker;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-keria-forest rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-keria-muted;
+}
+
+/* Mapbox overrides */
+.mapboxgl-map {
+  font-family: inherit;
+}
+
+.mapboxgl-ctrl-logo {
+  display: none !important;
+}
+
+.mapboxgl-ctrl-attrib {
+  font-size: 10px;
+  @apply bg-keria-darker/80 text-keria-muted;
+}
+
+.mapboxgl-ctrl-attrib a {
+  @apply text-keria-muted hover:text-keria-cream;
+}
+
+/* Loading screen specific */
+.loading-screen-bg {
+  background: linear-gradient(
+    135deg,
+    theme("colors.keria.darker") 0%,
+    theme("colors.keria.dark") 50%,
+    theme("colors.keria.forest") 100%
+  );
+}

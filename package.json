@@ -1,0 +1,27 @@
+{
+  "name": "meetpoint",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "type-check": "turbo type-check",
+    "clean": "turbo clean && rm -rf node_modules",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\""
+  },
+  "dependencies": {
+    "convex": "^1.17.4"
+  },
+  "devDependencies": {
+    "@meetpoint/config-eslint": "workspace:*",
+    "@meetpoint/config-typescript": "workspace:*",
+    "prettier": "^3.4.2",
+    "prettier-plugin-tailwindcss": "^0.6.9",
+    "turbo": "^2.3.3"
+  },
+  "packageManager": "pnpm@9.15.2",
+  "engines": {
+    "node": ">=20"
+  }
+}
