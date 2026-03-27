@@ -42,6 +42,40 @@ L'année 2027 vise la maturité du produit. L'intelligence artificielle apporte 
 
 ---
 
+## Suivi des Sprints
+
+### Sprint 0 — Conception (Novembre 2025 — Janvier 2026) — TERMINE
+- Vision produit et pitch
+- Business model canvas
+- Etude de marche (SWOT, PESTEL, 5 forces de Porter)
+- Business plan
+- Roadmap initiale
+- Description de l'equipe ideale
+- [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/1)
+
+### Sprint 1 — MVP Fonctionnel (Fevrier — Mars 2026) — TERMINE
+- 16 user stories completees, 70 story points
+- Application fonctionnelle : MeetPoints, evenements, carte interactive, votes
+- Stack technique : Next.js 15 + Convex + Mapbox + Tailwind + Framer Motion
+- Design system Keria avec palette 16 couleurs et animations cinematiques
+- [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/2)
+- [Sprint Review](./12-Sprint-Review-Sprint1.md)
+
+### Sprint 2 — Qualite et Polish (Avril — Mai 2026) — EN COURS
+- 8 user stories planifiees, 19 story points
+- Objectifs : tests unitaires, CI/CD, accessibilite, responsive, performance
+- [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/3)
+- [Sprint Planning](./13-Sprint-Planning-Sprint2.md)
+
+### Jalons a venir
+| Date | Jalon |
+|------|-------|
+| 31 mai 2026 | Livraison MVP final + documentation complete |
+| 12 juin 2026 | Remise des livrables au jury |
+| 19 juin 2026 | Soutenance (20 min presentation + 10 min Q&A) |
+
+---
+
 ## Organisation Opérationnelle
 
 ### Structure Actuelle
