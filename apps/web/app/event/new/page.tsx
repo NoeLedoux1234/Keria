@@ -6,9 +6,16 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button, Input } from "@meetpoint/ui";
 import { useCreateEvent } from "@/hooks";
+import dynamic from "next/dynamic";
 import { StageForm, type StageFormData } from "@/components/event";
-import { MapContainer, MapStageMarker, MapStagePath, type MapContainerHandle } from "@/components/map";
+import { MapStageMarker, MapStagePath } from "@/components/map";
 import { PageBackground } from "@/components/page-background";
+import type { MapContainerHandle } from "@/components/map";
+
+const MapContainer = dynamic(
+  () => import("@/components/map/map-container").then((m) => ({ default: m.MapContainer })),
+  { ssr: false }
+);
 
 type Step = 1 | 2 | 3;
 
