@@ -67,9 +67,6 @@ export function RSVPButtons({
   );
 }
 
-/**
- * Affiche le statut RSVP sous forme de badge
- */
 export function RSVPBadge({ status }: { status: RSVPStatus }) {
   const config: Record<RSVPStatus, { label: string; className: string }> = {
     yes: { label: "Participe", className: "bg-keria-success/20 text-keria-success-light" },

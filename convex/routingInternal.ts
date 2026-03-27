@@ -7,44 +7,15 @@ const ORS_PROFILES: Record<string, string> = {
   driving: "driving-car",
   cycling: "cycling-regular",
   walking: "foot-walking",
-  transit: "driving-car", // ORS n'a pas de transit, fallback sur driving
+  transit: "driving-car",
 };
 
-// Format GeoJSON retourné par ORS
-interface GeoJSONRouteResponse {
-  type: "FeatureCollection";
-  features: Array<{
-    type: "Feature";
-    properties: {
-      summary: {
-        distance: number; // mètres
-        duration: number; // secondes
-      };
-    };
-    geometry: {
-      type: "LineString";
-      coordinates: Array<[number, number]>; // [lng, lat]
-    };
-  }>;
-}
+type ORSIsochroneFeature = {
+  geometry: {
+    coordinates: Array<Array<[number, number]>>;
+  };
+};
 
-// Format JSON standard retourné par ORS (fallback)
-interface JSONRouteResponse {
-  routes: Array<{
-    summary: {
-      distance: number;
-      duration: number;
-    };
-    geometry: string; // Polyline encodée
-  }>;
-}
-
-// Type union pour supporter les deux formats
-type ORSResponse = GeoJSONRouteResponse | JSONRouteResponse;
-
-/**
- * Décode une polyline encodée (format Google)
- */
 function decodePolyline(encoded: string): Array<[number, number]> {
   const coordinates: Array<[number, number]> = [];
   let index = 0;
@@ -83,9 +54,6 @@ function decodePolyline(encoded: string): Array<[number, number]> {
   return coordinates;
 }
 
-/**
- * Calcule le temps de trajet entre deux points (interne)
- */
 export const calculateRoute = internalAction({
   args: {
     originLat: v.number(),
@@ -94,7 +62,7 @@ export const calculateRoute = internalAction({
     destLng: v.number(),
     transportMode: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, args) => {
     const apiKey = process.env.ORS_API_KEY;
 
     if (!apiKey) {
@@ -107,7 +75,6 @@ export const calculateRoute = internalAction({
     }
 
     const profile = ORS_PROFILES[args.transportMode] || "driving-car";
-    // Utiliser l'endpoint JSON standard avec geometry_format=geojson
     const url = `${ORS_BASE_URL}/v2/directions/${profile}`;
 
     try {
@@ -142,17 +109,13 @@ export const calculateRoute = internalAction({
       let summary: { distance: number; duration: number } | undefined;
       let coordinates: Array<[number, number]> = [];
 
-      // Vérifier le format de réponse (GeoJSON ou JSON standard)
       if ("features" in data && Array.isArray(data.features) && data.features[0]) {
-        // Format GeoJSON
         const feature = data.features[0];
         summary = feature?.properties?.summary;
         coordinates = feature?.geometry?.coordinates ?? [];
       } else if ("routes" in data && Array.isArray(data.routes) && data.routes[0]) {
-        // Format JSON standard avec polyline encodée
         const route = data.routes[0];
         summary = route.summary;
-        // Décoder la polyline si c'est une string
         if (typeof route.geometry === "string") {
           coordinates = decodePolyline(route.geometry);
         } else if (route.geometry?.coordinates) {
@@ -191,9 +154,6 @@ export const calculateRoute = internalAction({
   },
 });
 
-/**
- * Calcule les isochrones (zones accessibles) pour un participant
- */
 export const calculateIsochrone = internalAction({
   args: {
     lat: v.number(),
@@ -201,7 +161,7 @@ export const calculateIsochrone = internalAction({
     transportMode: v.string(),
     durationMinutes: v.array(v.number()),
   },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, args) => {
     const apiKey = process.env.ORS_API_KEY;
 
     if (!apiKey) {
@@ -224,7 +184,7 @@ export const calculateIsochrone = internalAction({
         },
         body: JSON.stringify({
           locations: [[args.lng, args.lat]],
-          range: args.durationMinutes.map((d) => d * 60), // Convertir en secondes
+          range: args.durationMinutes.map((d) => d * 60),
           range_type: "time",
         }),
       });
@@ -241,7 +201,7 @@ export const calculateIsochrone = internalAction({
 
       const data = await response.json();
 
-      const isochrones = data.features.map((feature: any, index: number) => ({
+      const isochrones = data.features.map((feature: ORSIsochroneFeature, index: number) => ({
         durationMinutes: args.durationMinutes[index],
         polygon: feature.geometry.coordinates[0].map(([lng, lat]: [number, number]) => ({
           lat,

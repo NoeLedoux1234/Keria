@@ -3,7 +3,6 @@ import { action, internalQuery, internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 
-// Query interne pour éviter la référence circulaire
 export const _getParticipants = internalQuery({
   args: { meetId: v.id("meets") },
   handler: async (ctx, args) => {
@@ -14,7 +13,6 @@ export const _getParticipants = internalQuery({
   },
 });
 
-// Mutation interne pour éviter la référence circulaire
 export const _updateTravelTime = internalMutation({
   args: {
     participantId: v.id("participants"),
@@ -29,9 +27,6 @@ export const _updateTravelTime = internalMutation({
   },
 });
 
-/**
- * Calcule les temps de trajet pour tous les participants vers le midpoint
- */
 export const calculateAllRoutes = action({
   args: {
     meetId: v.id("meets"),
@@ -39,7 +34,6 @@ export const calculateAllRoutes = action({
     midpointLng: v.number(),
   },
   handler: async (ctx, args) => {
-    // Utiliser la query interne pour éviter la référence circulaire
     const participants = await ctx.runQuery(internal.routing._getParticipants, {
       meetId: args.meetId,
     });
@@ -64,7 +58,6 @@ export const calculateAllRoutes = action({
       });
 
       if (route.success && route.durationMinutes !== null && route.distanceKm !== null) {
-        // Utiliser la mutation interne
         await ctx.runMutation(internal.routing._updateTravelTime, {
           participantId: participant._id,
           travelTimeMinutes: route.durationMinutes,
@@ -96,16 +89,12 @@ export const calculateAllRoutes = action({
   },
 });
 
-/**
- * Calcule les isochrones pour tous les participants d'un meet
- */
 export const calculateAllIsochrones = action({
   args: {
     meetId: v.id("meets"),
     durationMinutes: v.number(),
   },
   handler: async (ctx, args) => {
-    // Utiliser la query interne
     const participants = await ctx.runQuery(internal.routing._getParticipants, {
       meetId: args.meetId,
     });

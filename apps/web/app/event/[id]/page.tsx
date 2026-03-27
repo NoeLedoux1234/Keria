@@ -8,7 +8,11 @@ import { Button, Badge } from "@meetpoint/ui";
 import { useEvent, useEventParticipants } from "@/hooks";
 import { MapContainer, MapStageMarker, MapStagePath, type MapContainerHandle } from "@/components/map";
 import { StagesList, RSVPButtons, ParticipantsRSVPList } from "@/components/event";
+import { PageBackground } from "@/components/page-background";
 import type { Id, Doc } from "../../../../../convex/_generated/dataModel";
+
+type RSVPStatus = "yes" | "no" | "maybe" | "pending";
+type StageType = "departure" | "intermediate" | "arrival";
 
 export default function EventPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -22,6 +26,7 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
   const mapRef = useRef<MapContainerHandle>(null);
   const [currentParticipantId, setCurrentParticipantId] = useState<Id<"eventParticipants"> | null>(null);
   const [selectedStage, setSelectedStage] = useState<Doc<"eventStages"> | null>(null);
+  const [codeCopied, setCodeCopied] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem(`meetpoint-event-participant-${eventId}`);
@@ -33,6 +38,8 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
     }
   }, [eventId, participants]);
 
+  const stageCount = stages?.length ?? 0;
+
   useEffect(() => {
     if (stages && stages.length >= 2) {
       const locations = stages.map((s: Doc<"eventStages">) => s.location);
@@ -41,7 +48,7 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [stages?.length]);
+  }, [stageCount]);
 
   const handleStageClick = (stage: Doc<"eventStages">) => {
     setSelectedStage(stage);
@@ -62,12 +69,7 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
   if (isLoading) {
     return (
       <main className="relative flex min-h-screen items-center justify-center bg-keria-darker">
-        <div
-          className="pointer-events-none fixed inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-          }}
-        />
+        <PageBackground />
         <div className="relative z-10 flex flex-col items-center gap-4">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-keria-gold border-t-transparent" />
           <span className="text-sm text-keria-muted">Chargement...</span>
@@ -79,12 +81,7 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
   if (!event) {
     return (
       <main className="relative flex min-h-screen items-center justify-center bg-keria-darker">
-        <div
-          className="pointer-events-none fixed inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-          }}
-        />
+        <PageBackground />
         <div className="relative z-10 text-center">
           <p className="text-keria-muted">Événement non trouvé</p>
           <Link href="/" className="mt-4 inline-block text-sm text-keria-gold hover:underline">
@@ -97,7 +94,6 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
 
   const shareUrl = typeof window !== "undefined" ? `${window.location.origin}/join-event` : "";
   const currentParticipant = participants?.find((p: Doc<"eventParticipants">) => p._id === currentParticipantId);
-  const [codeCopied, setCodeCopied] = useState(false);
 
   const handleCopyCode = () => {
     if (!shareCode) return;
@@ -132,13 +128,7 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
 
   return (
     <main className="relative flex h-screen flex-col lg:flex-row bg-keria-darker">
-      {/* Grain overlay */}
-      <div
-        className="pointer-events-none fixed inset-0 z-50 opacity-[0.03]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        }}
-      />
+      <PageBackground />
 
       {/* Sidebar */}
       <aside className="relative z-10 w-full overflow-y-auto border-b border-keria-forest/20 bg-keria-darker p-5 lg:w-[380px] lg:border-b-0 lg:border-r">
@@ -240,7 +230,7 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
               Vous participez en tant que <span className="font-medium text-keria-cream">{currentParticipant.name}</span>
             </p>
             <RSVPButtons
-              currentStatus={currentParticipant.rsvpStatus as "yes" | "no" | "maybe" | "pending"}
+              currentStatus={currentParticipant.rsvpStatus as RSVPStatus}
               onRSVP={handleRSVP}
             />
           </div>
@@ -307,7 +297,7 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
               coordinates={stage.location}
               name={stage.name}
               description={stage.description}
-              stageType={stage.stageType as "departure" | "intermediate" | "arrival"}
+              stageType={stage.stageType as StageType}
               order={stage.order}
               scheduledAt={stage.scheduledAt}
               onClick={() => handleStageClick(stage)}

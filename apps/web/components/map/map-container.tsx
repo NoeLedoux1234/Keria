@@ -19,7 +19,7 @@ interface MapContainerProps {
   className?: string;
 }
 
-const DEFAULT_CENTER: Coordinates = { lat: 48.8566, lng: 2.3522 }; // Paris
+const DEFAULT_CENTER: Coordinates = { lat: 48.8566, lng: 2.3522 };
 const DEFAULT_ZOOM = 12;
 
 export const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(
@@ -56,7 +56,6 @@ export const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(
     [onClick]
   );
 
-  // Fonction pour centrer la carte sur des coordonnées
   const flyTo = useCallback((coordinates: Coordinates, zoom?: number) => {
     mapRef.current?.flyTo({
       center: [coordinates.lng, coordinates.lat],
@@ -65,7 +64,6 @@ export const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(
     });
   }, []);
 
-  // Fonction pour ajuster la vue à plusieurs points
   const fitBounds = useCallback((coordinates: Coordinates[], padding = 50) => {
     if (coordinates.length === 0) return;
 
@@ -93,7 +91,6 @@ export const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(
     );
   }, []);
 
-  // Exposer les fonctions via la ref
   useImperativeHandle(ref, () => ({
     flyTo,
     fitBounds,

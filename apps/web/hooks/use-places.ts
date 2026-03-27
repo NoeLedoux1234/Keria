@@ -4,9 +4,6 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 
-/**
- * Hook pour gérer les lieux suggérés
- */
 export function usePlaces(meetId: Id<"meets"> | undefined) {
   const places = useQuery(api.places.listByMeet, meetId ? { meetId } : "skip");
   const ranking = useQuery(api.votes.getPlaceRanking, meetId ? { meetId } : "skip");
@@ -23,9 +20,6 @@ export function usePlaces(meetId: Id<"meets"> | undefined) {
   };
 }
 
-/**
- * Hook pour gérer les votes
- */
 export function useVotes(meetId: Id<"meets"> | undefined) {
   const votes = useQuery(api.votes.listByMeet, meetId ? { meetId } : "skip");
 

@@ -17,9 +17,9 @@ interface MapStageMarkerProps {
 }
 
 const STAGE_COLORS: Record<StageType, string> = {
-  departure: "#6b8f4a", // keria-success
-  intermediate: "#c9a227", // keria-gold
-  arrival: "#a65a4a", // keria-error
+  departure: "#6b8f4a",
+  intermediate: "#c9a227",
+  arrival: "#a65a4a",
 };
 
 const StageTypeLabels: Record<StageType, string> = {

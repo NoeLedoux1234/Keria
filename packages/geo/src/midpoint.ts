@@ -1,10 +1,6 @@
 import type { Coordinates } from "@meetpoint/types";
-import { degreesToRadians, radiansToDegrees, distanceStandardDeviation } from "./distance";
+import { degreesToRadians, radiansToDegrees, distanceStandardDeviation, haversineDistance } from "./distance";
 
-/**
- * Calcule le centre géographique (centroïde) de plusieurs points
- * Utilise la méthode du centre de masse sphérique
- */
 export function calculateGeographicCenter(points: Coordinates[]): Coordinates {
   if (points.length === 0) {
     throw new Error("Au moins un point est requis");
@@ -14,7 +10,6 @@ export function calculateGeographicCenter(points: Coordinates[]): Coordinates {
     return points[0]!;
   }
 
-  // Convertir en coordonnées cartésiennes
   let x = 0;
   let y = 0;
   let z = 0;
@@ -33,7 +28,6 @@ export function calculateGeographicCenter(points: Coordinates[]): Coordinates {
   y /= total;
   z /= total;
 
-  // Reconvertir en coordonnées sphériques
   const lng = Math.atan2(y, x);
   const hyp = Math.sqrt(x * x + y * y);
   const lat = Math.atan2(z, hyp);
@@ -44,10 +38,6 @@ export function calculateGeographicCenter(points: Coordinates[]): Coordinates {
   };
 }
 
-/**
- * Calcule le point médian pondéré
- * Chaque point peut avoir un poids différent (ex: basé sur le temps de trajet acceptable)
- */
 export function calculateWeightedMidpoint(
   points: Coordinates[],
   weights: number[]
@@ -90,10 +80,6 @@ export function calculateWeightedMidpoint(
   };
 }
 
-/**
- * Optimise le point de rencontre pour minimiser l'écart-type des distances
- * Utilise une recherche par grille autour du centre géographique
- */
 export function optimizeMeetingPoint(
   participants: Coordinates[],
   gridSize: number = 5,
@@ -101,13 +87,11 @@ export function optimizeMeetingPoint(
 ): Coordinates {
   const center = calculateGeographicCenter(participants);
 
-  // Convertir le rayon en degrés (approximation)
-  const radiusDeg = radiusKm / 111; // ~111km par degré de latitude
+  const radiusDeg = radiusKm / 111;
 
   let bestPoint = center;
   let bestStdDev = distanceStandardDeviation(center, participants);
 
-  // Recherche par grille
   for (let i = -gridSize; i <= gridSize; i++) {
     for (let j = -gridSize; j <= gridSize; j++) {
       const candidate: Coordinates = {
@@ -126,19 +110,13 @@ export function optimizeMeetingPoint(
   return bestPoint;
 }
 
-/**
- * Résultat du calcul de midpoint avec métadonnées
- */
-export interface MidpointResult {
+export type MidpointResult = {
   midpoint: Coordinates;
-  fairnessScore: number; // 0-100, plus c'est haut plus c'est équitable
+  fairnessScore: number;
   averageDistanceKm: number;
   maxDistanceKm: number;
-}
+};
 
-/**
- * Calcule le midpoint avec des métriques d'équité
- */
 export function calculateMidpointWithMetrics(participants: Coordinates[]): MidpointResult {
   if (participants.length < 2) {
     throw new Error("Au moins 2 participants sont requis");
@@ -147,14 +125,10 @@ export function calculateMidpointWithMetrics(participants: Coordinates[]): Midpo
   const midpoint = optimizeMeetingPoint(participants);
   const stdDev = distanceStandardDeviation(midpoint, participants);
 
-  // Calcul des distances
-  const { haversineDistance } = require("./distance");
   const distances = participants.map((p) => haversineDistance(midpoint, p));
   const avgDistance = distances.reduce((a, b) => a + b, 0) / distances.length;
   const maxDistance = Math.max(...distances);
 
-  // Score d'équité: basé sur le coefficient de variation (inverse)
-  // Plus l'écart-type est faible par rapport à la moyenne, plus c'est équitable
   const cv = avgDistance > 0 ? stdDev / avgDistance : 0;
   const fairnessScore = Math.max(0, Math.min(100, 100 * (1 - cv)));
 

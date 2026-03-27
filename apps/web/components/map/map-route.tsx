@@ -22,7 +22,6 @@ export function MapRoute({ routes }: MapRouteProps) {
       {routes.map((route) => {
         if (!route.polyline || route.polyline.length === 0) return null;
 
-        // Convertir les coordonnées en format GeoJSON
         const coordinates = route.polyline.map((coord) => [coord.lng, coord.lat]);
 
         const geojson: GeoJSON.Feature<GeoJSON.LineString> = {
@@ -45,7 +44,6 @@ export function MapRoute({ routes }: MapRouteProps) {
             type="geojson"
             data={geojson}
           >
-            {/* Bordure de la ligne (pour meilleure visibilité) */}
             <Layer
               id={`route-outline-${route.participantId}`}
               type="line"
@@ -59,7 +57,6 @@ export function MapRoute({ routes }: MapRouteProps) {
                 "line-cap": "round",
               }}
             />
-            {/* Ligne principale */}
             <Layer
               id={`route-line-${route.participantId}`}
               type="line"

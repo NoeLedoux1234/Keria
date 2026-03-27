@@ -1,11 +1,10 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-/**
- * Génère un code de partage unique (6 caractères alphanumériques)
- */
+const MAX_SHARE_CODE_ATTEMPTS = 10;
+
 function generateShareCode(): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // Sans I, O, 0, 1 pour éviter confusion
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let code = "";
   for (let i = 0; i < 6; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -13,9 +12,6 @@ function generateShareCode(): string {
   return code;
 }
 
-/**
- * Crée un nouveau meeting
- */
 export const create = mutation({
   args: {
     name: v.string(),
@@ -45,27 +41,23 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const now = Date.now();
 
-    // Générer un code de partage unique
     let shareCode = generateShareCode();
-    let existing = await ctx.db
-      .query("meets")
-      .withIndex("by_share_code", (q) => q.eq("shareCode", shareCode))
-      .first();
-
-    // Régénérer si collision (rare)
-    while (existing) {
-      shareCode = generateShareCode();
-      existing = await ctx.db
+    for (let attempt = 0; attempt < MAX_SHARE_CODE_ATTEMPTS; attempt++) {
+      const existing = await ctx.db
         .query("meets")
         .withIndex("by_share_code", (q) => q.eq("shareCode", shareCode))
         .first();
+      if (!existing) break;
+      if (attempt === MAX_SHARE_CODE_ATTEMPTS - 1) {
+        throw new Error("Failed to generate unique share code");
+      }
+      shareCode = generateShareCode();
     }
 
-    // Créer le meeting
     const meetId = await ctx.db.insert("meets", {
       name: args.name,
       description: args.description,
-      creatorId: args.creatorName, // TODO: utiliser l'auth user ID
+      creatorName: args.creatorName,
       shareCode,
       filters: args.filters ?? {},
       status: "pending",
@@ -74,7 +66,6 @@ export const create = mutation({
       updatedAt: now,
     });
 
-    // Ajouter le créateur comme premier participant
     await ctx.db.insert("participants", {
       meetId,
       name: args.creatorName,
@@ -89,9 +80,6 @@ export const create = mutation({
   },
 });
 
-/**
- * Récupère un meeting par son ID
- */
 export const get = query({
   args: { id: v.id("meets") },
   handler: async (ctx, args) => {
@@ -99,9 +87,6 @@ export const get = query({
   },
 });
 
-/**
- * Récupère un meeting par son code de partage
- */
 export const getByShareCode = query({
   args: { shareCode: v.string() },
   handler: async (ctx, args) => {
@@ -112,9 +97,6 @@ export const getByShareCode = query({
   },
 });
 
-/**
- * Liste les participants d'un meeting
- */
 export const getParticipants = query({
   args: { meetId: v.id("meets") },
   handler: async (ctx, args) => {
@@ -125,9 +107,6 @@ export const getParticipants = query({
   },
 });
 
-/**
- * Met à jour le midpoint calculé
- */
 export const updateMidpoint = mutation({
   args: {
     meetId: v.id("meets"),
@@ -148,9 +127,6 @@ export const updateMidpoint = mutation({
   },
 });
 
-/**
- * Met à jour le statut d'un meeting
- */
 export const updateStatus = mutation({
   args: {
     meetId: v.id("meets"),
@@ -170,9 +146,6 @@ export const updateStatus = mutation({
   },
 });
 
-/**
- * Sélectionne un lieu pour le meeting
- */
 export const selectPlace = mutation({
   args: {
     meetId: v.id("meets"),
@@ -187,9 +160,6 @@ export const selectPlace = mutation({
   },
 });
 
-/**
- * Met à jour le timestamp de dernière recherche (pour le cache)
- */
 export const updateLastSearchedAt = mutation({
   args: { meetId: v.id("meets") },
   handler: async (ctx, args) => {

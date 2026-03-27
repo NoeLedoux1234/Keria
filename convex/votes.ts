@@ -1,9 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-/**
- * Vote pour ou contre un lieu
- */
 export const cast = mutation({
   args: {
     meetId: v.id("meets"),
@@ -12,19 +9,16 @@ export const cast = mutation({
     vote: v.union(v.literal("up"), v.literal("down")),
   },
   handler: async (ctx, args) => {
-    // Vérifier que le participant appartient au meeting
     const participant = await ctx.db.get(args.participantId);
     if (!participant || participant.meetId !== args.meetId) {
       throw new Error("Invalid participant");
     }
 
-    // Vérifier que le lieu appartient au meeting
     const place = await ctx.db.get(args.placeId);
     if (!place || place.meetId !== args.meetId) {
       throw new Error("Invalid place");
     }
 
-    // Vérifier si un vote existe déjà
     const existingVote = await ctx.db
       .query("votes")
       .withIndex("by_place_participant", (q) =>
@@ -33,7 +27,6 @@ export const cast = mutation({
       .first();
 
     if (existingVote) {
-      // Mettre à jour le vote existant
       await ctx.db.patch(existingVote._id, {
         vote: args.vote,
         votedAt: Date.now(),
@@ -41,7 +34,6 @@ export const cast = mutation({
       return existingVote._id;
     }
 
-    // Créer nouveau vote
     return await ctx.db.insert("votes", {
       meetId: args.meetId,
       placeId: args.placeId,
@@ -52,9 +44,6 @@ export const cast = mutation({
   },
 });
 
-/**
- * Supprime un vote
- */
 export const remove = mutation({
   args: {
     placeId: v.id("places"),
@@ -74,9 +63,6 @@ export const remove = mutation({
   },
 });
 
-/**
- * Récupère les votes d'un meeting
- */
 export const listByMeet = query({
   args: { meetId: v.id("meets") },
   handler: async (ctx, args) => {
@@ -87,9 +73,6 @@ export const listByMeet = query({
   },
 });
 
-/**
- * Récupère les votes pour un lieu
- */
 export const listByPlace = query({
   args: { placeId: v.id("places") },
   handler: async (ctx, args) => {
@@ -100,9 +83,6 @@ export const listByPlace = query({
   },
 });
 
-/**
- * Récupère le score d'un lieu (upvotes - downvotes)
- */
 export const getPlaceScore = query({
   args: { placeId: v.id("places") },
   handler: async (ctx, args) => {
@@ -123,9 +103,6 @@ export const getPlaceScore = query({
   },
 });
 
-/**
- * Récupère le classement des lieux pour un meeting
- */
 export const getPlaceRanking = query({
   args: { meetId: v.id("meets") },
   handler: async (ctx, args) => {
@@ -139,7 +116,6 @@ export const getPlaceRanking = query({
       .withIndex("by_meet", (q) => q.eq("meetId", args.meetId))
       .collect();
 
-    // Calculer les scores
     const placeScores = places.map((place) => {
       const placeVotes = votes.filter((v) => v.placeId === place._id);
       const upvotes = placeVotes.filter((v) => v.vote === "up").length;
@@ -153,7 +129,6 @@ export const getPlaceRanking = query({
       };
     });
 
-    // Trier par score décroissant
     return placeScores.sort((a, b) => b.score - a.score);
   },
 });

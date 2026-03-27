@@ -9,6 +9,7 @@ import { Button, Badge } from "@meetpoint/ui";
 import { useMeet } from "@/hooks";
 import { MapContainer, MapMarker, MapMidpoint, MapRoute, type MapContainerHandle } from "@/components/map";
 import { PlacesList } from "@/components/places-list";
+import { PageBackground } from "@/components/page-background";
 import { calculateMidpointWithMetrics } from "@meetpoint/geo";
 import { api } from "../../../../../convex/_generated/api";
 import type { Id, Doc } from "../../../../../convex/_generated/dataModel";
@@ -105,6 +106,8 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
     }
   }, [meetId, participants]);
 
+  const participantCount = participants?.length ?? 0;
+
   useEffect(() => {
     if (participants && participants.length >= 2) {
       const locations = participants.map((p: Doc<"participants">) => p.location);
@@ -113,7 +116,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [participants?.length]);
+  }, [participantCount]);
 
   const handleSelectParticipant = (participantId: Id<"participants">) => {
     localStorage.setItem(`meetpoint-participant-${meetId}`, participantId);
@@ -164,8 +167,8 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
       if (result.success) {
         setRoutes(result.routes);
       }
-    } catch (error) {
-      console.error("Error calculating routes:", error);
+    } catch (_error) {
+      setRoutes([]);
     } finally {
       setIsCalculatingRoutes(false);
     }
@@ -174,12 +177,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
   if (isLoading) {
     return (
       <main className="relative flex min-h-screen items-center justify-center bg-keria-darker">
-        <div
-          className="pointer-events-none fixed inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-          }}
-        />
+        <PageBackground />
         <div className="relative z-10 flex flex-col items-center gap-4">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-keria-gold border-t-transparent" />
           <span className="text-sm text-keria-muted">Chargement...</span>
@@ -191,12 +189,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
   if (!meet) {
     return (
       <main className="relative flex min-h-screen items-center justify-center bg-keria-darker">
-        <div
-          className="pointer-events-none fixed inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-          }}
-        />
+        <PageBackground />
         <div className="relative z-10 text-center">
           <p className="text-keria-muted">MeetPoint non trouvé</p>
           <Link href="/" className="mt-4 inline-block text-sm text-keria-gold hover:underline">
@@ -214,13 +207,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
 
   return (
     <main className="relative flex h-screen flex-col lg:flex-row bg-keria-darker">
-      {/* Grain overlay */}
-      <div
-        className="pointer-events-none fixed inset-0 z-50 opacity-[0.03]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        }}
-      />
+      <PageBackground />
 
       {/* Sidebar */}
       <aside className="relative z-10 w-full overflow-y-auto border-b border-keria-forest/20 bg-keria-darker p-5 lg:w-[380px] lg:border-b-0 lg:border-r">

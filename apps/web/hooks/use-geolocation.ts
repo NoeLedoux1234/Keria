@@ -9,9 +9,6 @@ interface GeolocationState {
   isLoading: boolean;
 }
 
-/**
- * Hook pour obtenir la géolocalisation de l'utilisateur
- */
 export function useGeolocation() {
   const [state, setState] = useState<GeolocationState>({
     coordinates: null,
@@ -66,7 +63,7 @@ export function useGeolocation() {
       {
         enableHighAccuracy: true,
         timeout: 10000,
-        maximumAge: 60000, // Cache pendant 1 minute
+        maximumAge: 60000,
       }
     );
   }, []);

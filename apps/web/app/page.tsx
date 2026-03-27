@@ -216,24 +216,22 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.8 }}
           >
-            <Link href="/new">
-              <motion.button
-                className="min-w-[200px] border border-keria-gold bg-keria-gold px-8 py-4 font-display text-xs font-semibold uppercase tracking-[0.2em] text-keria-darker transition-all hover:bg-keria-gold-light"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href="/new"
+                className="inline-block min-w-[200px] border border-keria-gold bg-keria-gold px-8 py-4 text-center font-display text-xs font-semibold uppercase tracking-[0.2em] text-keria-darker transition-all hover:bg-keria-gold-light"
               >
                 MeetPoint
-              </motion.button>
-            </Link>
-            <Link href="/event/new">
-              <motion.button
-                className="min-w-[200px] border border-white/10 bg-white/5 px-8 py-4 font-display text-xs font-semibold uppercase tracking-[0.2em] text-keria-cream/80 backdrop-blur-md transition-all hover:border-keria-gold/50 hover:text-keria-gold"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href="/event/new"
+                className="inline-block min-w-[200px] border border-white/10 bg-white/5 px-8 py-4 text-center font-display text-xs font-semibold uppercase tracking-[0.2em] text-keria-cream/80 backdrop-blur-md transition-all hover:border-keria-gold/50 hover:text-keria-gold"
               >
                 Événement
-              </motion.button>
-            </Link>
+              </Link>
+            </motion.div>
           </motion.div>
 
           {/* Secondary links */}
@@ -391,15 +389,14 @@ export default function HomePage() {
             GO
           </span>
 
-          <Link href="/new">
-            <motion.button
-              className="mt-8 border border-keria-gold bg-keria-gold px-16 py-5 font-display text-xs font-semibold uppercase tracking-[0.25em] text-keria-darker transition-all hover:bg-keria-gold-light"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="mt-8 inline-block">
+            <Link
+              href="/new"
+              className="inline-block border border-keria-gold bg-keria-gold px-16 py-5 font-display text-xs font-semibold uppercase tracking-[0.25em] text-keria-darker transition-all hover:bg-keria-gold-light"
             >
               Commencer
-            </motion.button>
-          </Link>
+            </Link>
+          </motion.div>
         </motion.div>
       </section>
 

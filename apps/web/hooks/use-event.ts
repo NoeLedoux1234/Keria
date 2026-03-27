@@ -4,9 +4,6 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 
-/**
- * Hook pour gérer un événement
- */
 export function useEvent(eventId: Id<"events"> | undefined) {
   const event = useQuery(api.events.get, eventId ? { id: eventId } : "skip");
   const stages = useQuery(
@@ -38,9 +35,6 @@ export function useEvent(eventId: Id<"events"> | undefined) {
   };
 }
 
-/**
- * Hook pour gérer un événement par code de partage
- */
 export function useEventByShareCode(shareCode: string | undefined) {
   const event = useQuery(
     api.events.getByShareCode,
@@ -53,18 +47,12 @@ export function useEventByShareCode(shareCode: string | undefined) {
   };
 }
 
-/**
- * Hook pour créer un événement
- */
 export function useCreateEvent() {
   const create = useMutation(api.events.create);
 
   return { create };
 }
 
-/**
- * Hook pour gérer les étapes d'un événement
- */
 export function useEventStages(eventId: Id<"events"> | undefined) {
   const stages = useQuery(
     api.eventStages.listByEvent,
@@ -84,9 +72,6 @@ export function useEventStages(eventId: Id<"events"> | undefined) {
   };
 }
 
-/**
- * Hook pour gérer les participants d'un événement
- */
 export function useEventParticipants(eventId: Id<"events"> | undefined) {
   const participants = useQuery(
     api.eventParticipants.listByEvent,

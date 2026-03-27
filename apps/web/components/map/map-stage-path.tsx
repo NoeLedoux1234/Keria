@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import { Source, Layer } from "react-map-gl";
 import type { Coordinates } from "@meetpoint/types";
 
@@ -16,15 +17,18 @@ interface MapStagePathProps {
 
 export function MapStagePath({
   stages,
-  color = "#6366f1", // indigo
+  color = "#6366f1",
   dashed = true,
 }: MapStagePathProps) {
-  // Trier les étapes par ordre et extraire les coordonnées
+  const uniqueId = useId();
   const sortedStages = [...stages].sort((a, b) => a.order - b.order);
 
   if (sortedStages.length < 2) return null;
 
-  // Convertir en format GeoJSON
+  const sourceId = `event-stages-path-${uniqueId}`;
+  const outlineLayerId = `stages-path-outline-${uniqueId}`;
+  const lineLayerId = `stages-path-line-${uniqueId}`;
+
   const coordinates = sortedStages.map((stage) => [
     stage.location.lng,
     stage.location.lat,
@@ -40,10 +44,9 @@ export function MapStagePath({
   };
 
   return (
-    <Source id="event-stages-path" type="geojson" data={geojson}>
-      {/* Bordure blanche pour meilleure visibilité */}
+    <Source id={sourceId} type="geojson" data={geojson}>
       <Layer
-        id="stages-path-outline"
+        id={outlineLayerId}
         type="line"
         paint={{
           "line-color": "#ffffff",
@@ -55,9 +58,8 @@ export function MapStagePath({
           "line-cap": "round",
         }}
       />
-      {/* Ligne principale */}
       <Layer
-        id="stages-path-line"
+        id={lineLayerId}
         type="line"
         paint={{
           "line-color": color,

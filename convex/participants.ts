@@ -1,9 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-/**
- * Ajoute un participant à un meeting
- */
 export const join = mutation({
   args: {
     meetId: v.id("meets"),
@@ -30,7 +27,6 @@ export const join = mutation({
       throw new Error("Cannot join a cancelled or completed meeting");
     }
 
-    // Vérifier si le participant existe déjà (par nom pour l'instant)
     const existingParticipant = await ctx.db
       .query("participants")
       .withIndex("by_meet", (q) => q.eq("meetId", args.meetId))
@@ -38,16 +34,9 @@ export const join = mutation({
       .first();
 
     if (existingParticipant) {
-      // Mettre à jour la localisation existante
-      await ctx.db.patch(existingParticipant._id, {
-        location: args.location,
-        address: args.address,
-        transportMode: args.transportMode,
-      });
-      return existingParticipant._id;
+      throw new Error("A participant with this name already exists in this meeting. Please choose a different name.");
     }
 
-    // Créer nouveau participant
     const participantId = await ctx.db.insert("participants", {
       meetId: args.meetId,
       name: args.name,
@@ -58,7 +47,6 @@ export const join = mutation({
       joinedAt: Date.now(),
     });
 
-    // Mettre à jour le timestamp du meeting
     await ctx.db.patch(args.meetId, {
       updatedAt: Date.now(),
     });
@@ -67,9 +55,6 @@ export const join = mutation({
   },
 });
 
-/**
- * Met à jour la localisation d'un participant
- */
 export const updateLocation = mutation({
   args: {
     participantId: v.id("participants"),
@@ -90,16 +75,12 @@ export const updateLocation = mutation({
       address: args.address,
     });
 
-    // Mettre à jour le timestamp du meeting
     await ctx.db.patch(participant.meetId, {
       updatedAt: Date.now(),
     });
   },
 });
 
-/**
- * Met à jour le temps de trajet d'un participant
- */
 export const updateTravelTime = mutation({
   args: {
     participantId: v.id("participants"),
@@ -114,9 +95,6 @@ export const updateTravelTime = mutation({
   },
 });
 
-/**
- * Supprime un participant
- */
 export const remove = mutation({
   args: {
     participantId: v.id("participants"),
@@ -131,7 +109,6 @@ export const remove = mutation({
       throw new Error("Cannot remove the creator");
     }
 
-    // Supprimer les votes du participant
     const votes = await ctx.db
       .query("votes")
       .withIndex("by_participant", (q) => q.eq("participantId", args.participantId))
@@ -141,19 +118,14 @@ export const remove = mutation({
       await ctx.db.delete(vote._id);
     }
 
-    // Supprimer le participant
     await ctx.db.delete(args.participantId);
 
-    // Mettre à jour le timestamp du meeting
     await ctx.db.patch(participant.meetId, {
       updatedAt: Date.now(),
     });
   },
 });
 
-/**
- * Récupère un participant par ID
- */
 export const get = query({
   args: { id: v.id("participants") },
   handler: async (ctx, args) => {

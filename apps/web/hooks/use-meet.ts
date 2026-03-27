@@ -4,9 +4,6 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 
-/**
- * Hook pour gérer un meeting
- */
 export function useMeet(meetId: Id<"meets"> | undefined) {
   const meet = useQuery(api.meets.get, meetId ? { id: meetId } : "skip");
   const participants = useQuery(
@@ -28,9 +25,6 @@ export function useMeet(meetId: Id<"meets"> | undefined) {
   };
 }
 
-/**
- * Hook pour gérer un meeting par code de partage
- */
 export function useMeetByShareCode(shareCode: string | undefined) {
   const meet = useQuery(
     api.meets.getByShareCode,
@@ -43,9 +37,6 @@ export function useMeetByShareCode(shareCode: string | undefined) {
   };
 }
 
-/**
- * Hook pour créer un meeting
- */
 export function useCreateMeet() {
   const create = useMutation(api.meets.create);
 

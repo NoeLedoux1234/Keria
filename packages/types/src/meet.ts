@@ -1,50 +1,35 @@
 import type { Coordinates, Place, TransportMode } from "./location";
 
-/**
- * Statut d'un meeting
- */
 export type MeetStatus = "draft" | "pending" | "confirmed" | "completed" | "cancelled";
 
-/**
- * Participant à un meeting
- */
-export interface Participant {
+export type Participant = {
   id: string;
   userId?: string;
   name: string;
   location: Coordinates;
   transportMode: TransportMode;
   joinedAt: number;
-}
+};
 
-/**
- * Vote sur un lieu
- */
-export interface LocationVote {
+export type LocationVote = {
   placeId: string;
   participantId: string;
   vote: "up" | "down";
   votedAt: number;
-}
+};
 
-/**
- * Filtres pour la recherche de lieux
- */
-export interface MeetFilters {
+export type MeetFilters = {
   maxTravelTimeMinutes?: number;
   placeCategories?: string[];
   priceLevel?: number[];
   openNow?: boolean;
-}
+};
 
-/**
- * Meeting principal
- */
-export interface Meet {
+export type Meet = {
   id: string;
   name: string;
   description?: string;
-  creatorId: string;
+  creatorName: string;
   participants: Participant[];
   midpoint?: Coordinates;
   suggestedPlaces: Place[];
@@ -55,12 +40,9 @@ export interface Meet {
   scheduledFor?: number;
   createdAt: number;
   updatedAt: number;
-}
+};
 
-/**
- * Données pour créer un nouveau meeting
- */
-export interface CreateMeetInput {
+export type CreateMeetInput = {
   name: string;
   description?: string;
   creatorLocation: Coordinates;
@@ -68,14 +50,11 @@ export interface CreateMeetInput {
   transportMode: TransportMode;
   filters?: MeetFilters;
   scheduledFor?: number;
-}
+};
 
-/**
- * Données pour rejoindre un meeting
- */
-export interface JoinMeetInput {
+export type JoinMeetInput = {
   meetId: string;
   name: string;
   location: Coordinates;
   transportMode: TransportMode;
-}
+};

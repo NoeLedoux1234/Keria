@@ -2,9 +2,6 @@ import { v } from "convex/values";
 import { action, internalAction } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 
-/**
- * Catégories de lieux supportées
- */
 const PLACE_CATEGORIES = {
   restaurant: ["amenity=restaurant"],
   cafe: ["amenity=cafe"],
@@ -36,9 +33,6 @@ interface OverpassElement {
   };
 }
 
-/**
- * Recherche des lieux autour d'un point via Overpass API (OpenStreetMap) - interne
- */
 export const _searchNearby = internalAction({
   args: {
     meetId: v.id("meets"),
@@ -49,14 +43,12 @@ export const _searchNearby = internalAction({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const radius = args.radiusMeters ?? 1000; // 1km par défaut
+    const radius = args.radiusMeters ?? 1000;
     const limit = args.limit ?? 15;
     const categories = (args.categories ?? ["restaurant", "cafe", "bar"]) as PlaceCategory[];
 
-    // Construire les tags pour la requête Overpass
     const tags = categories.flatMap((cat) => PLACE_CATEGORIES[cat] ?? []);
 
-    // Construire la requête Overpass QL
     const tagQueries = tags
       .map((tag) => {
         const [key, value] = tag.split("=");
@@ -89,14 +81,12 @@ export const _searchNearby = internalAction({
       const data = await response.json();
       const elements: OverpassElement[] = data.elements || [];
 
-      // Transformer les résultats et les sauvegarder
       const places = elements
-        .filter((el) => el.tags?.name) // Garder seulement ceux avec un nom
+        .filter((el) => el.tags?.name)
         .map((el) => {
           const lat = el.lat ?? el.center?.lat ?? 0;
           const lon = el.lon ?? el.center?.lon ?? 0;
 
-          // Déterminer la catégorie
           let category = "other";
           if (el.tags?.amenity === "restaurant") category = "restaurant";
           else if (el.tags?.amenity === "cafe") category = "cafe";
@@ -105,7 +95,6 @@ export const _searchNearby = internalAction({
           else if (el.tags?.amenity === "cinema") category = "cinema";
           else if (el.tags?.leisure === "park") category = "park";
 
-          // Construire l'adresse
           const addressParts = [];
           if (el.tags?.["addr:housenumber"]) addressParts.push(el.tags["addr:housenumber"]);
           if (el.tags?.["addr:street"]) addressParts.push(el.tags["addr:street"]);
@@ -122,7 +111,6 @@ export const _searchNearby = internalAction({
           };
         });
 
-      // Sauvegarder les lieux dans la DB
       for (const place of places) {
         await ctx.runMutation(api.places.add, {
           meetId: args.meetId,
@@ -151,9 +139,6 @@ export const _searchNearby = internalAction({
   },
 });
 
-/**
- * Recherche des lieux autour d'un point (public wrapper)
- */
 export const searchNearby = action({
   args: {
     meetId: v.id("meets"),
@@ -168,9 +153,6 @@ export const searchNearby = action({
   },
 });
 
-/**
- * Recherche des lieux avec l'heure actuelle pour des suggestions contextuelles
- */
 export const searchContextual = action({
   args: {
     meetId: v.id("meets"),
@@ -181,26 +163,19 @@ export const searchContextual = action({
   handler: async (ctx, args) => {
     const hour = new Date().getHours();
 
-    // Catégories basées sur l'heure
     let categories: PlaceCategory[];
     if (hour >= 6 && hour < 11) {
-      // Matin
       categories = ["cafe"];
     } else if (hour >= 11 && hour < 15) {
-      // Midi
       categories = ["restaurant", "fast_food"];
     } else if (hour >= 15 && hour < 18) {
-      // Après-midi
       categories = ["cafe", "park"];
     } else if (hour >= 18 && hour < 22) {
-      // Soir
       categories = ["restaurant", "bar"];
     } else {
-      // Nuit
       categories = ["bar"];
     }
 
-    // Utiliser _searchNearby interne pour éviter la référence circulaire
     return await ctx.runAction(internal.searchPlaces._searchNearby, {
       meetId: args.meetId,
       lat: args.lat,

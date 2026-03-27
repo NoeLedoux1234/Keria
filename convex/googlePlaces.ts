@@ -4,11 +4,10 @@ import { api, internal } from "./_generated/api";
 
 const GOOGLE_PLACES_BASE_URL = "https://places.googleapis.com/v1/places";
 
-// Mapping des catégories vers les types Google Places (types supportés uniquement)
 const CATEGORY_TO_GOOGLE_TYPES: Record<string, string[]> = {
   restaurant: ["restaurant", "french_restaurant", "italian_restaurant", "japanese_restaurant", "chinese_restaurant", "indian_restaurant", "mexican_restaurant", "thai_restaurant", "vietnamese_restaurant", "korean_restaurant", "mediterranean_restaurant", "american_restaurant"],
   cafe: ["cafe", "coffee_shop"],
-  bar: ["bar", "wine_bar"], // cocktail_bar n'est pas supporté
+  bar: ["bar", "wine_bar"],
   fast_food: ["fast_food_restaurant", "hamburger_restaurant", "pizza_restaurant", "sandwich_shop"],
   cinema: ["movie_theater"],
   park: ["park"],
@@ -61,16 +60,10 @@ interface PlacesResponse {
   places: GooglePlace[];
 }
 
-/**
- * Génère l'URL d'une photo Google Places
- */
 function getPhotoUrl(photoName: string, apiKey: string, maxWidth = 400): string {
   return `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=${maxWidth}&key=${apiKey}`;
 }
 
-/**
- * Détermine la catégorie à partir des types Google
- */
 function getCategoryFromTypes(types: string[] | undefined): string {
   if (!types) return "other";
 
@@ -86,9 +79,6 @@ function getCategoryFromTypes(types: string[] | undefined): string {
   return "other";
 }
 
-/**
- * Convertit le niveau de prix Google en nombre
- */
 function getPriceLevelNumber(priceLevel: string | undefined): number | undefined {
   if (!priceLevel) return undefined;
 
@@ -103,10 +93,6 @@ function getPriceLevelNumber(priceLevel: string | undefined): number | undefined
   return mapping[priceLevel];
 }
 
-/**
- * Recherche des lieux via Google Places API (New) - interne
- */
-// TTL du cache : 1 heure
 const CACHE_TTL_MS = 60 * 60 * 1000;
 
 export const _searchNearby = internalAction({
@@ -119,7 +105,6 @@ export const _searchNearby = internalAction({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    // Vérifier le cache avant d'appeler l'API
     const meet = await ctx.runQuery(api.meets.get, { id: args.meetId });
     const now = Date.now();
 
@@ -150,7 +135,6 @@ export const _searchNearby = internalAction({
     const limit = args.limit ?? 15;
     const categories = args.categories ?? ["restaurant", "cafe", "bar"];
 
-    // Construire les types à inclure
     const includedTypes = categories.flatMap(
       (cat) => CATEGORY_TO_GOOGLE_TYPES[cat] ?? []
     );
@@ -160,7 +144,6 @@ export const _searchNearby = internalAction({
     }
 
     try {
-      // Recherche avec plus de champs incluant les avis
       const response = await fetch(`${GOOGLE_PLACES_BASE_URL}:searchNearby`, {
         method: "POST",
         headers: {
@@ -199,18 +182,15 @@ export const _searchNearby = internalAction({
       const data: PlacesResponse = await response.json();
       const googlePlaces = data.places || [];
 
-      // Transformer et sauvegarder les lieux
       const places = googlePlaces.map((place) => {
         const category = getCategoryFromTypes(place.types);
 
-        // Récupérer plusieurs photos (jusqu'à 5)
         const photos = place.photos?.slice(0, 5).map((photo) =>
           getPhotoUrl(photo.name, apiKey, 800)
         ) ?? [];
 
         const photoUrl = photos[0];
 
-        // Transformer les avis
         const reviews = place.reviews?.slice(0, 5).map((review) => ({
           authorName: review.authorAttribution.displayName,
           authorPhoto: review.authorAttribution.photoUri,
@@ -241,7 +221,6 @@ export const _searchNearby = internalAction({
         };
       });
 
-      // Sauvegarder les lieux dans la DB
       for (const place of places) {
         await ctx.runMutation(api.places.add, {
           meetId: args.meetId,
@@ -263,7 +242,6 @@ export const _searchNearby = internalAction({
         });
       }
 
-      // Mettre à jour le timestamp de dernière recherche
       await ctx.runMutation(api.meets.updateLastSearchedAt, { meetId: args.meetId });
 
       return {
@@ -284,9 +262,6 @@ export const _searchNearby = internalAction({
   },
 });
 
-/**
- * Recherche des lieux via Google Places API (public)
- */
 export const searchNearby = action({
   args: {
     meetId: v.id("meets"),
@@ -301,9 +276,6 @@ export const searchNearby = action({
   },
 });
 
-/**
- * Recherche contextuelle basée sur l'heure
- */
 export const searchContextual = action({
   args: {
     meetId: v.id("meets"),

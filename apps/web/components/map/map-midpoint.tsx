@@ -10,12 +10,11 @@ interface MapMidpointProps {
 }
 
 export function MapMidpoint({ coordinates, fairnessScore, onClick }: MapMidpointProps) {
-  // Couleur basée sur le score d'équité
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "#6b8f4a"; // keria-success
-    if (score >= 60) return "#c9a227"; // keria-gold
-    if (score >= 40) return "#a65a4a"; // keria-error
-    return "#8a3a2a"; // keria-error-dark
+    if (score >= 80) return "#6b8f4a";
+    if (score >= 60) return "#c9a227";
+    if (score >= 40) return "#a65a4a";
+    return "#8a3a2a";
   };
 
   return (

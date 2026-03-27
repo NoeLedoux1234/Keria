@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useId } from "react";
 import { useAction } from "convex/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button, Card, CardHeader, CardTitle, CardContent, Badge, Modal } from "@meetpoint/ui";
@@ -42,20 +42,20 @@ const CATEGORY_FILTERS = [
 
 const PRICE_LEVELS = ["", "€", "€€", "€€€", "€€€€"];
 
-function StarIcon({ filled, half, size }: { filled?: boolean; half?: boolean; size: number }) {
+function StarIcon({ filled, half, size, gradientId }: { filled?: boolean; half?: boolean; size: number; gradientId?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {half ? (
+      {half && gradientId ? (
         <>
           <defs>
-            <linearGradient id="halfStar">
+            <linearGradient id={gradientId}>
               <stop offset="50%" stopColor="currentColor" />
               <stop offset="50%" stopColor="transparent" />
             </linearGradient>
           </defs>
           <path
             d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-            fill="url(#halfStar)"
+            fill={`url(#${gradientId})`}
             stroke="currentColor"
             strokeWidth="1.5"
             className="text-keria-gold"
@@ -75,6 +75,7 @@ function StarIcon({ filled, half, size }: { filled?: boolean; half?: boolean; si
 }
 
 function StarRating({ rating, size = "sm" }: { rating: number; size?: "sm" | "lg" }) {
+  const uniqueId = useId();
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating - fullStars >= 0.5;
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
@@ -85,7 +86,7 @@ function StarRating({ rating, size = "sm" }: { rating: number; size?: "sm" | "lg
       {Array.from({ length: fullStars }).map((_, i) => (
         <StarIcon key={`full-${i}`} filled size={iconSize} />
       ))}
-      {hasHalfStar && <StarIcon key="half" half size={iconSize} />}
+      {hasHalfStar ? <StarIcon key="half" half size={iconSize} gradientId={`halfStar-${uniqueId}`} /> : null}
       {Array.from({ length: emptyStars }).map((_, i) => (
         <StarIcon key={`empty-${i}`} size={iconSize} />
       ))}
@@ -93,7 +94,6 @@ function StarRating({ rating, size = "sm" }: { rating: number; size?: "sm" | "lg
   );
 }
 
-// Carousel de photos
 function PhotoCarousel({ photos, name }: { photos: string[]; name: string }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -167,7 +167,6 @@ function PhotoCarousel({ photos, name }: { photos: string[]; name: string }) {
   );
 }
 
-// Couleurs pour les avatars
 const AVATAR_COLORS = [
   "bg-keria-gold/20 text-keria-gold",
   "bg-keria-success/20 text-keria-success-light",
@@ -176,7 +175,6 @@ const AVATAR_COLORS = [
   "bg-keria-forest/50 text-keria-cream",
 ];
 
-// Composant pour un avis
 function ReviewCard({ review, index }: { review: { authorName: string; authorPhoto?: string; rating: number; text: string; relativeTime: string }; index: number }) {
   const [expanded, setExpanded] = useState(false);
   const isLong = review.text.length > 150;
@@ -223,7 +221,6 @@ function ReviewCard({ review, index }: { review: { authorName: string; authorPho
   );
 }
 
-// Modale de détails d'un lieu
 function PlaceModal({
   place,
   isOpen,
@@ -530,7 +527,6 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
   const { ranking, isLoading } = usePlaces(meetId);
   const { votes, castVote } = useVotes(meetId);
 
-  // Utiliser Google Places API si disponible, sinon Overpass
   const searchGoogle = useAction(api.googlePlaces.searchNearby);
   const searchGoogleContextual = useAction(api.googlePlaces.searchContextual);
   const searchOverpass = useAction(api.searchPlaces.searchNearby);
@@ -542,17 +538,14 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
   const [useGoogleApi, setUseGoogleApi] = useState(true);
   const [searchError, setSearchError] = useState<string | null>(null);
 
-  // État pour la modale
   const [selectedPlace, setSelectedPlace] = useState<PlaceRankingItem | null>(null);
 
-  // Debounce pour éviter les clics rapides
   const lastSearchTime = useRef(0);
   const DEBOUNCE_MS = 2000;
 
   const handleSearch = async (contextual = false) => {
     if (!midpoint) return;
 
-    // Debounce: empêcher les clics rapides
     const now = Date.now();
     if (now - lastSearchTime.current < DEBOUNCE_MS) {
       return;
@@ -630,8 +623,7 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
       if (!result.success) {
         setSearchError(result.error ?? "Erreur de recherche");
       }
-    } catch (error) {
-      console.error("Search error:", error);
+    } catch (_error) {
       setSearchError("Erreur de connexion");
     } finally {
       setIsSearching(false);
@@ -648,8 +640,8 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
         participantId,
         vote,
       });
-    } catch (error) {
-      console.error("Vote error:", error);
+    } catch (_error) {
+      setSearchError("Erreur lors du vote");
     }
   };
 

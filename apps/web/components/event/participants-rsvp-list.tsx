@@ -37,7 +37,6 @@ export function ParticipantsRSVPList({
   currentParticipantId,
   rsvpCounts,
 }: ParticipantsRSVPListProps) {
-  // Grouper les participants par statut RSVP
   const groupedParticipants = participants.reduce(
     (acc, participant) => {
       const status = participant.rsvpStatus as RSVPStatus;
@@ -48,12 +47,10 @@ export function ParticipantsRSVPList({
     {} as Record<RSVPStatus, Doc<"eventParticipants">[]>
   );
 
-  // Trier les sections par ordre
   const sortedStatuses = (Object.keys(SECTION_CONFIG) as RSVPStatus[]).sort(
     (a, b) => SECTION_CONFIG[a].order - SECTION_CONFIG[b].order
   );
 
-  // Générer une couleur basée sur le nom
   const getInitialColor = (name: string) => {
     const colors = [
       "bg-keria-gold",

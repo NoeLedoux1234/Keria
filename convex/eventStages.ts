@@ -1,18 +1,12 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-/**
- * Détermine le type d'étape en fonction de son ordre
- */
 function getStageType(order: number, totalStages: number): "departure" | "intermediate" | "arrival" {
   if (order === 0) return "departure";
   if (order === totalStages - 1) return "arrival";
   return "intermediate";
 }
 
-/**
- * Ajoute une étape à un événement
- */
 export const add = mutation({
   args: {
     eventId: v.id("events"),
@@ -27,13 +21,11 @@ export const add = mutation({
     estimatedDurationMinutes: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    // Récupérer toutes les étapes existantes
     const existingStages = await ctx.db
       .query("eventStages")
       .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
       .collect();
 
-    // Trouver la bonne position en fonction de la date
     const allStages = [
       ...existingStages.map((s) => ({ scheduledAt: s.scheduledAt, id: s._id })),
       { scheduledAt: args.scheduledAt, id: null },
@@ -42,7 +34,6 @@ export const add = mutation({
     const newOrder = allStages.findIndex((s) => s.id === null);
     const totalStages = allStages.length;
 
-    // Créer la nouvelle étape
     const stageId = await ctx.db.insert("eventStages", {
       eventId: args.eventId,
       name: args.name,
@@ -56,7 +47,6 @@ export const add = mutation({
       createdAt: Date.now(),
     });
 
-    // Mettre à jour les ordres et types des autres étapes
     for (const stage of existingStages) {
       const stageData = allStages.find((s) => s.id === stage._id);
       if (stageData) {
@@ -68,7 +58,6 @@ export const add = mutation({
       }
     }
 
-    // Mettre à jour les dates de l'événement
     const sortedStages = allStages.sort((a, b) => a.scheduledAt - b.scheduledAt);
     await ctx.db.patch(args.eventId, {
       startsAt: sortedStages[0]!.scheduledAt,
@@ -80,9 +69,6 @@ export const add = mutation({
   },
 });
 
-/**
- * Met à jour une étape
- */
 export const update = mutation({
   args: {
     stageId: v.id("eventStages"),
@@ -102,7 +88,18 @@ export const update = mutation({
     const stage = await ctx.db.get(args.stageId);
     if (!stage) throw new Error("Stage not found");
 
-    const updates: Record<string, unknown> = {};
+    type StagePatch = Partial<{
+      name: string;
+      description: string;
+      location: { lat: number; lng: number };
+      address: string;
+      scheduledAt: number;
+      estimatedDurationMinutes: number;
+      order: number;
+      stageType: "departure" | "intermediate" | "arrival";
+    }>;
+
+    const updates: StagePatch = {};
 
     if (args.name !== undefined) updates.name = args.name;
     if (args.description !== undefined) updates.description = args.description;
@@ -112,17 +109,14 @@ export const update = mutation({
       updates.estimatedDurationMinutes = args.estimatedDurationMinutes;
     }
 
-    // Si la date change, il faut recalculer les ordres
     if (args.scheduledAt !== undefined && args.scheduledAt !== stage.scheduledAt) {
       updates.scheduledAt = args.scheduledAt;
 
-      // Récupérer toutes les étapes
       const allStages = await ctx.db
         .query("eventStages")
         .withIndex("by_event", (q) => q.eq("eventId", stage.eventId))
         .collect();
 
-      // Recalculer les ordres
       const updatedStages = allStages.map((s) => ({
         ...s,
         scheduledAt: s._id === args.stageId ? args.scheduledAt : s.scheduledAt,
@@ -131,7 +125,6 @@ export const update = mutation({
       const sortedStages = updatedStages.sort((a, b) => (a.scheduledAt ?? 0) - (b.scheduledAt ?? 0));
       const totalStages = sortedStages.length;
 
-      // Mettre à jour les ordres
       for (let i = 0; i < sortedStages.length; i++) {
         const s = sortedStages[i]!;
         if (s._id === args.stageId) {
@@ -145,7 +138,6 @@ export const update = mutation({
         }
       }
 
-      // Mettre à jour les dates de l'événement
       await ctx.db.patch(stage.eventId, {
         startsAt: sortedStages[0]!.scheduledAt,
         endsAt: sortedStages[sortedStages.length - 1]!.scheduledAt,
@@ -155,23 +147,18 @@ export const update = mutation({
 
     await ctx.db.patch(args.stageId, updates);
 
-    // Mettre à jour l'événement
     await ctx.db.patch(stage.eventId, {
       updatedAt: Date.now(),
     });
   },
 });
 
-/**
- * Supprime une étape
- */
 export const remove = mutation({
   args: { stageId: v.id("eventStages") },
   handler: async (ctx, args) => {
     const stage = await ctx.db.get(args.stageId);
     if (!stage) throw new Error("Stage not found");
 
-    // Récupérer toutes les autres étapes
     const allStages = await ctx.db
       .query("eventStages")
       .withIndex("by_event", (q) => q.eq("eventId", stage.eventId))
@@ -179,15 +166,12 @@ export const remove = mutation({
 
     const remainingStages = allStages.filter((s) => s._id !== args.stageId);
 
-    // Vérifier qu'il reste au moins 2 étapes
     if (remainingStages.length < 2) {
       throw new Error("Un événement doit avoir au moins 2 étapes");
     }
 
-    // Supprimer l'étape
     await ctx.db.delete(args.stageId);
 
-    // Recalculer les ordres
     const sortedStages = remainingStages.sort((a, b) => a.scheduledAt - b.scheduledAt);
     const totalStages = sortedStages.length;
 
@@ -199,7 +183,6 @@ export const remove = mutation({
       });
     }
 
-    // Mettre à jour les dates de l'événement
     await ctx.db.patch(stage.eventId, {
       startsAt: sortedStages[0]!.scheduledAt,
       endsAt: sortedStages[sortedStages.length - 1]!.scheduledAt,
@@ -208,9 +191,6 @@ export const remove = mutation({
   },
 });
 
-/**
- * Récupère une étape par son ID
- */
 export const get = query({
   args: { stageId: v.id("eventStages") },
   handler: async (ctx, args) => {
@@ -218,9 +198,6 @@ export const get = query({
   },
 });
 
-/**
- * Liste les étapes d'un événement (triées par ordre)
- */
 export const listByEvent = query({
   args: { eventId: v.id("events") },
   handler: async (ctx, args) => {

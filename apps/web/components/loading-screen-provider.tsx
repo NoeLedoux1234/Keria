@@ -31,19 +31,14 @@ export function LoadingScreenProvider({ children }: { children: ReactNode }) {
     setShowIntro(true);
   }, []);
 
-  if (!isClient) {
-    return null;
-  }
-
   return (
     <LoadingContext.Provider value={{ hasSeenIntro: !showIntro }}>
       {children}
-
-      <AnimatePresence>
-        {showIntro && (
+      {isClient && showIntro && (
+        <AnimatePresence>
           <LoadingScreen key="intro" onComplete={() => setShowIntro(false)} />
-        )}
-      </AnimatePresence>
+        </AnimatePresence>
+      )}
     </LoadingContext.Provider>
   );
 }

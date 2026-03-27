@@ -1,9 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-/**
- * Ajoute un lieu suggéré à un meeting
- */
 export const add = mutation({
   args: {
     meetId: v.id("meets"),
@@ -38,7 +35,6 @@ export const add = mutation({
     relevanceScore: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    // Vérifier si le lieu existe déjà pour ce meeting
     const existing = await ctx.db
       .query("places")
       .withIndex("by_meet", (q) => q.eq("meetId", args.meetId))
@@ -46,7 +42,6 @@ export const add = mutation({
       .first();
 
     if (existing) {
-      // Mettre à jour les infos
       await ctx.db.patch(existing._id, {
         name: args.name,
         address: args.address,
@@ -92,9 +87,6 @@ export const add = mutation({
   },
 });
 
-/**
- * Récupère les lieux suggérés pour un meeting
- */
 export const listByMeet = query({
   args: { meetId: v.id("meets") },
   handler: async (ctx, args) => {
@@ -105,9 +97,6 @@ export const listByMeet = query({
   },
 });
 
-/**
- * Récupère les lieux par catégorie
- */
 export const listByCategory = query({
   args: {
     meetId: v.id("meets"),
@@ -121,9 +110,6 @@ export const listByCategory = query({
   },
 });
 
-/**
- * Supprime tous les lieux d'un meeting
- */
 export const clearByMeet = mutation({
   args: { meetId: v.id("meets") },
   handler: async (ctx, args) => {
@@ -133,7 +119,6 @@ export const clearByMeet = mutation({
       .collect();
 
     for (const place of places) {
-      // Supprimer les votes associés
       const votes = await ctx.db
         .query("votes")
         .withIndex("by_place", (q) => q.eq("placeId", place._id))

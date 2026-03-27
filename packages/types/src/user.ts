@@ -1,19 +1,13 @@
 import type { Coordinates, TransportMode } from "./location";
 
-/**
- * Préférences utilisateur
- */
-export interface UserPreferences {
+export type UserPreferences = {
   defaultTransportMode: TransportMode;
   defaultLocation?: Coordinates;
   favoriteCategories: string[];
   maxBudget?: number;
-}
+};
 
-/**
- * Utilisateur
- */
-export interface User {
+export type User = {
   id: string;
   email: string;
   name: string;
@@ -21,4 +15,4 @@ export interface User {
   preferences: UserPreferences;
   createdAt: number;
   updatedAt: number;
-}
+};

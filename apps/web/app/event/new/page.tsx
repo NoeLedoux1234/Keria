@@ -8,6 +8,7 @@ import { Button, Input } from "@meetpoint/ui";
 import { useCreateEvent } from "@/hooks";
 import { StageForm, type StageFormData } from "@/components/event";
 import { MapContainer, MapStageMarker, MapStagePath, type MapContainerHandle } from "@/components/map";
+import { PageBackground } from "@/components/page-background";
 
 type Step = 1 | 2 | 3;
 
@@ -108,7 +109,6 @@ export default function NewEventPage() {
       router.push(`/event/${result.eventId}?code=${result.shareCode}`);
     } catch (err) {
       setError("Erreur lors de la création de l'événement");
-      console.error(err);
     } finally {
       setIsSubmitting(false);
     }
@@ -119,33 +119,7 @@ export default function NewEventPage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-keria-darker">
-      {/* Background image with blur */}
-      <div
-        className="fixed inset-0"
-        style={{
-          backgroundImage: `url("https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=2000&q=80")`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          filter: "blur(40px) brightness(0.25) saturate(0.7)",
-          transform: "scale(1.2)",
-        }}
-      />
-
-      {/* Heavy grain */}
-      <div
-        className="pointer-events-none fixed inset-0 z-10 opacity-[0.03]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        }}
-      />
-
-      {/* Vignette */}
-      <div
-        className="pointer-events-none fixed inset-0 z-10"
-        style={{
-          background: "radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.6) 100%)",
-        }}
-      />
+      <PageBackground />
 
       {/* Header */}
       <header className="relative z-20 flex items-center justify-between px-6 py-6">

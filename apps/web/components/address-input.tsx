@@ -8,7 +8,7 @@ import type { Coordinates } from "@meetpoint/types";
 interface AddressSuggestion {
   id: string;
   place_name: string;
-  center: [number, number]; // [lng, lat]
+  center: [number, number];
 }
 
 interface AddressInputProps {
@@ -29,7 +29,6 @@ export function AddressInput({
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Fermer les suggestions quand on clique ailleurs
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -40,7 +39,6 @@ export function AddressInput({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Recherche avec debounce
   useEffect(() => {
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
@@ -55,14 +53,17 @@ export function AddressInput({
       setIsLoading(true);
       try {
         const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+        if (!token) {
+          setSuggestions([]);
+          return;
+        }
         const response = await fetch(
           `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${token}&country=fr&language=fr&limit=5`
         );
         const data = await response.json();
         setSuggestions(data.features || []);
         setShowSuggestions(true);
-      } catch (error) {
-        console.error("Geocoding error:", error);
+      } catch (_error) {
         setSuggestions([]);
       } finally {
         setIsLoading(false);

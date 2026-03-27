@@ -1,30 +1,23 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-/**
- * Génère un code de partage unique pour les événements (6 caractères)
- */
+const MAX_SHARE_CODE_ATTEMPTS = 10;
+
 function generateEventShareCode(): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // Sans I, O, 0, 1 pour éviter confusion
-  let code = "E"; // Préfixe E pour distinguer des meetpoints
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code = "E";
   for (let i = 0; i < 5; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return code;
 }
 
-/**
- * Détermine le type d'étape en fonction de son ordre
- */
 function getStageType(order: number, totalStages: number): "departure" | "intermediate" | "arrival" {
   if (order === 0) return "departure";
   if (order === totalStages - 1) return "arrival";
   return "intermediate";
 }
 
-/**
- * Crée un nouvel événement avec ses étapes
- */
 export const create = mutation({
   args: {
     name: v.string(),
@@ -45,37 +38,31 @@ export const create = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    // Vérifier qu'il y a au moins 2 étapes
     if (args.stages.length < 2) {
       throw new Error("Un événement doit avoir au moins 2 étapes (départ et arrivée)");
     }
 
     const now = Date.now();
 
-    // Générer un code de partage unique
     let shareCode = generateEventShareCode();
-    let existing = await ctx.db
-      .query("events")
-      .withIndex("by_share_code", (q) => q.eq("shareCode", shareCode))
-      .first();
-
-    // Régénérer si collision (rare)
-    while (existing) {
-      shareCode = generateEventShareCode();
-      existing = await ctx.db
+    for (let attempt = 0; attempt < MAX_SHARE_CODE_ATTEMPTS; attempt++) {
+      const existing = await ctx.db
         .query("events")
         .withIndex("by_share_code", (q) => q.eq("shareCode", shareCode))
         .first();
+      if (!existing) break;
+      if (attempt === MAX_SHARE_CODE_ATTEMPTS - 1) {
+        throw new Error("Failed to generate unique share code");
+      }
+      shareCode = generateEventShareCode();
     }
 
-    // Trier les étapes par date
     const sortedStages = [...args.stages].sort((a, b) => a.scheduledAt - b.scheduledAt);
 
-    // Créer l'événement
     const eventId = await ctx.db.insert("events", {
       name: args.name,
       description: args.description,
-      creatorId: args.creatorName, // TODO: utiliser l'auth user ID
+      creatorName: args.creatorName,
       shareCode,
       status: "published",
       startsAt: sortedStages[0]!.scheduledAt,
@@ -84,7 +71,6 @@ export const create = mutation({
       updatedAt: now,
     });
 
-    // Créer les étapes
     for (let i = 0; i < sortedStages.length; i++) {
       const stage = sortedStages[i]!;
       await ctx.db.insert("eventStages", {
@@ -101,7 +87,6 @@ export const create = mutation({
       });
     }
 
-    // Ajouter le créateur comme premier participant avec RSVP = yes
     const participantId = await ctx.db.insert("eventParticipants", {
       eventId,
       name: args.creatorName,
@@ -115,9 +100,6 @@ export const create = mutation({
   },
 });
 
-/**
- * Récupère un événement par son ID
- */
 export const get = query({
   args: { id: v.id("events") },
   handler: async (ctx, args) => {
@@ -125,9 +107,6 @@ export const get = query({
   },
 });
 
-/**
- * Récupère un événement par son code de partage
- */
 export const getByShareCode = query({
   args: { shareCode: v.string() },
   handler: async (ctx, args) => {
@@ -138,9 +117,6 @@ export const getByShareCode = query({
   },
 });
 
-/**
- * Liste les étapes d'un événement (triées par ordre)
- */
 export const getStages = query({
   args: { eventId: v.id("events") },
   handler: async (ctx, args) => {
@@ -153,9 +129,6 @@ export const getStages = query({
   },
 });
 
-/**
- * Liste les participants d'un événement
- */
 export const getParticipants = query({
   args: { eventId: v.id("events") },
   handler: async (ctx, args) => {
@@ -166,9 +139,6 @@ export const getParticipants = query({
   },
 });
 
-/**
- * Compte les participants par statut RSVP
- */
 export const countByRsvp = query({
   args: { eventId: v.id("events") },
   handler: async (ctx, args) => {
@@ -187,9 +157,6 @@ export const countByRsvp = query({
   },
 });
 
-/**
- * Met à jour les détails d'un événement
- */
 export const update = mutation({
   args: {
     eventId: v.id("events"),
@@ -197,7 +164,7 @@ export const update = mutation({
     description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const updates: Record<string, unknown> = {
+    const updates: Partial<{ name: string; description: string; updatedAt: number }> = {
       updatedAt: Date.now(),
     };
 
@@ -208,9 +175,6 @@ export const update = mutation({
   },
 });
 
-/**
- * Met à jour le statut d'un événement
- */
 export const updateStatus = mutation({
   args: {
     eventId: v.id("events"),
@@ -230,13 +194,9 @@ export const updateStatus = mutation({
   },
 });
 
-/**
- * Supprime un événement et toutes ses données associées
- */
 export const remove = mutation({
   args: { eventId: v.id("events") },
   handler: async (ctx, args) => {
-    // Supprimer les étapes
     const stages = await ctx.db
       .query("eventStages")
       .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
@@ -246,7 +206,6 @@ export const remove = mutation({
       await ctx.db.delete(stage._id);
     }
 
-    // Supprimer les participants
     const participants = await ctx.db
       .query("eventParticipants")
       .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
@@ -256,7 +215,6 @@ export const remove = mutation({
       await ctx.db.delete(participant._id);
     }
 
-    // Supprimer l'événement
     await ctx.db.delete(args.eventId);
   },
 });
