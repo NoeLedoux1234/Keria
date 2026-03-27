@@ -26,10 +26,10 @@ const SECTION_CONFIG: Record<RSVPStatus, { label: string; order: number }> = {
 };
 
 const SectionIndicators: Record<RSVPStatus, React.ReactNode> = {
-  yes: <span className="h-2 w-2 rounded-full bg-green-500" />,
+  yes: <span className="h-2 w-2 rounded-full bg-keria-success" />,
   maybe: <span className="h-2 w-2 rounded-full bg-keria-gold" />,
   pending: <span className="h-2 w-2 rounded-full bg-keria-muted" />,
-  no: <span className="h-2 w-2 rounded-full bg-red-500" />,
+  no: <span className="h-2 w-2 rounded-full bg-keria-error" />,
 };
 
 export function ParticipantsRSVPList({
@@ -56,13 +56,13 @@ export function ParticipantsRSVPList({
   // Générer une couleur basée sur le nom
   const getInitialColor = (name: string) => {
     const colors = [
-      "bg-blue-500",
-      "bg-green-500",
-      "bg-purple-500",
-      "bg-orange-500",
-      "bg-pink-500",
-      "bg-teal-500",
-      "bg-indigo-500",
+      "bg-keria-gold",
+      "bg-keria-success",
+      "bg-keria-info",
+      "bg-keria-error",
+      "bg-keria-forest",
+      "bg-keria-muted",
+      "bg-keria-success-dark",
     ];
     const index = name.charCodeAt(0) % colors.length;
     return colors[index];
@@ -74,7 +74,7 @@ export function ParticipantsRSVPList({
       {rsvpCounts && (
         <div className="flex flex-wrap gap-2 rounded-lg bg-keria-forest/30 p-3">
           <div className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-green-500" />
+            <span className="h-2 w-2 rounded-full bg-keria-success" />
             <span className="text-sm text-keria-cream">{rsvpCounts.yes} oui</span>
           </div>
           <div className="flex items-center gap-1.5">
@@ -82,7 +82,7 @@ export function ParticipantsRSVPList({
             <span className="text-sm text-keria-cream">{rsvpCounts.maybe} peut-être</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-red-500" />
+            <span className="h-2 w-2 rounded-full bg-keria-error" />
             <span className="text-sm text-keria-cream">{rsvpCounts.no} non</span>
           </div>
           {rsvpCounts.pending > 0 && (

@@ -104,7 +104,7 @@ export function StageForm({
           initialValue={address}
         />
         {location && (
-          <p className="mt-1 text-xs text-green-400">
+          <p className="mt-1 text-xs text-keria-success-light">
             Lieu sélectionné
           </p>
         )}

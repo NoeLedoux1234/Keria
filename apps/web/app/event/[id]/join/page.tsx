@@ -71,7 +71,7 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
     return (
       <main className="relative flex min-h-screen items-center justify-center bg-keria-darker">
         <div
-          className="pointer-events-none fixed inset-0 opacity-[0.15]"
+          className="pointer-events-none fixed inset-0 opacity-[0.03]"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
           }}
@@ -88,7 +88,7 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
     return (
       <main className="relative flex min-h-screen items-center justify-center bg-keria-darker">
         <div
-          className="pointer-events-none fixed inset-0 opacity-[0.15]"
+          className="pointer-events-none fixed inset-0 opacity-[0.03]"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
           }}
@@ -119,7 +119,7 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
 
       {/* Heavy grain */}
       <div
-        className="pointer-events-none fixed inset-0 z-10 opacity-[0.15]"
+        className="pointer-events-none fixed inset-0 z-10 opacity-[0.03]"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
         }}
@@ -138,7 +138,7 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
         <Link href="/" className="font-display text-lg font-bold text-keria-cream/80 transition-colors hover:text-keria-cream">
           KERIA
         </Link>
-        <span className="font-mono text-[10px] text-keria-muted/40">ÉVÉNEMENT</span>
+        <span className="font-mono text-[10px] text-keria-muted/70">ÉVÉNEMENT</span>
       </header>
 
       {/* Content */}
@@ -193,7 +193,7 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 rounded-xl border border-keria-forest/20 bg-keria-darker/40 p-8 backdrop-blur-md">
             <div>
               <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-keria-muted">
                 Votre nom
@@ -217,7 +217,7 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
             </div>
 
             {error && (
-              <div className="rounded border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">
+              <div className="rounded border border-keria-error/30 bg-keria-error/10 p-3 text-sm text-keria-error-light">
                 {error}
               </div>
             )}
@@ -237,7 +237,7 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
           <div className="mt-8 text-center">
             <Link
               href="/"
-              className="text-[10px] uppercase tracking-widest text-keria-muted/50 transition-colors hover:text-keria-gold"
+              className="text-[10px] uppercase tracking-widest text-keria-muted/80 transition-colors hover:text-keria-gold"
             >
               Retour à l'accueil
             </Link>
@@ -248,7 +248,7 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
       {/* Decorative corner */}
       <div className="pointer-events-none fixed bottom-6 right-6 z-20">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] text-keria-muted/30">2026</span>
+          <span className="font-mono text-[10px] text-keria-muted/60">2026</span>
           <div className="h-2 w-2 rounded-full bg-keria-gold/30" />
         </div>
       </div>

@@ -4,6 +4,7 @@ import { use, useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAction } from "convex/react";
+import { motion } from "framer-motion";
 import { Button, Badge } from "@meetpoint/ui";
 import { useMeet } from "@/hooks";
 import { MapContainer, MapMarker, MapMidpoint, MapRoute, type MapContainerHandle } from "@/components/map";
@@ -12,7 +13,7 @@ import { calculateMidpointWithMetrics } from "@meetpoint/geo";
 import { api } from "../../../../../convex/_generated/api";
 import type { Id, Doc } from "../../../../../convex/_generated/dataModel";
 
-const MARKER_COLORS = ["blue", "orange", "purple", "green", "red"] as const;
+const MARKER_COLORS = ["gold", "success", "muted", "forest", "error"] as const;
 
 const TransportIcons: Record<string, React.ReactNode> = {
   driving: (
@@ -54,11 +55,11 @@ const TransportIcons: Record<string, React.ReactNode> = {
 };
 
 const COLOR_HEX: Record<string, string> = {
-  blue: "#3b82f6",
-  orange: "#f97316",
-  purple: "#8b5cf6",
-  green: "#22c55e",
-  red: "#ef4444",
+  gold: "#c9a227",
+  success: "#6b8f4a",
+  muted: "#8a8a78",
+  forest: "#3d4435",
+  error: "#a65a4a",
 };
 
 interface RouteData {
@@ -85,6 +86,14 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
   const [currentParticipantId, setCurrentParticipantId] = useState<Id<"participants"> | null>(null);
   const [isCalculatingRoutes, setIsCalculatingRoutes] = useState(false);
   const [routes, setRoutes] = useState<RouteData[]>([]);
+  const [codeCopied, setCodeCopied] = useState(false);
+
+  const handleCopyCode = () => {
+    if (!shareCode) return;
+    navigator.clipboard.writeText(shareCode);
+    setCodeCopied(true);
+    setTimeout(() => setCodeCopied(false), 2000);
+  };
 
   useEffect(() => {
     const stored = localStorage.getItem(`meetpoint-participant-${meetId}`);
@@ -166,7 +175,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
     return (
       <main className="relative flex min-h-screen items-center justify-center bg-keria-darker">
         <div
-          className="pointer-events-none fixed inset-0 opacity-[0.15]"
+          className="pointer-events-none fixed inset-0 opacity-[0.03]"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
           }}
@@ -183,7 +192,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
     return (
       <main className="relative flex min-h-screen items-center justify-center bg-keria-darker">
         <div
-          className="pointer-events-none fixed inset-0 opacity-[0.15]"
+          className="pointer-events-none fixed inset-0 opacity-[0.03]"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
           }}
@@ -207,7 +216,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
     <main className="relative flex h-screen flex-col lg:flex-row bg-keria-darker">
       {/* Grain overlay */}
       <div
-        className="pointer-events-none fixed inset-0 z-50 opacity-[0.08]"
+        className="pointer-events-none fixed inset-0 z-50 opacity-[0.03]"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
         }}
@@ -227,11 +236,34 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
 
         {/* Meet info */}
         <div className="mb-6">
-          <h1 className="font-display text-2xl font-bold text-keria-cream">{meet.name}</h1>
+          <h1 className="border-l-2 border-keria-gold pl-3 font-display text-2xl font-bold text-keria-cream">{meet.name}</h1>
 
           {shareCode && (
             <div className="mt-4 rounded border border-keria-gold/30 bg-keria-gold/5 p-4">
-              <p className="text-[10px] uppercase tracking-wider text-keria-gold/70">Code de partage</p>
+              <div className="flex items-center justify-between">
+                <p className="text-[10px] uppercase tracking-wider text-keria-gold">Code de partage</p>
+                <button
+                  onClick={handleCopyCode}
+                  className="flex items-center gap-1 rounded px-2 py-1 text-[10px] uppercase tracking-wider text-keria-gold transition-colors hover:bg-keria-gold/10 hover:text-keria-gold"
+                >
+                  {codeCopied ? (
+                    <>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      Copié
+                    </>
+                  ) : (
+                    <>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                      </svg>
+                      Copier
+                    </>
+                  )}
+                </button>
+              </div>
               <p className="mt-1 font-mono text-3xl font-bold tracking-[0.2em] text-keria-gold">
                 {shareCode}
               </p>
@@ -244,7 +276,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
 
         {/* Participants */}
         <div className="mb-6">
-          <h2 className="mb-3 text-xs font-medium uppercase tracking-wider text-keria-muted">
+          <h2 className="mb-3 border-l-2 border-keria-gold pl-3 text-xs font-medium uppercase tracking-wider text-keria-muted">
             Participants ({participants?.length ?? 0})
           </h2>
           {participants && participants.length > 0 ? (
@@ -255,13 +287,17 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
                   : null;
 
                 return (
-                  <li
+                  <motion.li
                     key={p._id}
-                    className={`rounded border p-3 transition-all ${
+                    className={`rounded border p-3 transition-colors ${
                       currentParticipantId === p._id
                         ? "border-keria-gold/50 bg-keria-gold/10"
                         : "border-keria-forest/30 bg-keria-forest/10 hover:border-keria-forest/50"
                     }`}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: i * 0.06 }}
+                    whileHover={{ x: 4 }}
                   >
                     <div
                       onClick={() => handleSelectParticipant(p._id)}
@@ -308,7 +344,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
                         Itinéraire
                       </a>
                     )}
-                  </li>
+                  </motion.li>
                 );
               })}
             </ul>
@@ -325,7 +361,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
         {/* Midpoint Stats */}
         {midpointResult && (
           <div className="mb-6 rounded border border-keria-forest/30 bg-keria-forest/10 p-4">
-            <h2 className="mb-3 text-xs font-medium uppercase tracking-wider text-keria-muted">
+            <h2 className="mb-3 border-l-2 border-keria-gold pl-3 text-xs font-medium uppercase tracking-wider text-keria-muted">
               Point de rencontre
             </h2>
             <div className="grid grid-cols-2 gap-4">
@@ -360,7 +396,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
             </div>
 
             {routes.length > 0 && (
-              <p className="mt-3 text-center text-[10px] text-green-400">
+              <p className="mt-3 text-center text-[10px] text-keria-success-light">
                 {routes.filter(r => r.polyline && r.polyline.length > 0).length} trajets affichés
               </p>
             )}
@@ -376,13 +412,15 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
       </aside>
 
       {/* Map */}
-      <div className="relative z-0 flex-1">
-        <button
+      <div className="relative z-0 flex-1 border border-keria-forest/20">
+        <motion.button
           onClick={handleFitAllParticipants}
-          className="absolute left-4 top-4 z-10 rounded border border-keria-forest/50 bg-keria-darker/90 px-4 py-2 text-[10px] font-medium uppercase tracking-wider text-keria-cream backdrop-blur-sm transition-colors hover:border-keria-gold/50 hover:text-keria-gold"
+          className="absolute left-4 top-4 z-10 rounded border border-keria-gold/30 bg-keria-darker/90 px-4 py-2 text-[10px] font-medium uppercase tracking-wider text-keria-cream backdrop-blur-md transition-colors hover:border-keria-gold/50 hover:text-keria-gold"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           Voir tout
-        </button>
+        </motion.button>
         <MapContainer
           ref={mapRef}
           initialCenter={participants?.[0]?.location ?? { lat: 48.8566, lng: 2.3522 }}
@@ -399,7 +437,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
                   return {
                     participantId: route.participantId,
                     participantName: route.participantName,
-                    color: COLOR_HEX[MARKER_COLORS[participantIndex % MARKER_COLORS.length]!] ?? "#3b82f6",
+                    color: COLOR_HEX[MARKER_COLORS[participantIndex % MARKER_COLORS.length]!] ?? "#c9a227",
                     polyline: route.polyline!,
                     durationMinutes: route.durationMinutes ?? 0,
                     distanceKm: route.distanceKm ?? 0,

@@ -19,19 +19,14 @@ const config: Config = {
           gold: "#c9a227",
           "gold-dark": "#a68520",
           muted: "#8a8a78",
-        },
-        // Keep brand for backwards compatibility during transition
-        brand: {
-          50: "#eff6ff",
-          100: "#dbeafe",
-          200: "#bfdbfe",
-          300: "#93c5fd",
-          400: "#60a5fa",
-          500: "#3b82f6",
-          600: "#2563eb",
-          700: "#1d4ed8",
-          800: "#1e40af",
-          900: "#1e3a8a",
+          success: "#6b8f4a",
+          "success-light": "#8aad66",
+          "success-dark": "#4a6b32",
+          error: "#a65a4a",
+          "error-light": "#c47a6a",
+          "error-dark": "#8a3a2a",
+          info: "#6a8a7a",
+          "info-light": "#8aaa9a",
         },
       },
       fontFamily: {
@@ -46,6 +41,10 @@ const config: Config = {
         "slide-up": "slideUp 0.6s ease-out forwards",
         "scale-in": "scaleIn 0.5s ease-out forwards",
         "line-expand": "lineExpand 0.8s ease-out forwards",
+        shimmer: "shimmer 2s linear infinite",
+        "pulse-soft": "pulse-soft 2s ease-in-out infinite",
+        "bounce-in": "bounce-in 0.5s ease-out forwards",
+        "stagger-fade": "stagger-fade 0.4s ease-out forwards",
       },
       keyframes: {
         textReveal: {
@@ -71,6 +70,24 @@ const config: Config = {
         lineExpand: {
           "0%": { width: "0%" },
           "100%": { width: "100%" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        "pulse-soft": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.6" },
+        },
+        "bounce-in": {
+          "0%": { transform: "scale(0.3)", opacity: "0" },
+          "50%": { transform: "scale(1.05)" },
+          "70%": { transform: "scale(0.9)" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        "stagger-fade": {
+          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
       },
     },

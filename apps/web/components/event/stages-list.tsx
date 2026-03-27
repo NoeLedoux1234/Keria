@@ -14,9 +14,9 @@ interface StagesListProps {
 }
 
 const STAGE_COLORS: Record<StageType, string> = {
-  departure: "bg-green-500",
+  departure: "bg-keria-success",
   intermediate: "bg-keria-gold",
-  arrival: "bg-red-500",
+  arrival: "bg-keria-error",
 };
 
 const STAGE_LABELS: Record<StageType, string> = {
@@ -113,7 +113,7 @@ export function StagesList({
                       e.stopPropagation();
                       onRemoveStage(stage._id);
                     }}
-                    className="rounded p-1 text-keria-muted transition-colors hover:bg-red-900/30 hover:text-red-400"
+                    className="rounded p-1 text-keria-muted transition-colors hover:bg-keria-error/20 hover:text-keria-error-light"
                     title="Supprimer cette étape"
                   >
                     <svg

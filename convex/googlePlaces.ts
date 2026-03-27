@@ -106,6 +106,9 @@ function getPriceLevelNumber(priceLevel: string | undefined): number | undefined
 /**
  * Recherche des lieux via Google Places API (New) - interne
  */
+// TTL du cache : 1 heure
+const CACHE_TTL_MS = 60 * 60 * 1000;
+
 export const _searchNearby = internalAction({
   args: {
     meetId: v.id("meets"),
@@ -116,6 +119,22 @@ export const _searchNearby = internalAction({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    // Vérifier le cache avant d'appeler l'API
+    const meet = await ctx.runQuery(api.meets.get, { id: args.meetId });
+    const now = Date.now();
+
+    if (meet?.lastSearchedAt && (now - meet.lastSearchedAt) < CACHE_TTL_MS) {
+      const cached = await ctx.runQuery(api.places.listByMeet, { meetId: args.meetId });
+      if (cached.length > 0) {
+        return {
+          success: true,
+          count: cached.length,
+          places: cached,
+          fromCache: true,
+        };
+      }
+    }
+
     const apiKey = process.env.GOOGLE_PLACES_API_KEY;
 
     if (!apiKey) {
@@ -244,10 +263,14 @@ export const _searchNearby = internalAction({
         });
       }
 
+      // Mettre à jour le timestamp de dernière recherche
+      await ctx.runMutation(api.meets.updateLastSearchedAt, { meetId: args.meetId });
+
       return {
         success: true,
         count: places.length,
         places,
+        fromCache: false,
       };
     } catch (error) {
       console.error("Error searching Google Places:", error);

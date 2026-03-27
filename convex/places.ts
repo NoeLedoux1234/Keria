@@ -62,10 +62,12 @@ export const add = mutation({
         website: args.website,
         reviews: args.reviews,
         relevanceScore: args.relevanceScore,
+        lastRefreshedAt: Date.now(),
       });
       return existing._id;
     }
 
+    const now = Date.now();
     return await ctx.db.insert("places", {
       meetId: args.meetId,
       externalId: args.externalId,
@@ -84,7 +86,8 @@ export const add = mutation({
       website: args.website,
       reviews: args.reviews,
       relevanceScore: args.relevanceScore,
-      createdAt: Date.now(),
+      createdAt: now,
+      lastRefreshedAt: now,
     });
   },
 });

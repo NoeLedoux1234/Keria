@@ -17,9 +17,9 @@ interface MapStageMarkerProps {
 }
 
 const STAGE_COLORS: Record<StageType, string> = {
-  departure: "#22c55e", // green
-  intermediate: "#3b82f6", // blue
-  arrival: "#ef4444", // red
+  departure: "#6b8f4a", // keria-success
+  intermediate: "#c9a227", // keria-gold
+  arrival: "#a65a4a", // keria-error
 };
 
 const StageTypeLabels: Record<StageType, string> = {
@@ -67,7 +67,7 @@ export function MapStageMarker({
             {order + 1}
           </div>
           {/* Label */}
-          <div className="mt-1 rounded-full bg-white px-2 py-0.5 text-xs font-medium shadow-md">
+          <div className="mt-1 rounded-full bg-keria-darker/90 backdrop-blur-sm px-2 py-0.5 text-xs font-medium text-keria-cream shadow-md">
             {name}
           </div>
         </div>
@@ -92,11 +92,11 @@ export function MapStageMarker({
               </span>
               <h3 className="font-semibold">{name}</h3>
             </div>
-            <p className="mt-1 text-xs text-neutral-500">{formattedTime}</p>
+            <p className="mt-1 text-xs text-keria-muted">{formattedTime}</p>
             {description && (
-              <p className="mt-2 text-sm text-neutral-600">{description}</p>
+              <p className="mt-2 text-sm text-keria-cream/80">{description}</p>
             )}
-            <div className="mt-2 flex items-center gap-1 text-xs text-neutral-400">
+            <div className="mt-2 flex items-center gap-1 text-xs text-keria-muted">
               {stageType === "departure" && "Point de départ"}
               {stageType === "intermediate" && "Étape intermédiaire"}
               {stageType === "arrival" && "Point d'arrivée"}

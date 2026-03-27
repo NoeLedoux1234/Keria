@@ -53,7 +53,7 @@ export default function JoinPage() {
 
       {/* Heavy grain */}
       <div
-        className="pointer-events-none fixed inset-0 z-10 opacity-[0.15]"
+        className="pointer-events-none fixed inset-0 z-10 opacity-[0.03]"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
         }}
@@ -72,7 +72,7 @@ export default function JoinPage() {
         <Link href="/" className="font-display text-lg font-bold text-keria-cream/80 transition-colors hover:text-keria-cream">
           KERIA
         </Link>
-        <span className="font-mono text-[10px] text-keria-muted/40">MEETPOINT</span>
+        <span className="font-mono text-[10px] text-keria-muted/70">MEETPOINT</span>
       </header>
 
       {/* Content */}
@@ -110,40 +110,42 @@ export default function JoinPage() {
           />
 
           {/* Code input */}
-          <div className="mt-10 space-y-6">
-            <div>
-              <Input
-                placeholder="ABC123"
-                value={code}
-                onChange={handleCodeChange}
-                maxLength={6}
-                className="border-keria-forest/30 bg-keria-darker/50 text-center font-mono text-3xl tracking-[0.3em] backdrop-blur-sm"
-              />
-              <p className="mt-3 text-[10px] uppercase tracking-wider text-keria-muted/50">
-                Code à 6 caractères
-              </p>
+          <div className="mt-10 rounded-xl border border-keria-forest/20 bg-keria-darker/40 p-8 backdrop-blur-md">
+            <div className="space-y-6">
+              <div>
+                <Input
+                  placeholder="ABC123"
+                  value={code}
+                  onChange={handleCodeChange}
+                  maxLength={6}
+                  className="border-keria-forest/30 bg-keria-darker/50 text-center font-mono text-3xl tracking-[0.3em] backdrop-blur-sm"
+                />
+                <p className="mt-3 text-[10px] uppercase tracking-wider text-keria-muted/80">
+                  Code à 6 caractères
+                </p>
+              </div>
+
+              {meet === undefined && code.length === 6 && (
+                <div className="flex items-center justify-center gap-2 text-sm text-keria-muted">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-keria-gold border-t-transparent" />
+                  <span>Recherche...</span>
+                </div>
+              )}
+
+              {error && (
+                <div className="rounded border border-keria-error/30 bg-keria-error/10 p-3 text-sm text-keria-error-light">
+                  {error}
+                </div>
+              )}
+
+              <Button
+                variant="outline"
+                className="w-full py-4 text-xs uppercase tracking-widest"
+                onClick={() => router.push("/")}
+              >
+                Retour à l'accueil
+              </Button>
             </div>
-
-            {meet === undefined && code.length === 6 && (
-              <div className="flex items-center justify-center gap-2 text-sm text-keria-muted">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-keria-gold border-t-transparent" />
-                <span>Recherche...</span>
-              </div>
-            )}
-
-            {error && (
-              <div className="rounded border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">
-                {error}
-              </div>
-            )}
-
-            <Button
-              variant="outline"
-              className="w-full py-4 text-xs uppercase tracking-widest"
-              onClick={() => router.push("/")}
-            >
-              Retour à l'accueil
-            </Button>
           </div>
         </motion.div>
       </div>
@@ -151,7 +153,7 @@ export default function JoinPage() {
       {/* Decorative elements */}
       <div className="pointer-events-none fixed bottom-6 right-6 z-20">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] text-keria-muted/30">2026</span>
+          <span className="font-mono text-[10px] text-keria-muted/60">2026</span>
           <div className="h-2 w-2 rounded-full bg-keria-gold/30" />
         </div>
       </div>

@@ -133,7 +133,7 @@ export default function NewEventPage() {
 
       {/* Heavy grain */}
       <div
-        className="pointer-events-none fixed inset-0 z-10 opacity-[0.15]"
+        className="pointer-events-none fixed inset-0 z-10 opacity-[0.03]"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
         }}
@@ -153,15 +153,21 @@ export default function NewEventPage() {
           KERIA
         </Link>
         <div className="flex items-center gap-4">
-          <span className="font-mono text-[10px] text-keria-muted/40">ÉVÉNEMENT</span>
+          <span className="font-mono text-[10px] text-keria-muted/70">ÉVÉNEMENT</span>
           <div className="flex gap-1">
             {[1, 2, 3].map((s) => (
               <div
                 key={s}
-                className={`h-1.5 w-6 rounded-full transition-colors ${
-                  s <= step ? "bg-keria-gold" : "bg-keria-forest/30"
-                }`}
-              />
+                className="relative h-1.5 w-6 overflow-hidden rounded-full bg-keria-forest/30"
+              >
+                <motion.div
+                  className="absolute inset-0 rounded-full bg-keria-gold"
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: s <= step ? 1 : 0 }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  style={{ transformOrigin: "left" }}
+                />
+              </div>
             ))}
           </div>
         </div>
@@ -186,7 +192,7 @@ export default function NewEventPage() {
                 transition={{ duration: 0.3 }}
               >
                 <div className="mb-10 text-center">
-                  <span className="mb-2 block text-[10px] font-medium uppercase tracking-widest text-keria-gold/70">
+                  <span className="mb-2 block text-[10px] font-medium uppercase tracking-widest text-keria-gold">
                     Étape 1/3
                   </span>
                   <h1 className="font-display text-4xl font-bold tracking-tight text-keria-cream">
@@ -197,7 +203,7 @@ export default function NewEventPage() {
                   <div className="mx-auto mt-4 h-px w-16 bg-keria-gold/50" />
                 </div>
 
-                <div className="space-y-5">
+                <div className="space-y-5 rounded-xl border border-keria-forest/20 bg-keria-darker/40 p-8 backdrop-blur-md">
                   <div>
                     <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-keria-muted">
                       Nom de l'événement
@@ -256,7 +262,7 @@ export default function NewEventPage() {
                 transition={{ duration: 0.3 }}
               >
                 <div className="mb-8 text-center">
-                  <span className="mb-2 block text-[10px] font-medium uppercase tracking-widest text-keria-gold/70">
+                  <span className="mb-2 block text-[10px] font-medium uppercase tracking-widest text-keria-gold">
                     Étape 2/3
                   </span>
                   <h1 className="font-display text-3xl font-bold tracking-tight text-keria-cream">
@@ -274,16 +280,19 @@ export default function NewEventPage() {
                       {[...stages]
                         .sort((a, b) => a.scheduledAt - b.scheduledAt)
                         .map((stage, index) => (
-                          <div
+                          <motion.div
                             key={stage.id}
                             className="flex items-center gap-3 rounded border border-keria-forest/30 bg-keria-darker/50 p-3 backdrop-blur-sm"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3, delay: index * 0.08 }}
                           >
                             <div
                               className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white ${
                                 stage.stageType === "departure"
-                                  ? "bg-green-500"
+                                  ? "bg-keria-success"
                                   : stage.stageType === "arrival"
-                                    ? "bg-red-500"
+                                    ? "bg-keria-error"
                                     : "bg-keria-gold"
                               }`}
                             >
@@ -304,14 +313,14 @@ export default function NewEventPage() {
                             {stages.length > 2 && (
                               <button
                                 onClick={() => handleRemoveStage(stage.id)}
-                                className="rounded p-1.5 text-keria-muted transition-colors hover:bg-red-500/10 hover:text-red-400"
+                                className="rounded p-1.5 text-keria-muted transition-colors hover:bg-keria-error/20 hover:text-keria-error-light"
                               >
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                   <path d="M18 6L6 18M6 6l12 12" />
                                 </svg>
                               </button>
                             )}
-                          </div>
+                          </motion.div>
                         ))}
                     </div>
                   )}
@@ -372,7 +381,7 @@ export default function NewEventPage() {
                 transition={{ duration: 0.3 }}
               >
                 <div className="mb-6 text-center">
-                  <span className="mb-2 block text-[10px] font-medium uppercase tracking-widest text-keria-gold/70">
+                  <span className="mb-2 block text-[10px] font-medium uppercase tracking-widest text-keria-gold">
                     Étape 3/3
                   </span>
                   <h1 className="font-display text-3xl font-bold tracking-tight text-keria-cream">
@@ -426,9 +435,9 @@ export default function NewEventPage() {
                           <span
                             className={`h-2 w-2 rounded-full ${
                               stage.stageType === "departure"
-                                ? "bg-green-500"
+                                ? "bg-keria-success"
                                 : stage.stageType === "arrival"
-                                  ? "bg-red-500"
+                                  ? "bg-keria-error"
                                   : "bg-keria-gold"
                             }`}
                           />
@@ -446,7 +455,7 @@ export default function NewEventPage() {
                   </div>
 
                   {error && (
-                    <div className="rounded border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">
+                    <div className="rounded border border-keria-error/30 bg-keria-error/10 p-3 text-sm text-keria-error-light">
                       {error}
                     </div>
                   )}
@@ -478,7 +487,7 @@ export default function NewEventPage() {
           <div className="mt-8 text-center">
             <Link
               href="/"
-              className="text-[10px] uppercase tracking-widest text-keria-muted/50 transition-colors hover:text-keria-gold"
+              className="text-[10px] uppercase tracking-widest text-keria-muted/80 transition-colors hover:text-keria-gold"
             >
               Retour à l'accueil
             </Link>
@@ -489,7 +498,7 @@ export default function NewEventPage() {
       {/* Decorative corner */}
       <div className="pointer-events-none fixed bottom-6 right-6 z-20">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] text-keria-muted/30">2026</span>
+          <span className="font-mono text-[10px] text-keria-muted/60">2026</span>
           <div className="h-2 w-2 rounded-full bg-keria-gold/30" />
         </div>
       </div>

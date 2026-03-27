@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAction } from "convex/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button, Card, CardHeader, CardTitle, CardContent, Badge, Modal } from "@meetpoint/ui";
 import { api } from "../../../convex/_generated/api";
 import { usePlaces, useVotes } from "@/hooks";
@@ -41,21 +42,52 @@ const CATEGORY_FILTERS = [
 
 const PRICE_LEVELS = ["", "€", "€€", "€€€", "€€€€"];
 
-// Composant pour afficher les étoiles
+function StarIcon({ filled, half, size }: { filled?: boolean; half?: boolean; size: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {half ? (
+        <>
+          <defs>
+            <linearGradient id="halfStar">
+              <stop offset="50%" stopColor="currentColor" />
+              <stop offset="50%" stopColor="transparent" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+            fill="url(#halfStar)"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            className="text-keria-gold"
+          />
+        </>
+      ) : (
+        <path
+          d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+          fill={filled ? "currentColor" : "none"}
+          stroke="currentColor"
+          strokeWidth="1.5"
+          className={filled ? "text-keria-gold" : "text-keria-forest"}
+        />
+      )}
+    </svg>
+  );
+}
+
 function StarRating({ rating, size = "sm" }: { rating: number; size?: "sm" | "lg" }) {
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating - fullStars >= 0.5;
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-  const starClass = size === "lg" ? "text-xl" : "text-sm";
+  const iconSize = size === "lg" ? 20 : 14;
 
   return (
     <div className="flex items-center gap-0.5">
       {Array.from({ length: fullStars }).map((_, i) => (
-        <span key={`full-${i}`} className={`text-yellow-400 ${starClass}`}>★</span>
+        <StarIcon key={`full-${i}`} filled size={iconSize} />
       ))}
-      {hasHalfStar && <span className={`text-yellow-400 ${starClass}`}>★</span>}
+      {hasHalfStar && <StarIcon key="half" half size={iconSize} />}
       {Array.from({ length: emptyStars }).map((_, i) => (
-        <span key={`empty-${i}`} className={`text-neutral-300 ${starClass}`}>★</span>
+        <StarIcon key={`empty-${i}`} size={iconSize} />
       ))}
     </div>
   );
@@ -80,7 +112,7 @@ function PhotoCarousel({ photos, name }: { photos: string[]; name: string }) {
   };
 
   return (
-    <div className="relative h-56 w-full bg-neutral-100">
+    <div className="relative h-56 w-full bg-keria-darker/50">
       <img
         src={photos[currentIndex]}
         alt={`${name} - Photo ${currentIndex + 1}`}
@@ -137,11 +169,11 @@ function PhotoCarousel({ photos, name }: { photos: string[]; name: string }) {
 
 // Couleurs pour les avatars
 const AVATAR_COLORS = [
-  "bg-blue-100 text-blue-600",
-  "bg-green-100 text-green-600",
-  "bg-purple-100 text-purple-600",
-  "bg-orange-100 text-orange-600",
-  "bg-pink-100 text-pink-600",
+  "bg-keria-gold/20 text-keria-gold",
+  "bg-keria-success/20 text-keria-success-light",
+  "bg-keria-info/20 text-keria-info-light",
+  "bg-keria-error/20 text-keria-error-light",
+  "bg-keria-forest/50 text-keria-cream",
 ];
 
 // Composant pour un avis
@@ -151,7 +183,7 @@ function ReviewCard({ review, index }: { review: { authorName: string; authorPho
   const avatarColor = AVATAR_COLORS[index % AVATAR_COLORS.length];
 
   return (
-    <div className="rounded-lg bg-neutral-50 p-3">
+    <div className="rounded-lg bg-keria-forest/20 p-3">
       <div className="flex items-start gap-3">
         {/* Avatar avec initiale - les photos de profil Google ne sont pas accessibles directement */}
         <div className={`flex h-10 w-10 items-center justify-center rounded-full ${avatarColor} font-semibold flex-shrink-0`}>
@@ -160,25 +192,25 @@ function ReviewCard({ review, index }: { review: { authorName: string; authorPho
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
             <span className="font-medium text-sm truncate">{review.authorName}</span>
-            <span className="text-xs text-neutral-400 flex-shrink-0">{review.relativeTime}</span>
+            <span className="text-xs text-keria-muted flex-shrink-0">{review.relativeTime}</span>
           </div>
           <div className="flex items-center gap-1 mt-0.5">
             {Array.from({ length: 5 }).map((_, i) => (
               <span
                 key={i}
-                className={`text-sm ${i < review.rating ? "text-yellow-400" : "text-neutral-300"}`}
+                className={`text-sm ${i < review.rating ? "text-keria-gold" : "text-keria-forest"}`}
               >
                 ★
               </span>
             ))}
           </div>
           {review.text && (
-            <p className="mt-2 text-sm text-neutral-600">
+            <p className="mt-2 text-sm text-keria-cream/80">
               {isLong && !expanded ? `${review.text.slice(0, 150)}...` : review.text}
               {isLong && (
                 <button
                   onClick={() => setExpanded(!expanded)}
-                  className="ml-1 text-blue-600 hover:underline"
+                  className="ml-1 text-keria-gold hover:underline"
                 >
                   {expanded ? "Voir moins" : "Voir plus"}
                 </button>
@@ -235,8 +267,8 @@ function PlaceModal({
             <div
               className={`absolute bottom-3 right-3 rounded-full px-3 py-1 text-sm font-medium ${
                 place.openNow
-                  ? "bg-green-500 text-white"
-                  : "bg-red-500 text-white"
+                  ? "bg-keria-success text-keria-cream"
+                  : "bg-keria-error text-keria-cream"
               }`}
             >
               {place.openNow ? "Ouvert" : "Fermé"}
@@ -244,8 +276,8 @@ function PlaceModal({
           )}
         </div>
       ) : (
-        <div className="h-32 bg-neutral-100 flex items-center justify-center">
-          <span className="text-lg font-medium text-neutral-400">{categoryInfo.label}</span>
+        <div className="h-32 bg-keria-forest/20 flex items-center justify-center">
+          <span className="text-lg font-medium text-keria-muted">{categoryInfo.label}</span>
         </div>
       )}
 
@@ -254,20 +286,20 @@ function PlaceModal({
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <h2 className="text-xl font-bold">{place.name}</h2>
-            <p className="text-sm text-neutral-500">{categoryInfo.label}</p>
+            <p className="text-sm text-keria-muted">{categoryInfo.label}</p>
           </div>
 
           {/* Score */}
           <div className="text-center flex-shrink-0">
             <div
               className={`text-2xl font-bold ${
-                score > 0 ? "text-green-600" : score < 0 ? "text-red-600" : "text-neutral-400"
+                score > 0 ? "text-keria-success-light" : score < 0 ? "text-keria-error-light" : "text-keria-muted"
               }`}
             >
               {score > 0 ? "+" : ""}
               {score}
             </div>
-            <div className="text-xs text-neutral-400">
+            <div className="text-xs text-keria-muted">
               {upvotes}↑ {downvotes}↓
             </div>
           </div>
@@ -279,12 +311,12 @@ function PlaceModal({
             <StarRating rating={place.rating} size="lg" />
             <span className="text-lg font-semibold">{place.rating.toFixed(1)}</span>
             {place.userRatingsTotal && (
-              <span className="text-sm text-neutral-500">
+              <span className="text-sm text-keria-muted">
                 ({place.userRatingsTotal} avis)
               </span>
             )}
             {place.priceLevel !== undefined && place.priceLevel > 0 && (
-              <span className="text-sm font-medium text-green-600">
+              <span className="text-sm font-medium text-keria-success-light">
                 • {PRICE_LEVELS[place.priceLevel]}
               </span>
             )}
@@ -292,13 +324,13 @@ function PlaceModal({
         )}
 
         {/* Tabs */}
-        <div className="mt-4 flex border-b border-neutral-200">
+        <div className="mt-4 flex border-b border-keria-forest/30">
           <button
             onClick={() => setActiveTab("info")}
             className={`flex-1 pb-2 text-sm font-medium transition-colors ${
               activeTab === "info"
-                ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-neutral-500 hover:text-neutral-700"
+                ? "border-b-2 border-keria-gold text-keria-gold"
+                : "text-keria-muted hover:text-keria-cream"
             }`}
           >
             Infos
@@ -307,8 +339,8 @@ function PlaceModal({
             onClick={() => setActiveTab("reviews")}
             className={`flex-1 pb-2 text-sm font-medium transition-colors ${
               activeTab === "reviews"
-                ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-neutral-500 hover:text-neutral-700"
+                ? "border-b-2 border-keria-gold text-keria-gold"
+                : "text-keria-muted hover:text-keria-cream"
             }`}
           >
             Avis ({reviews.length})
@@ -317,8 +349,8 @@ function PlaceModal({
             onClick={() => setActiveTab("hours")}
             className={`flex-1 pb-2 text-sm font-medium transition-colors ${
               activeTab === "hours"
-                ? "border-b-2 border-blue-600 text-blue-600"
-                : "text-neutral-500 hover:text-neutral-700"
+                ? "border-b-2 border-keria-gold text-keria-gold"
+                : "text-keria-muted hover:text-keria-cream"
             }`}
           >
             Horaires
@@ -331,22 +363,22 @@ function PlaceModal({
             <div className="space-y-3">
               {/* Adresse */}
               <div className="flex items-start gap-3">
-                <svg className="h-4 w-4 text-neutral-400 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="h-4 w-4 text-keria-muted mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                   <circle cx="12" cy="10" r="3" />
                 </svg>
-                <p className="text-sm text-neutral-600">{place.address}</p>
+                <p className="text-sm text-keria-cream/80">{place.address}</p>
               </div>
 
               {/* Téléphone */}
               {place.phoneNumber && (
                 <div className="flex items-center gap-3">
-                  <svg className="h-4 w-4 text-neutral-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg className="h-4 w-4 text-keria-muted flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
                   </svg>
                   <a
                     href={`tel:${place.phoneNumber}`}
-                    className="text-sm text-blue-600 hover:underline"
+                    className="text-sm text-keria-gold hover:underline"
                   >
                     {place.phoneNumber}
                   </a>
@@ -356,7 +388,7 @@ function PlaceModal({
               {/* Site web */}
               {place.website && (
                 <div className="flex items-center gap-3">
-                  <svg className="h-4 w-4 text-neutral-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg className="h-4 w-4 text-keria-muted flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <circle cx="12" cy="12" r="10" />
                     <line x1="2" y1="12" x2="22" y2="12" />
                     <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
@@ -365,7 +397,7 @@ function PlaceModal({
                     href={place.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-blue-600 hover:underline truncate"
+                    className="text-sm text-keria-gold hover:underline truncate"
                   >
                     {place.website.replace(/^https?:\/\//, "").split("/")[0]}
                   </a>
@@ -383,7 +415,7 @@ function PlaceModal({
                   ))}
                   {/* Note sur la limite des avis */}
                   {place.userRatingsTotal && place.userRatingsTotal > 5 && (
-                    <p className="text-center text-xs text-neutral-400 py-2">
+                    <p className="text-center text-xs text-keria-muted py-2">
                       Seuls les 5 avis les plus récents sont affichés.
                       <br />
                       <a
@@ -393,7 +425,7 @@ function PlaceModal({
                         }
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
+                        className="text-keria-gold hover:underline"
                       >
                         Voir les {place.userRatingsTotal} avis sur Google Maps
                       </a>
@@ -401,7 +433,7 @@ function PlaceModal({
                   )}
                 </>
               ) : (
-                <p className="text-center text-sm text-neutral-500 py-4">
+                <p className="text-center text-sm text-keria-muted py-4">
                   Aucun avis disponible
                 </p>
               )}
@@ -416,11 +448,11 @@ function PlaceModal({
                     key={index}
                     className="flex justify-between text-sm"
                   >
-                    <span className="text-neutral-600">{hours}</span>
+                    <span className="text-keria-cream/80">{hours}</span>
                   </div>
                 ))
               ) : (
-                <p className="text-center text-sm text-neutral-500 py-4">
+                <p className="text-center text-sm text-keria-muted py-4">
                   Horaires non disponibles
                 </p>
               )}
@@ -431,35 +463,37 @@ function PlaceModal({
         {/* Boutons de vote */}
         {canVote ? (
           <div className="mt-4 flex gap-2">
-            <button
+            <motion.button
+              whileTap={{ scale: 0.9 }}
               onClick={() => onVote("up")}
               className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-colors ${
                 userVote === "up"
-                  ? "bg-green-100 text-green-700 ring-2 ring-green-500"
-                  : "bg-neutral-100 hover:bg-green-50"
+                  ? "bg-keria-success/20 text-keria-success-light ring-2 ring-keria-success"
+                  : "bg-keria-forest/30 text-keria-cream hover:bg-keria-success/10"
               }`}
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3" />
               </svg>
               Pour
-            </button>
-            <button
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.9 }}
               onClick={() => onVote("down")}
               className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-colors ${
                 userVote === "down"
-                  ? "bg-red-100 text-red-700 ring-2 ring-red-500"
-                  : "bg-neutral-100 hover:bg-red-50"
+                  ? "bg-keria-error/20 text-keria-error-light ring-2 ring-keria-error"
+                  : "bg-keria-forest/30 text-keria-cream hover:bg-keria-error/10"
               }`}
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3zm7-13h2.67A2.31 2.31 0 0122 4v7a2.31 2.31 0 01-2.33 2H17" />
               </svg>
               Contre
-            </button>
+            </motion.button>
           </div>
         ) : (
-          <p className="mt-4 text-center text-sm text-amber-600">
+          <p className="mt-4 text-center text-sm text-keria-gold">
             Sélectionnez-vous dans la liste des participants pour voter
           </p>
         )}
@@ -469,7 +503,7 @@ function PlaceModal({
           href={googleMapsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-4 flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+          className="mt-4 flex items-center justify-center gap-2 rounded-lg bg-keria-gold px-4 py-3 text-sm font-medium text-keria-darker transition-colors hover:bg-keria-gold-dark"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -511,8 +545,19 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
   // État pour la modale
   const [selectedPlace, setSelectedPlace] = useState<PlaceRankingItem | null>(null);
 
+  // Debounce pour éviter les clics rapides
+  const lastSearchTime = useRef(0);
+  const DEBOUNCE_MS = 2000;
+
   const handleSearch = async (contextual = false) => {
     if (!midpoint) return;
+
+    // Debounce: empêcher les clics rapides
+    const now = Date.now();
+    if (now - lastSearchTime.current < DEBOUNCE_MS) {
+      return;
+    }
+    lastSearchTime.current = now;
 
     setIsSearching(true);
     setSearchError(null);
@@ -702,7 +747,7 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
               </div>
 
               {searchError && (
-                <p className="text-xs text-amber-600">{searchError}</p>
+                <p className="text-xs text-keria-error-light">{searchError}</p>
               )}
             </div>
           )}
@@ -712,15 +757,28 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
               Chargement...
             </div>
           ) : filteredRanking && filteredRanking.length > 0 ? (
-            <ul className="space-y-3">
+            <motion.ul
+              className="space-y-3"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.08 } },
+              }}
+            >
               {filteredRanking.map((item: PlaceRankingItem) => {
                 const { place, score, upvotes, downvotes } = item;
                 const userVote = getUserVote(place._id);
                 const categoryInfo = CATEGORY_LABELS[place.category] ?? { label: "Autre" };
 
                 return (
-                  <li
+                  <motion.li
                     key={place._id}
+                    variants={{
+                      hidden: { opacity: 0, y: 20 },
+                      visible: { opacity: 1, y: 0 },
+                    }}
+                    whileHover={{ scale: 1.01 }}
                     onClick={() => setSelectedPlace(item)}
                     className="cursor-pointer rounded-lg border border-keria-forest/30 bg-keria-forest/10 overflow-hidden transition-all hover:border-keria-gold/50 hover:bg-keria-forest/20"
                   >
@@ -738,8 +796,8 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
                           <div
                             className={`absolute top-2 right-2 rounded-full px-2 py-0.5 text-xs font-medium ${
                               place.openNow
-                                ? "bg-green-500 text-white"
-                                : "bg-red-500 text-white"
+                                ? "bg-keria-success text-keria-cream"
+                                : "bg-keria-error text-keria-cream"
                             }`}
                           >
                             {place.openNow ? "Ouvert" : "Fermé"}
@@ -773,7 +831,7 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
 
                           <div className="flex items-center gap-2 mt-1">
                             {place.priceLevel !== undefined && place.priceLevel > 0 && (
-                              <span className="text-xs font-medium text-green-600">
+                              <span className="text-xs font-medium text-keria-success-light">
                                 {PRICE_LEVELS[place.priceLevel]}
                               </span>
                             )}
@@ -787,9 +845,9 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
                           <div
                             className={`text-lg font-bold ${
                               score > 0
-                                ? "text-green-400"
+                                ? "text-keria-success-light"
                                 : score < 0
-                                ? "text-red-400"
+                                ? "text-keria-error-light"
                                 : "text-keria-muted"
                             }`}
                           >
@@ -804,16 +862,16 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
 
                       {userVote && (
                         <div className="mt-2 text-xs text-center">
-                          <span className={userVote === "up" ? "text-green-600" : "text-red-600"}>
+                          <span className={userVote === "up" ? "text-keria-success-light" : "text-keria-error-light"}>
                             Vous avez voté {userVote === "up" ? "Pour" : "Contre"}
                           </span>
                         </div>
                       )}
                     </div>
-                  </li>
+                  </motion.li>
                 );
               })}
-            </ul>
+            </motion.ul>
           ) : (
             <div className="py-4 text-center text-sm text-keria-muted">
               {midpoint

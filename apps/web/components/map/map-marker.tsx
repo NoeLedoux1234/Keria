@@ -6,17 +6,17 @@ import type { Coordinates, TransportMode } from "@meetpoint/types";
 interface MapMarkerProps {
   coordinates: Coordinates;
   label?: string;
-  color?: "blue" | "red" | "green" | "orange" | "purple";
+  color?: "forest" | "error" | "success" | "gold" | "muted";
   transportMode?: TransportMode;
   onClick?: () => void;
 }
 
 const COLORS = {
-  blue: "#3b82f6",
-  red: "#ef4444",
-  green: "#22c55e",
-  orange: "#f97316",
-  purple: "#8b5cf6",
+  forest: "#3d4435",
+  error: "#a65a4a",
+  success: "#6b8f4a",
+  gold: "#c9a227",
+  muted: "#8a8a78",
 };
 
 const TransportIconsSvg: Record<TransportMode, React.ReactNode> = {
@@ -51,7 +51,7 @@ const TransportIconsSvg: Record<TransportMode, React.ReactNode> = {
 export function MapMarker({
   coordinates,
   label,
-  color = "blue",
+  color = "forest",
   transportMode,
   onClick,
 }: MapMarkerProps) {
@@ -64,8 +64,8 @@ export function MapMarker({
     >
       <div className="flex flex-col items-center">
         {label && (
-          <div className="mb-1 flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-xs font-medium shadow-md">
-            {transportMode && <span className="text-gray-600">{TransportIconsSvg[transportMode]}</span>}
+          <div className="mb-1 flex items-center gap-1 rounded-full bg-keria-darker/90 backdrop-blur-sm px-2 py-0.5 text-xs font-medium text-keria-cream shadow-md">
+            {transportMode && <span className="text-keria-muted">{TransportIconsSvg[transportMode]}</span>}
             {label}
           </div>
         )}

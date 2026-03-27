@@ -21,11 +21,9 @@ export function Modal({
   const [isVisible, setIsVisible] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // Gérer l'ouverture/fermeture avec animation
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true);
-      // Petit délai pour que le DOM soit prêt avant l'animation
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           setIsAnimating(true);
@@ -35,12 +33,11 @@ export function Modal({
       setIsAnimating(false);
       const timer = setTimeout(() => {
         setIsVisible(false);
-      }, 300); // Durée de l'animation
+      }, 300);
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
 
-  // Fermer avec Escape
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -65,27 +62,27 @@ export function Modal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
-      {/* Backdrop - sans flou, juste un overlay sombre */}
+      {/* Backdrop with blur */}
       <div
         className={cn(
-          "absolute inset-0 bg-black transition-opacity duration-300",
-          isAnimating ? "opacity-50" : "opacity-0"
+          "absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300",
+          isAnimating ? "opacity-100" : "opacity-0"
         )}
         onClick={onClose}
       />
 
-      {/* Modal content - slide up animation */}
+      {/* Modal content */}
       <div
         className={cn(
-          "relative z-10 w-full max-w-lg transform transition-all duration-300 ease-out",
+          "relative z-10 w-full max-w-lg transition-all duration-300",
           "max-h-[90vh] overflow-auto rounded-t-2xl bg-keria-darker border border-keria-forest/30 shadow-2xl sm:rounded-2xl sm:m-4",
           isAnimating
-            ? "translate-y-0 opacity-100"
-            : "translate-y-full opacity-0 sm:translate-y-8",
+            ? "translate-y-0 opacity-100 scale-100"
+            : "translate-y-full opacity-0 sm:translate-y-4 sm:scale-95",
           className
         )}
       >
-        {/* Barre de drag (mobile) */}
+        {/* Drag bar (mobile) */}
         <div className="sticky top-0 z-10 flex justify-center bg-keria-darker pt-3 pb-2 sm:hidden">
           <div className="h-1 w-10 rounded-full bg-keria-forest" />
         </div>

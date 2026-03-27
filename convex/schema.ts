@@ -51,6 +51,9 @@ export default defineSchema({
     scheduledFor: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),
+
+    // Cache pour optimiser les appels API
+    lastSearchedAt: v.optional(v.number()),
   })
     .index("by_creator", ["creatorId"])
     .index("by_share_code", ["shareCode"])
@@ -142,6 +145,9 @@ export default defineSchema({
     relevanceScore: v.optional(v.number()),
 
     createdAt: v.number(),
+
+    // Timestamp de dernière mise à jour des données
+    lastRefreshedAt: v.optional(v.number()),
   })
     .index("by_meet", ["meetId"])
     .index("by_category", ["meetId", "category"]),

@@ -186,3 +186,13 @@ export const selectPlace = mutation({
     });
   },
 });
+
+/**
+ * Met à jour le timestamp de dernière recherche (pour le cache)
+ */
+export const updateLastSearchedAt = mutation({
+  args: { meetId: v.id("meets") },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.meetId, { lastSearchedAt: Date.now() });
+  },
+});

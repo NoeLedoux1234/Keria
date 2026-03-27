@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@meetpoint/ui";
 import type { Coordinates } from "@meetpoint/types";
 
@@ -113,25 +114,36 @@ export function AddressInput({
         </div>
       )}
 
-      {showSuggestions && suggestions.length > 0 && (
-        <ul className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-keria-forest/50 bg-keria-darker shadow-lg">
-          {suggestions.map((suggestion) => (
-            <li
-              key={suggestion.id}
-              onClick={() => handleSelect(suggestion)}
-              className="cursor-pointer px-4 py-3 text-sm text-keria-cream hover:bg-keria-forest/30 transition-colors"
-            >
-              <span className="font-medium">
-                {suggestion.place_name.split(",")[0]}
-              </span>
-              <span className="text-keria-muted">
-                {suggestion.place_name.includes(",") &&
-                  ", " + suggestion.place_name.split(",").slice(1).join(",")}
-              </span>
-            </li>
-          ))}
-        </ul>
-      )}
+      <AnimatePresence>
+        {showSuggestions && suggestions.length > 0 && (
+          <motion.ul
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-keria-forest/50 bg-keria-darker shadow-lg"
+          >
+            {suggestions.map((suggestion, index) => (
+              <motion.li
+                key={suggestion.id}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.15, delay: index * 0.05 }}
+                onClick={() => handleSelect(suggestion)}
+                className="cursor-pointer px-4 py-3 text-sm text-keria-cream hover:bg-keria-forest/30 transition-colors"
+              >
+                <span className="font-medium">
+                  {suggestion.place_name.split(",")[0]}
+                </span>
+                <span className="text-keria-muted">
+                  {suggestion.place_name.includes(",") &&
+                    ", " + suggestion.place_name.split(",").slice(1).join(",")}
+                </span>
+              </motion.li>
+            ))}
+          </motion.ul>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

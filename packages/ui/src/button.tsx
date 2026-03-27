@@ -14,7 +14,7 @@ const buttonVariants = cva(
         outline:
           "border border-keria-forest text-keria-cream hover:bg-keria-forest/20 hover:border-keria-muted",
         ghost: "text-keria-cream hover:bg-keria-forest/30",
-        destructive: "bg-red-600/80 text-white hover:bg-red-700",
+        destructive: "bg-keria-error text-keria-cream hover:bg-keria-error-dark",
       },
       size: {
         default: "h-10 px-4 py-2",

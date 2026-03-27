@@ -12,10 +12,10 @@ interface MapMidpointProps {
 export function MapMidpoint({ coordinates, fairnessScore, onClick }: MapMidpointProps) {
   // Couleur basée sur le score d'équité
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "#22c55e"; // vert
-    if (score >= 60) return "#eab308"; // jaune
-    if (score >= 40) return "#f97316"; // orange
-    return "#ef4444"; // rouge
+    if (score >= 80) return "#6b8f4a"; // keria-success
+    if (score >= 60) return "#c9a227"; // keria-gold
+    if (score >= 40) return "#a65a4a"; // keria-error
+    return "#8a3a2a"; // keria-error-dark
   };
 
   return (
@@ -28,12 +28,12 @@ export function MapMidpoint({ coordinates, fairnessScore, onClick }: MapMidpoint
       <div className="flex flex-col items-center">
         <div className="relative">
           {/* Cercle pulsant */}
-          <div className="absolute inset-0 animate-ping rounded-full bg-blue-500 opacity-25" />
+          <div className="absolute inset-0 animate-ping rounded-full bg-keria-gold opacity-25" />
 
           {/* Marqueur principal */}
-          <div className="relative flex h-10 w-10 items-center justify-center rounded-full border-4 border-white bg-blue-600 shadow-lg">
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-full border-4 border-keria-cream bg-keria-gold shadow-lg">
             <svg
-              className="h-5 w-5 text-white"
+              className="h-5 w-5 text-keria-darker"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

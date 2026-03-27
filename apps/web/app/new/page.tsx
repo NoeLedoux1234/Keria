@@ -132,7 +132,7 @@ export default function NewMeetPage() {
 
       {/* Heavy grain */}
       <div
-        className="pointer-events-none fixed inset-0 z-10 opacity-[0.15]"
+        className="pointer-events-none fixed inset-0 z-10 opacity-[0.03]"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
         }}
@@ -151,7 +151,7 @@ export default function NewMeetPage() {
         <Link href="/" className="font-display text-lg font-bold text-keria-cream/80 transition-colors hover:text-keria-cream">
           KERIA
         </Link>
-        <span className="font-mono text-[10px] text-keria-muted/40">MEETPOINT</span>
+        <span className="font-mono text-[10px] text-keria-muted/70">MEETPOINT</span>
       </header>
 
       {/* Content */}
@@ -183,7 +183,7 @@ export default function NewMeetPage() {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 rounded-xl border border-keria-forest/20 bg-keria-darker/40 p-8 backdrop-blur-md">
             <div>
               <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-keria-muted">
                 Nom du MeetPoint
@@ -216,7 +216,7 @@ export default function NewMeetPage() {
                 <button
                   type="button"
                   onClick={() => setUseManualAddress(!useManualAddress)}
-                  className="text-[10px] uppercase tracking-wider text-keria-gold/70 transition-colors hover:text-keria-gold"
+                  className="text-[10px] uppercase tracking-wider text-keria-gold transition-colors hover:text-keria-gold"
                 >
                   {useManualAddress ? "Utiliser GPS" : "Entrer adresse"}
                 </button>
@@ -229,8 +229,8 @@ export default function NewMeetPage() {
                     placeholder="Rechercher une adresse..."
                   />
                   {manualCoordinates && (
-                    <div className="flex items-center gap-2 rounded border border-green-500/30 bg-green-500/10 p-3 text-sm text-green-400">
-                      <div className="h-2 w-2 rounded-full bg-green-500" />
+                    <div className="flex items-center gap-2 rounded border border-keria-success/30 bg-keria-success/10 p-3 text-sm text-keria-success-light">
+                      <div className="h-2 w-2 rounded-full bg-keria-success" />
                       <span className="truncate">{manualAddress}</span>
                     </div>
                   )}
@@ -238,10 +238,10 @@ export default function NewMeetPage() {
               ) : (
                 <>
                   {geoCoordinates ? (
-                    <div className="flex items-center gap-2 rounded border border-green-500/30 bg-green-500/10 p-3 text-sm text-green-400">
-                      <div className="h-2 w-2 rounded-full bg-green-500" />
+                    <div className="flex items-center gap-2 rounded border border-keria-success/30 bg-keria-success/10 p-3 text-sm text-keria-success-light">
+                      <div className="h-2 w-2 rounded-full bg-keria-success" />
                       <span>Position obtenue</span>
-                      <span className="ml-auto font-mono text-[10px] text-green-400/60">
+                      <span className="ml-auto font-mono text-[10px] text-keria-success-light/60">
                         {geoCoordinates.lat.toFixed(4)}°N
                       </span>
                     </div>
@@ -250,7 +250,7 @@ export default function NewMeetPage() {
                       type="button"
                       onClick={requestLocation}
                       disabled={geoLoading}
-                      className="flex w-full items-center justify-center gap-2 rounded border border-keria-forest/30 bg-keria-darker/50 p-4 text-sm text-keria-muted backdrop-blur-sm transition-all hover:border-keria-gold/50 hover:text-keria-cream"
+                      className="flex w-full items-center justify-center gap-2 rounded border border-keria-forest/30 bg-keria-darker/50 p-4 text-sm text-keria-muted backdrop-blur-sm transition-all hover:border-keria-gold/50 hover:text-keria-cream animate-pulse-soft"
                     >
                       {geoLoading ? (
                         <>
@@ -268,7 +268,7 @@ export default function NewMeetPage() {
                       )}
                     </button>
                   )}
-                  {geoError && <p className="mt-2 text-xs text-red-400">{geoError}</p>}
+                  {geoError && <p className="mt-2 text-xs text-keria-error-light">{geoError}</p>}
                 </>
               )}
             </div>
@@ -279,25 +279,27 @@ export default function NewMeetPage() {
               </label>
               <div className="grid grid-cols-4 gap-2">
                 {TRANSPORT_OPTIONS.map((option) => (
-                  <button
+                  <motion.button
                     key={option.value}
                     type="button"
                     onClick={() => setTransportMode(option.value)}
-                    className={`flex flex-col items-center gap-2 rounded border p-3 transition-all ${
+                    className={`flex flex-col items-center gap-2 rounded border p-3 transition-colors ${
                       transportMode === option.value
                         ? "border-keria-gold bg-keria-gold/10 text-keria-gold"
                         : "border-keria-forest/30 bg-keria-darker/30 text-keria-muted hover:border-keria-forest hover:text-keria-cream"
                     }`}
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.95 }}
                   >
                     {TransportIcons[option.value]}
                     <span className="text-[10px] uppercase tracking-wider">{option.label}</span>
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
 
             {error && (
-              <div className="rounded border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">
+              <div className="rounded border border-keria-error/30 bg-keria-error/10 p-3 text-sm text-keria-error-light">
                 {error}
               </div>
             )}
@@ -317,7 +319,7 @@ export default function NewMeetPage() {
           <div className="mt-8 text-center">
             <Link
               href="/"
-              className="text-[10px] uppercase tracking-widest text-keria-muted/50 transition-colors hover:text-keria-gold"
+              className="text-[10px] uppercase tracking-widest text-keria-muted/80 transition-colors hover:text-keria-gold"
             >
               Retour à l'accueil
             </Link>
@@ -328,7 +330,7 @@ export default function NewMeetPage() {
       {/* Decorative corner */}
       <div className="pointer-events-none fixed bottom-6 right-6 z-20">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] text-keria-muted/30">2026</span>
+          <span className="font-mono text-[10px] text-keria-muted/60">2026</span>
           <div className="h-2 w-2 rounded-full bg-keria-gold/30" />
         </div>
       </div>

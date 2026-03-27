@@ -12,10 +12,10 @@ interface RSVPButtonsProps {
 const RSVP_CONFIG = {
   yes: {
     label: "Oui",
-    color: "bg-green-500 text-white",
-    hoverColor: "hover:bg-green-600",
-    selectedColor: "bg-green-500 text-white ring-2 ring-green-400",
-    inactiveColor: "bg-keria-forest/30 text-keria-cream hover:bg-green-900/30 hover:text-green-400",
+    color: "bg-keria-success text-keria-cream",
+    hoverColor: "hover:bg-keria-success-dark",
+    selectedColor: "bg-keria-success text-keria-cream ring-2 ring-keria-success-light",
+    inactiveColor: "bg-keria-forest/30 text-keria-cream hover:bg-keria-success/20 hover:text-keria-success-light",
   },
   maybe: {
     label: "Peut-être",
@@ -26,10 +26,10 @@ const RSVP_CONFIG = {
   },
   no: {
     label: "Non",
-    color: "bg-red-500 text-white",
-    hoverColor: "hover:bg-red-600",
-    selectedColor: "bg-red-500 text-white ring-2 ring-red-400",
-    inactiveColor: "bg-keria-forest/30 text-keria-cream hover:bg-red-900/30 hover:text-red-400",
+    color: "bg-keria-error text-keria-cream",
+    hoverColor: "hover:bg-keria-error-dark",
+    selectedColor: "bg-keria-error text-keria-cream ring-2 ring-keria-error-light",
+    inactiveColor: "bg-keria-forest/30 text-keria-cream hover:bg-keria-error/20 hover:text-keria-error-light",
   },
 };
 
@@ -72,9 +72,9 @@ export function RSVPButtons({
  */
 export function RSVPBadge({ status }: { status: RSVPStatus }) {
   const config: Record<RSVPStatus, { label: string; className: string }> = {
-    yes: { label: "Participe", className: "bg-green-900/50 text-green-400" },
+    yes: { label: "Participe", className: "bg-keria-success/20 text-keria-success-light" },
     maybe: { label: "Peut-être", className: "bg-keria-gold/20 text-keria-gold" },
-    no: { label: "Ne participe pas", className: "bg-red-900/50 text-red-400" },
+    no: { label: "Ne participe pas", className: "bg-keria-error/20 text-keria-error-light" },
     pending: { label: "En attente", className: "bg-keria-forest/50 text-keria-muted" },
   };
 

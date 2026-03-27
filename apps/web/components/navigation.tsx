@@ -17,44 +17,43 @@ export function Navigation() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
-  // Don't show nav on homepage for cleaner look
   const isHomepage = pathname === "/";
 
   return (
     <>
-      {/* Fixed corner navigation button - hidden on homepage to avoid conflicts */}
+      {/* Fixed corner navigation button */}
       {!isHomepage && (
         <motion.button
           onClick={() => setIsOpen(!isOpen)}
-          className="fixed right-6 top-6 z-[60] flex h-12 w-12 items-center justify-center rounded-full bg-keria-darker/90 backdrop-blur-md transition-colors hover:bg-keria-forest border border-keria-forest/30"
+          className="fixed right-6 top-6 z-[60] flex h-12 w-12 items-center justify-center rounded-full border border-keria-forest/30 bg-keria-darker/90 backdrop-blur-md transition-all hover:ring-1 hover:ring-keria-gold/30"
           aria-label="Menu"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, duration: 0.3 }}
         >
-        <div className="flex flex-col items-center justify-center gap-1.5">
-          <motion.span
-            className="block h-0.5 w-5 bg-keria-cream"
-            animate={{
-              rotate: isOpen ? 45 : 0,
-              y: isOpen ? 8 : 0,
-            }}
-            transition={{ duration: 0.2 }}
-          />
-          <motion.span
-            className="block h-0.5 w-5 bg-keria-cream"
-            animate={{ opacity: isOpen ? 0 : 1 }}
-            transition={{ duration: 0.2 }}
-          />
-          <motion.span
-            className="block h-0.5 w-5 bg-keria-cream"
-            animate={{
-              rotate: isOpen ? -45 : 0,
-              y: isOpen ? -8 : 0,
-            }}
-            transition={{ duration: 0.2 }}
-          />
-        </div>
+          <div className="flex flex-col items-center justify-center gap-1.5">
+            <motion.span
+              className="block h-0.5 w-5 bg-keria-cream"
+              animate={{
+                rotate: isOpen ? 45 : 0,
+                y: isOpen ? 8 : 0,
+              }}
+              transition={{ duration: 0.2 }}
+            />
+            <motion.span
+              className="block h-0.5 w-5 bg-keria-cream"
+              animate={{ opacity: isOpen ? 0 : 1 }}
+              transition={{ duration: 0.2 }}
+            />
+            <motion.span
+              className="block h-0.5 w-5 bg-keria-cream"
+              animate={{
+                rotate: isOpen ? -45 : 0,
+                y: isOpen ? -8 : 0,
+              }}
+              transition={{ duration: 0.2 }}
+            />
+          </div>
         </motion.button>
       )}
 
@@ -77,32 +76,40 @@ export function Navigation() {
             <motion.ul
               initial="hidden"
               animate="visible"
-              exit="hidden"
+              exit="exit"
               variants={{
                 visible: {
                   transition: { staggerChildren: 0.08, delayChildren: 0.1 },
                 },
+                exit: {
+                  transition: { staggerChildren: 0.05, staggerDirection: -1 },
+                },
               }}
               className="relative z-10 space-y-6 text-center"
             >
-              {navLinks.map((link) => (
+              {navLinks.map((link, index) => (
                 <motion.li
                   key={link.href}
                   variants={{
                     hidden: { opacity: 0, y: 30 },
                     visible: { opacity: 1, y: 0 },
+                    exit: { opacity: 0, y: -20 },
                   }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
                 >
                   <Link
                     href={link.href}
                     onClick={() => setIsOpen(false)}
-                    className={`group relative inline-block font-display text-3xl font-bold transition-colors sm:text-4xl ${
+                    className={`group relative inline-flex items-center gap-4 font-display text-3xl font-bold transition-colors sm:text-4xl ${
                       pathname === link.href
                         ? "text-keria-gold"
                         : "text-keria-cream hover:text-keria-gold"
                     }`}
                   >
+                    {/* Editorial number */}
+                    <span className="font-mono text-xs text-keria-gold/60">
+                      {String(index + 1).padStart(2, "0")}.
+                    </span>
                     {link.label}
                     {/* Underline effect */}
                     <span

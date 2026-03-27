@@ -103,8 +103,8 @@ export const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(
 
   if (!mapboxToken) {
     return (
-      <div className={`flex items-center justify-center bg-neutral-100 ${className}`}>
-        <p className="text-neutral-500">
+      <div className={`flex items-center justify-center bg-keria-darker ${className}`}>
+        <p className="text-keria-muted">
           Token Mapbox non configuré. Ajoutez NEXT_PUBLIC_MAPBOX_TOKEN dans .env.local
         </p>
       </div>
@@ -118,7 +118,7 @@ export const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(
       onMove={handleMove}
       onClick={handleClick}
       mapboxAccessToken={mapboxToken}
-      mapStyle="mapbox://styles/mapbox/light-v11"
+      mapStyle="mapbox://styles/mapbox/dark-v11"
       style={{ width: "100%", height: "100%" }}
       attributionControl={false}
       reuseMaps

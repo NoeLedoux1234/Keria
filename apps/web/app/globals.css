@@ -65,6 +65,32 @@
   @apply text-keria-muted hover:text-keria-cream;
 }
 
+@layer utilities {
+  .grain-overlay {
+    position: relative;
+  }
+  .grain-overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+
+  .vignette {
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(30, 34, 26, 0.6) 100%);
+  }
+
+  .glass-card {
+    @apply bg-keria-darker/60 backdrop-blur-md border border-keria-forest/30 shadow-xl;
+  }
+
+  .text-gold-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-keria-gold via-keria-cream to-keria-gold;
+  }
+}
+
 /* Loading screen specific */
 .loading-screen-bg {
   background: linear-gradient(
@@ -73,4 +99,34 @@
     theme("colors.keria.dark") 50%,
     theme("colors.keria.forest") 100%
   );
+}
+
+/* Animated gradient shift for landing page */
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient-shift {
+  animation: gradient-shift 12s ease-in-out infinite;
+}
+
+/* Pulse soft for geo button attention */
+@keyframes pulse-soft {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(198, 168, 124, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(198, 168, 124, 0);
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
 }
