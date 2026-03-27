@@ -44,7 +44,7 @@ const PRICE_LEVELS = ["", "€", "€€", "€€€", "€€€€"];
 
 function StarIcon({ filled, half, size, gradientId }: { filled?: boolean; half?: boolean; size: number; gradientId?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       {half && gradientId ? (
         <>
           <defs>
@@ -82,7 +82,7 @@ function StarRating({ rating, size = "sm" }: { rating: number; size?: "sm" | "lg
   const iconSize = size === "lg" ? 20 : 14;
 
   return (
-    <div className="flex items-center gap-0.5">
+    <div className="flex items-center gap-0.5" role="img" aria-label={`Note : ${rating.toFixed(1)} sur 5`}>
       {Array.from({ length: fullStars }).map((_, i) => (
         <StarIcon key={`full-${i}`} filled size={iconSize} />
       ))}
@@ -463,13 +463,14 @@ function PlaceModal({
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => onVote("up")}
+              aria-label={`Voter pour ${place.name}`}
               className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-colors ${
                 userVote === "up"
                   ? "bg-keria-success/20 text-keria-success-light ring-2 ring-keria-success"
                   : "bg-keria-forest/30 text-keria-cream hover:bg-keria-success/10"
               }`}
             >
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3" />
               </svg>
               Pour
@@ -477,13 +478,14 @@ function PlaceModal({
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => onVote("down")}
+              aria-label={`Voter contre ${place.name}`}
               className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-colors ${
                 userVote === "down"
                   ? "bg-keria-error/20 text-keria-error-light ring-2 ring-keria-error"
                   : "bg-keria-forest/30 text-keria-cream hover:bg-keria-error/10"
               }`}
             >
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <path d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3zm7-13h2.67A2.31 2.31 0 0122 4v7a2.31 2.31 0 01-2.33 2H17" />
               </svg>
               Contre

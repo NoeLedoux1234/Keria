@@ -179,10 +179,11 @@ export default function NewEventPage() {
 
                 <div className="space-y-5 rounded-xl border border-keria-forest/20 bg-keria-darker/40 p-8 backdrop-blur-md">
                   <div>
-                    <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-keria-muted">
+                    <label htmlFor="event-name" className="mb-2 block text-xs font-medium uppercase tracking-wider text-keria-muted">
                       Nom de l'événement
                     </label>
                     <Input
+                      id="event-name"
                       placeholder="Ex: Tour à moto du dimanche"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
@@ -191,10 +192,11 @@ export default function NewEventPage() {
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-keria-muted">
+                    <label htmlFor="event-description" className="mb-2 block text-xs font-medium uppercase tracking-wider text-keria-muted">
                       Description <span className="text-keria-forest">(optionnel)</span>
                     </label>
                     <Input
+                      id="event-description"
                       placeholder="Décrivez votre événement..."
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
@@ -203,10 +205,11 @@ export default function NewEventPage() {
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-keria-muted">
+                    <label htmlFor="event-creator-name" className="mb-2 block text-xs font-medium uppercase tracking-wider text-keria-muted">
                       Votre nom
                     </label>
                     <Input
+                      id="event-creator-name"
                       placeholder="Ex: Jean"
                       value={creatorName}
                       onChange={(e) => setCreatorName(e.target.value)}

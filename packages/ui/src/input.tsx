@@ -1,4 +1,4 @@
-import { forwardRef, type InputHTMLAttributes } from "react";
+import { forwardRef, useId, type InputHTMLAttributes } from "react";
 import { cn } from "./utils";
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -7,6 +7,8 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, error, ...props }, ref) => {
+    const errorId = useId();
+
     return (
       <div className="w-full">
         <input
@@ -17,9 +19,15 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             className
           )}
           ref={ref}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? errorId : undefined}
           {...props}
         />
-        {error && <p className="mt-1 text-xs text-keria-error-light">{error}</p>}
+        {error && (
+          <p id={errorId} className="mt-1 text-xs text-keria-error-light">
+            {error}
+          </p>
+        )}
       </div>
     );
   }

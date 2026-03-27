@@ -12,7 +12,7 @@ import type { TransportMode, Coordinates } from "@meetpoint/types";
 
 const TransportIcons: Record<TransportMode, React.ReactNode> = {
   driving: (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
       <path d="M5 11l1.5-4.5a2 2 0 011.9-1.5h7.2a2 2 0 011.9 1.5L19 11" />
       <path d="M5 11v6a1 1 0 001 1h1a1 1 0 001-1v-1h8v1a1 1 0 001 1h1a1 1 0 001-1v-6" />
       <path d="M5 11h14" />
@@ -21,7 +21,7 @@ const TransportIcons: Record<TransportMode, React.ReactNode> = {
     </svg>
   ),
   transit: (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
       <rect x="6" y="3" width="12" height="14" rx="2" />
       <path d="M6 12h12" />
       <circle cx="8.5" cy="15" r="1" />
@@ -30,7 +30,7 @@ const TransportIcons: Record<TransportMode, React.ReactNode> = {
     </svg>
   ),
   cycling: (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
       <circle cx="6" cy="17" r="3" />
       <circle cx="18" cy="17" r="3" />
       <path d="M6 17l3-7h4l3 7" />
@@ -39,7 +39,7 @@ const TransportIcons: Record<TransportMode, React.ReactNode> = {
     </svg>
   ),
   walking: (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
       <circle cx="12" cy="4" r="2" />
       <path d="M12 6v5l3 4" />
       <path d="M12 11l-3 4" />
@@ -159,10 +159,11 @@ export default function NewMeetPage() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6 rounded-xl border border-keria-forest/20 bg-keria-darker/40 p-8 backdrop-blur-md">
             <div>
-              <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-keria-muted">
+              <label htmlFor="meetpoint-name" className="mb-2 block text-xs font-medium uppercase tracking-wider text-keria-muted">
                 Nom du MeetPoint
               </label>
               <Input
+                id="meetpoint-name"
                 placeholder="Ex: Dîner d'anniversaire"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -171,10 +172,11 @@ export default function NewMeetPage() {
             </div>
 
             <div>
-              <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-keria-muted">
+              <label htmlFor="creator-name" className="mb-2 block text-xs font-medium uppercase tracking-wider text-keria-muted">
                 Votre nom
               </label>
               <Input
+                id="creator-name"
                 placeholder="Ex: Marie"
                 value={creatorName}
                 onChange={(e) => setCreatorName(e.target.value)}
@@ -233,7 +235,7 @@ export default function NewMeetPage() {
                         </>
                       ) : (
                         <>
-                          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                             <circle cx="12" cy="12" r="3" />
                             <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
                           </svg>

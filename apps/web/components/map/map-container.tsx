@@ -109,18 +109,23 @@ export const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(
   }
 
   return (
-    <Map
-      ref={mapRef}
-      {...viewState}
-      onMove={handleMove}
-      onClick={handleClick}
-      mapboxAccessToken={mapboxToken}
-      mapStyle="mapbox://styles/mapbox/dark-v11"
-      style={{ width: "100%", height: "100%" }}
-      attributionControl={false}
-      reuseMaps
-    >
-      {children}
-    </Map>
+    <div aria-label="Carte interactive" role="region">
+      <span className="sr-only">
+        Carte interactive affichant les positions des participants et lieux de rendez-vous
+      </span>
+      <Map
+        ref={mapRef}
+        {...viewState}
+        onMove={handleMove}
+        onClick={handleClick}
+        mapboxAccessToken={mapboxToken}
+        mapStyle="mapbox://styles/mapbox/dark-v11"
+        style={{ width: "100%", height: "100%" }}
+        attributionControl={false}
+        reuseMaps
+      >
+        {children}
+      </Map>
+    </div>
   );
 });

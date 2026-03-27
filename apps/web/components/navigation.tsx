@@ -27,6 +27,7 @@ export function Navigation() {
           onClick={() => setIsOpen(!isOpen)}
           className="fixed right-6 top-6 z-[60] flex h-12 w-12 items-center justify-center rounded-full border border-keria-forest/30 bg-keria-darker/90 backdrop-blur-md transition-all hover:ring-1 hover:ring-keria-gold/30"
           aria-label="Menu"
+          aria-expanded={isOpen}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, duration: 0.3 }}

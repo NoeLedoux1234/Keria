@@ -159,10 +159,11 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6 rounded-xl border border-keria-forest/20 bg-keria-darker/40 p-8 backdrop-blur-md">
             <div>
-              <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-keria-muted">
+              <label htmlFor="event-participant-name" className="mb-2 block text-xs font-medium uppercase tracking-wider text-keria-muted">
                 Votre nom
               </label>
               <Input
+                id="event-participant-name"
                 placeholder="Ex: Marie"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
