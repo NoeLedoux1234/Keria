@@ -56,14 +56,14 @@ Apres le calcul du midpoint, Marie clique "Rechercher des lieux". L'application 
 
 ---
 
-## Carte des Stories
+## Carte des Stories par Sprint
 
-| Parcours | Decouverte | Creation | Participation | Decision |
-|----------|-----------|----------|---------------|----------|
-| **MVP** | #15 Landing page | #1 Creer MeetPoint | #4 Geolocalisation | #9 Rechercher lieux |
-| | | #12 Creer evenement | #5 Adresse manuelle | #10 Voter |
-| | | | #6 Mode transport | #11 Selectionner lieu |
-| | | #2 Rejoindre par code | #7 Calcul midpoint | #14 RSVP |
-| | | #13 Rejoindre event | #8 Routes carte | |
-| | #16 Design system | #3 Partager code | | |
-| **Post-MVP** | SEO, Performance | Auth, Historique | Notifications push | Filtres avances |
+| Sprint | Stories | Thème |
+|--------|---------|-------|
+| Sprint 1 (fév S1) | #1 Créer MeetPoint, #2 Rejoindre code, #3 Partager code, #16 Design system | Fondations |
+| Sprint 2 (fév S2) | #4 Géoloc, #5 Adresse manuelle, #6 Transport, #15 Landing page | Participants |
+| Sprint 3 (mars S1) | #7 Calcul midpoint, #8 Afficher routes | Carte et calcul |
+| Sprint 4 (mars S2) | #9 Rechercher lieux, #10 Voter, #11 Sélectionner lieu | Lieux et votes |
+| Sprint 5 (avr S1) | #12 Créer événement, #13 Rejoindre event, #14 RSVP | Événements |
+| Sprint 6 (avr S2) | #17 Tests, #18 CI/CD, #19 Error boundaries, #20 Loading | Qualité |
+| Sprint 7 (mai) | #21 A11y, #22 Responsive, #23 SEO, #24 Performance | Polish |

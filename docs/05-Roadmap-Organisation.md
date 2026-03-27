@@ -44,35 +44,53 @@ L'année 2027 vise la maturité du produit. L'intelligence artificielle apporte 
 
 ## Suivi des Sprints
 
-### Sprint 0 — Conception (Novembre 2025 — Janvier 2026) — TERMINE
+### Sprint 0 — Conception (Novembre 2025 — Janvier 2026) — TERMINÉ
 - Vision produit et pitch
 - Business model canvas
-- Etude de marche (SWOT, PESTEL, 5 forces de Porter)
-- Business plan
-- Roadmap initiale
-- Description de l'equipe ideale
+- Étude de marché (SWOT, PESTEL, 5 forces de Porter)
+- Business plan et roadmap initiale
 - [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/1)
 
-### Sprint 1 — MVP Fonctionnel (Fevrier — Mars 2026) — TERMINE
-- 16 user stories completees, 70 story points
-- Application fonctionnelle : MeetPoints, evenements, carte interactive, votes
-- Stack technique : Next.js 15 + Convex + Mapbox + Tailwind + Framer Motion
-- Design system Keria avec palette 16 couleurs et animations cinematiques
-- [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/2)
-- [Sprint Review](./12-Sprint-Review-Sprint1.md)
+### Sprint 1 — Setup et MeetPoint de base (1-14 février 2026) — TERMINÉ
+- 4 stories, 15 points : création MeetPoint, rejoindre par code, partage, design system
+- Setup monorepo Turborepo + Next.js 15 + Convex + Tailwind
+- [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/5)
 
-### Sprint 2 — Qualite et Polish (Avril — Mai 2026) — EN COURS
-- 8 user stories planifiees, 19 story points
-- Objectifs : tests unitaires, CI/CD, accessibilite, responsive, performance
-- [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/3)
-- [Sprint Planning](./13-Sprint-Planning-Sprint2.md)
+### Sprint 2 — Participants et géolocalisation (15-28 février 2026) — TERMINÉ
+- 4 stories, 13 points : géolocalisation, adresse Mapbox, modes transport, landing page
+- Hook useGeolocation, composant AddressInput
+- [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/6)
 
-### Jalons a venir
+### Sprint 3 — Carte et calcul du midpoint (1-14 mars 2026) — TERMINÉ
+- 2 stories, 13 points : algorithme midpoint équitable, routes OpenRouteService
+- Package @meetpoint/geo, carte Mapbox interactive
+- [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/7)
+
+### Sprint 4 — Recherche de lieux et votes (15-28 mars 2026) — TERMINÉ
+- 3 stories, 15 points : Google Places, Overpass/OSM, votes up/down temps réel
+- Composant PlacesList, système de ranking
+- [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/8)
+
+### Sprint 5 — Événements multi-étapes (29 mars — 11 avril 2026) — TERMINÉ
+- 3 stories, 14 points : création événement, étapes, RSVP
+- Formulaire multi-étapes, carte itinéraire
+- [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/9)
+
+### Sprint 6 — Qualité et tests (12-25 avril 2026) — TERMINÉ
+- 4 stories, 8 points : Vitest, CI/CD, error boundaries, loading skeletons
+- Husky + commitlint, GitHub Actions
+- [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/10)
+
+### Sprint 7 — UX Polish et finalisation (26 avril — 31 mai 2026) — EN COURS
+- 4 stories, 10 points : accessibilité, responsive, SEO, performance
+- [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/11)
+
+### Jalons à venir
 | Date | Jalon |
 |------|-------|
-| 31 mai 2026 | Livraison MVP final + documentation complete |
+| 31 mai 2026 | Livraison MVP final + documentation complète |
 | 12 juin 2026 | Remise des livrables au jury |
-| 19 juin 2026 | Soutenance (20 min presentation + 10 min Q&A) |
+| 19 juin 2026 | Soutenance (20 min présentation + 10 min Q&A) |
 
 ---
 
