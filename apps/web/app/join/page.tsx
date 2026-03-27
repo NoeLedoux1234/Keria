@@ -88,7 +88,11 @@ export default function JoinPage() {
           <div className="mt-10 rounded-xl border border-keria-forest/20 bg-keria-darker/40 p-8 backdrop-blur-md">
             <div className="space-y-6">
               <div>
+                <label htmlFor="share-code" className="sr-only">
+                  Code de partage
+                </label>
                 <Input
+                  id="share-code"
                   placeholder="ABC123"
                   value={code}
                   onChange={handleCodeChange}

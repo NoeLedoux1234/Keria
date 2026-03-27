@@ -92,11 +92,15 @@ export function AddressInput({
         onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
         placeholder={placeholder}
         className="w-full"
+        role="combobox"
+        aria-expanded={showSuggestions && suggestions.length > 0}
+        aria-autocomplete="list"
+        aria-controls="address-suggestions-listbox"
       />
 
       {isLoading && (
         <div className="absolute right-3 top-1/2 -translate-y-1/2">
-          <svg className="h-4 w-4 animate-spin text-keria-muted" viewBox="0 0 24 24">
+          <svg className="h-4 w-4 animate-spin text-keria-muted" viewBox="0 0 24 24" aria-hidden="true">
             <circle
               className="opacity-25"
               cx="12"
@@ -118,6 +122,8 @@ export function AddressInput({
       <AnimatePresence>
         {showSuggestions && suggestions.length > 0 && (
           <motion.ul
+            id="address-suggestions-listbox"
+            role="listbox"
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -127,6 +133,7 @@ export function AddressInput({
             {suggestions.map((suggestion, index) => (
               <motion.li
                 key={suggestion.id}
+                role="option"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.15, delay: index * 0.05 }}

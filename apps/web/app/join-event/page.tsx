@@ -84,7 +84,11 @@ export default function JoinEventPage() {
           <div className="mt-10 rounded-xl border border-keria-forest/20 bg-keria-darker/40 p-8 backdrop-blur-md">
             <div className="space-y-6">
               <div>
+                <label htmlFor="event-share-code" className="sr-only">
+                  Code de l'événement
+                </label>
                 <Input
+                  id="event-share-code"
                   placeholder="EABC12"
                   value={code}
                   onChange={handleCodeChange}

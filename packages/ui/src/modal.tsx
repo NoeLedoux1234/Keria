@@ -69,10 +69,13 @@ export function Modal({
           isAnimating ? "opacity-100" : "opacity-0"
         )}
         onClick={onClose}
+        aria-hidden="true"
       />
 
       {/* Modal content */}
       <div
+        role="dialog"
+        aria-modal="true"
         className={cn(
           "relative z-10 w-full max-w-lg transition-all duration-300",
           "max-h-[90vh] overflow-auto rounded-t-2xl bg-keria-darker border border-keria-forest/30 shadow-2xl sm:rounded-2xl sm:m-4",
@@ -103,6 +106,7 @@ export function Modal({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
+              aria-hidden="true"
             >
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
