@@ -101,7 +101,7 @@ export function Navigation() {
                   <Link
                     href={link.href}
                     onClick={() => setIsOpen(false)}
-                    className={`group relative inline-flex items-center gap-4 font-display text-3xl font-bold transition-colors sm:text-4xl ${
+                    className={`group relative inline-flex items-center gap-4 font-display text-2xl font-bold transition-colors sm:text-3xl lg:text-4xl ${
                       pathname === link.href
                         ? "text-keria-gold"
                         : "text-keria-cream hover:text-keria-gold"

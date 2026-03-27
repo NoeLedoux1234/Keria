@@ -18,6 +18,14 @@ export const metadata: Metadata = {
   description:
     "Trouvez le point de rencontre le plus équitable entre plusieurs personnes. Simple, intelligent et élégant.",
   keywords: ["point de rencontre", "meetpoint", "équitable", "rendez-vous", "localisation"],
+  openGraph: {
+    title: "KERIA - Trouvez le point de rencontre parfait",
+    description:
+      "Trouvez le point de rencontre le plus équitable entre plusieurs personnes. Simple, intelligent et élégant.",
+    type: "website",
+    locale: "fr_FR",
+    siteName: "KERIA",
+  },
 };
 
 export default function RootLayout({

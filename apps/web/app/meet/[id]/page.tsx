@@ -6,10 +6,20 @@ import Link from "next/link";
 import { useAction } from "convex/react";
 import { motion } from "framer-motion";
 import { Button, Badge } from "@meetpoint/ui";
+import dynamic from "next/dynamic";
 import { useMeet } from "@/hooks";
-import { MapContainer, MapMarker, MapMidpoint, MapRoute, type MapContainerHandle } from "@/components/map";
-import { PlacesList } from "@/components/places-list";
+import { MapMarker, MapMidpoint, MapRoute } from "@/components/map";
 import { PageBackground } from "@/components/page-background";
+import type { MapContainerHandle } from "@/components/map";
+
+const MapContainer = dynamic(
+  () => import("@/components/map/map-container").then((m) => ({ default: m.MapContainer })),
+  { ssr: false }
+);
+const PlacesList = dynamic(
+  () => import("@/components/places-list").then((m) => ({ default: m.PlacesList })),
+  { ssr: false }
+);
 import { calculateMidpointWithMetrics } from "@meetpoint/geo";
 import { api } from "../../../../../convex/_generated/api";
 import type { Id, Doc } from "../../../../../convex/_generated/dataModel";
@@ -210,7 +220,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
       <PageBackground />
 
       {/* Sidebar */}
-      <aside className="relative z-10 w-full overflow-y-auto border-b border-keria-forest/20 bg-keria-darker p-5 lg:w-[380px] lg:border-b-0 lg:border-r">
+      <aside className="relative z-10 max-h-[50vh] w-full overflow-y-auto border-b border-keria-forest/20 bg-keria-darker p-5 lg:max-h-none lg:w-[380px] lg:overflow-visible lg:border-b-0 lg:border-r">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <Link href="/" className="font-display text-lg font-bold text-keria-cream/80 transition-colors hover:text-keria-cream">

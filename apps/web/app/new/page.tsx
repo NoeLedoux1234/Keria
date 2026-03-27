@@ -253,7 +253,7 @@ export default function NewMeetPage() {
               <label className="mb-3 block text-xs font-medium uppercase tracking-wider text-keria-muted">
                 Mode de transport
               </label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {TRANSPORT_OPTIONS.map((option) => (
                   <motion.button
                     key={option.value}

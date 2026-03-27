@@ -5,11 +5,18 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button, Badge } from "@meetpoint/ui";
+import dynamic from "next/dynamic";
 import { useEvent, useEventParticipants } from "@/hooks";
-import { MapContainer, MapStageMarker, MapStagePath, type MapContainerHandle } from "@/components/map";
+import { MapStageMarker, MapStagePath } from "@/components/map";
 import { StagesList, RSVPButtons, ParticipantsRSVPList } from "@/components/event";
 import { PageBackground } from "@/components/page-background";
+import type { MapContainerHandle } from "@/components/map";
 import type { Id, Doc } from "../../../../../convex/_generated/dataModel";
+
+const MapContainer = dynamic(
+  () => import("@/components/map/map-container").then((m) => ({ default: m.MapContainer })),
+  { ssr: false }
+);
 
 type RSVPStatus = "yes" | "no" | "maybe" | "pending";
 type StageType = "departure" | "intermediate" | "arrival";
@@ -131,7 +138,7 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
       <PageBackground />
 
       {/* Sidebar */}
-      <aside className="relative z-10 w-full overflow-y-auto border-b border-keria-forest/20 bg-keria-darker p-5 lg:w-[380px] lg:border-b-0 lg:border-r">
+      <aside className="relative z-10 max-h-[50vh] w-full overflow-y-auto border-b border-keria-forest/20 bg-keria-darker p-5 lg:max-h-none lg:w-[380px] lg:overflow-visible lg:border-b-0 lg:border-r">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <Link href="/" className="font-display text-lg font-bold text-keria-cream/80 transition-colors hover:text-keria-cream">
