@@ -40,6 +40,11 @@ interface BoundingBox {
   maxLng: number;
 }
 
+interface GeoCenter {
+  lat: number;
+  lng: number;
+}
+
 function computeBoundingBox(locations: ParticipantLocation[]): BoundingBox {
   const lats = locations.map((location) => location.lat);
   const lngs = locations.map((location) => location.lng);
@@ -49,6 +54,17 @@ function computeBoundingBox(locations: ParticipantLocation[]): BoundingBox {
     maxLat: Math.max(...lats),
     minLng: Math.min(...lngs),
     maxLng: Math.max(...lngs),
+  };
+}
+
+function computeCenter(locations: ParticipantLocation[]): GeoCenter {
+  const total = locations.length;
+  const sumLat = locations.reduce((accumulator, location) => accumulator + location.lat, 0);
+  const sumLng = locations.reduce((accumulator, location) => accumulator + location.lng, 0);
+
+  return {
+    lat: sumLat / total,
+    lng: sumLng / total,
   };
 }
 
@@ -70,16 +86,32 @@ function isValidCity(value: unknown): value is SuggestedCity {
   );
 }
 
+function sanitizeReason(reason: string): string {
+  return reason
+    .replace(/optimal central meeting point/gi, "centre")
+    .replace(/central meeting point/gi, "centre")
+    .replace(/point central optimal/gi, "centre")
+    .replace(/central point/gi, "centre")
+    .replace(/point central/gi, "centre")
+    .replace(/bounding box/gi, "secteur")
+    .replace(/\s*\bcoordinates?\b/gi, "")
+    .replace(/\s*\bcoordonn[ée]es?\b/gi, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
 function buildSystemPrompt(): string {
   return [
     "You are a travel assistant that suggests French cities for a group meetup.",
-    "You must only suggest real French cities located strictly inside the geographic bounding box delimited by the participants.",
+    "You must only suggest real, well-known French cities or communes (towns) located strictly inside the geographic bounding box delimited by the participants.",
+    "Never suggest neighborhoods, districts, boroughs, or arrondissements: suggest the actual city or commune instead (for example never 'Paris - Montmartre' nor '18e arrondissement', but a real standalone commune).",
+    "The suggested cities must be located between the participants, inside the bounding box, and must constitute a fair meeting point: prioritize the cities that are the closest to the optimal central meeting point provided.",
     "Each city must match the group preferences as closely as possible.",
     "Always answer with a single strict JSON object and nothing else.",
     'The JSON must have exactly this shape: { "understoodPreferences": string[], "cities": [{ "name": string, "region": string, "coordinates": { "lat": number, "lng": number }, "reason": string, "matchScore": number }] }.',
-    "matchScore is an integer between 0 and 100 expressing how well the city matches the preferences.",
+    "matchScore is an integer between 0 and 100 that must reflect both how well the city matches the preferences and its geographic relevance, meaning its fairness and its proximity to the optimal central meeting point.",
     'Write the "reason" and "region" fields in French, addressed to the user.',
-    'The "reason" must be a single concise sentence and must never mention technical terms such as coordinates or bounding box.',
+    'The "reason" must be a single concise sentence and must never mention technical terms such as coordinates, bounding box, or central point.',
     "Provide between 3 and 5 cities.",
   ].join(" ");
 }
@@ -87,6 +119,7 @@ function buildSystemPrompt(): string {
 function buildUserPrompt(
   locations: ParticipantLocation[],
   boundingBox: BoundingBox,
+  center: GeoCenter,
   preferences: string
 ): string {
   const participantLines = locations
@@ -104,10 +137,13 @@ function buildUserPrompt(
     `Latitude from ${boundingBox.minLat} to ${boundingBox.maxLat}`,
     `Longitude from ${boundingBox.minLng} to ${boundingBox.maxLng}`,
     "",
+    `Optimal central meeting point: lat ${center.lat}, lng ${center.lng}`,
+    "Prioritize the real French cities or communes that are the closest to this optimal central meeting point while staying inside the bounding box.",
+    "",
     "Group preferences:",
     preferences,
     "",
-    "Suggest 3 to 5 French cities located inside the bounding box and matching these preferences.",
+    "Suggest 3 to 5 real French cities located inside the bounding box, as close as possible to the optimal central meeting point, and matching these preferences.",
   ].join("\n");
 }
 
@@ -134,8 +170,14 @@ export const _suggestCities = internalAction({
     }
 
     const boundingBox = computeBoundingBox(args.participantLocations);
+    const center = computeCenter(args.participantLocations);
     const systemPrompt = buildSystemPrompt();
-    const userPrompt = buildUserPrompt(args.participantLocations, boundingBox, args.preferences);
+    const userPrompt = buildUserPrompt(
+      args.participantLocations,
+      boundingBox,
+      center,
+      args.preferences
+    );
 
     try {
       const response = await fetch(ANTHROPIC_API_URL, {
@@ -195,7 +237,7 @@ export const _suggestCities = internalAction({
           lat: city.coordinates.lat,
           lng: city.coordinates.lng,
         },
-        reason: city.reason,
+        reason: sanitizeReason(city.reason),
         matchScore: city.matchScore,
       }));
 
