@@ -7,10 +7,13 @@ import { useAction } from "convex/react";
 import { motion } from "framer-motion";
 import { Button, Badge } from "@meetpoint/ui";
 import dynamic from "next/dynamic";
-import { useMeet } from "@/hooks";
+import { useMeet, useAiSuggestions } from "@/hooks";
 import { MapMarker, MapMidpoint, MapRoute } from "@/components/map";
 import { PageBackground } from "@/components/page-background";
+import { PreferencesInput } from "@/components/preferences-input";
+import { CitySuggestions } from "@/components/city-suggestions";
 import type { MapContainerHandle } from "@/components/map";
+import type { SuggestedCity } from "@/types/ai";
 
 const MapContainer = dynamic(
   () => import("@/components/map/map-container").then((m) => ({ default: m.MapContainer })),
@@ -28,7 +31,13 @@ const MARKER_COLORS = ["gold", "success", "muted", "forest", "error"] as const;
 
 const TransportIcons: Record<string, React.ReactNode> = {
   driving: (
-    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <svg
+      className="h-4 w-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
       <path d="M5 11l1.5-4.5a2 2 0 011.9-1.5h7.2a2 2 0 011.9 1.5L19 11" />
       <path d="M5 11v6a1 1 0 001 1h1a1 1 0 001-1v-1h8v1a1 1 0 001 1h1a1 1 0 001-1v-6" />
       <path d="M5 11h14" />
@@ -37,7 +46,13 @@ const TransportIcons: Record<string, React.ReactNode> = {
     </svg>
   ),
   transit: (
-    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <svg
+      className="h-4 w-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
       <rect x="6" y="3" width="12" height="14" rx="2" />
       <path d="M6 12h12" />
       <circle cx="8.5" cy="15" r="1" />
@@ -46,7 +61,13 @@ const TransportIcons: Record<string, React.ReactNode> = {
     </svg>
   ),
   cycling: (
-    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <svg
+      className="h-4 w-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
       <circle cx="6" cy="17" r="3" />
       <circle cx="18" cy="17" r="3" />
       <path d="M6 17l3-7h4l3 7" />
@@ -55,7 +76,13 @@ const TransportIcons: Record<string, React.ReactNode> = {
     </svg>
   ),
   walking: (
-    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <svg
+      className="h-4 w-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
       <circle cx="12" cy="4" r="2" />
       <path d="M12 6v5l3 4" />
       <path d="M12 11l-3 4" />
@@ -83,6 +110,11 @@ interface RouteData {
   error?: string;
 }
 
+interface SelectedCity {
+  name: string;
+  coordinates: { lat: number; lng: number };
+}
+
 export default function MeetPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const searchParams = useSearchParams();
@@ -91,6 +123,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
   const meetId = id as Id<"meets">;
   const { meet, participants, isLoading, updateMidpoint } = useMeet(meetId);
   const calculateAllRoutes = useAction(api.routing.calculateAllRoutes);
+  const { isEnabled, selectCity } = useAiSuggestions(meetId);
 
   const mapRef = useRef<MapContainerHandle>(null);
 
@@ -98,6 +131,8 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
   const [isCalculatingRoutes, setIsCalculatingRoutes] = useState(false);
   const [routes, setRoutes] = useState<RouteData[]>([]);
   const [codeCopied, setCodeCopied] = useState(false);
+  const [aiCities, setAiCities] = useState<SuggestedCity[]>([]);
+  const [selectedCity, setSelectedCity] = useState<SelectedCity | null>(meet?.selectedCity ?? null);
 
   const handleCopyCode = () => {
     if (!shareCode) return;
@@ -115,6 +150,16 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
       }
     }
   }, [meetId, participants]);
+
+  useEffect(() => {
+    if (meet?.selectedCity) {
+      setSelectedCity(meet.selectedCity);
+    }
+  }, [
+    meet?.selectedCity?.name,
+    meet?.selectedCity?.coordinates.lat,
+    meet?.selectedCity?.coordinates.lng,
+  ]);
 
   const participantCount = participants?.length ?? 0;
 
@@ -136,6 +181,16 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
     if (participant) {
       mapRef.current?.flyTo(participant.location, 14);
     }
+  };
+
+  const handleSelectCity = async (city: SuggestedCity) => {
+    const nextSelection: SelectedCity = {
+      name: city.name,
+      coordinates: city.coordinates,
+    };
+    setSelectedCity(nextSelection);
+    mapRef.current?.flyTo(city.coordinates, 12);
+    await selectCity({ meetId, selectedCity: nextSelection });
   };
 
   const handleFitAllParticipants = () => {
@@ -186,11 +241,11 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
 
   if (isLoading) {
     return (
-      <main className="relative flex min-h-screen items-center justify-center bg-keria-darker">
+      <main className="bg-keria-darker relative flex min-h-screen items-center justify-center">
         <PageBackground />
         <div className="relative z-10 flex flex-col items-center gap-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-keria-gold border-t-transparent" />
-          <span className="text-sm text-keria-muted">Chargement...</span>
+          <div className="border-keria-gold h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+          <span className="text-keria-muted text-sm">Chargement...</span>
         </div>
       </main>
     );
@@ -198,11 +253,11 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
 
   if (!meet) {
     return (
-      <main className="relative flex min-h-screen items-center justify-center bg-keria-darker">
+      <main className="bg-keria-darker relative flex min-h-screen items-center justify-center">
         <PageBackground />
         <div className="relative z-10 text-center">
           <p className="text-keria-muted">MeetPoint non trouvé</p>
-          <Link href="/" className="mt-4 inline-block text-sm text-keria-gold hover:underline">
+          <Link href="/" className="text-keria-gold mt-4 inline-block text-sm hover:underline">
             Retour à l'accueil
           </Link>
         </div>
@@ -216,43 +271,67 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
     : 0;
 
   return (
-    <main className="relative flex h-screen flex-col lg:flex-row bg-keria-darker">
+    <main className="bg-keria-darker relative flex h-screen flex-col lg:flex-row">
       <PageBackground />
 
       {/* Sidebar */}
-      <aside className="relative z-10 max-h-[50vh] w-full overflow-y-auto border-b border-keria-forest/20 bg-keria-darker p-5 lg:max-h-none lg:w-[380px] lg:overflow-visible lg:border-b-0 lg:border-r">
+      <aside className="border-keria-forest/20 bg-keria-darker relative z-10 max-h-[50vh] w-full overflow-y-auto border-b p-5 lg:max-h-none lg:w-[380px] lg:overflow-visible lg:border-b-0 lg:border-r">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
-          <Link href="/" className="font-display text-lg font-bold text-keria-cream/80 transition-colors hover:text-keria-cream">
+          <Link
+            href="/"
+            className="font-display text-keria-cream/80 hover:text-keria-cream text-lg font-bold transition-colors"
+          >
             KERIA
           </Link>
-          <Badge variant={meet.status === "pending" ? "warning" : "success"} className="text-[10px] uppercase">
+          <Badge
+            variant={meet.status === "pending" ? "warning" : "success"}
+            className="text-[10px] uppercase"
+          >
             {meet.status}
           </Badge>
         </div>
 
         {/* Meet info */}
         <div className="mb-6">
-          <h1 className="border-l-2 border-keria-gold pl-3 font-display text-2xl font-bold text-keria-cream">{meet.name}</h1>
+          <h1 className="border-keria-gold font-display text-keria-cream border-l-2 pl-3 text-2xl font-bold">
+            {meet.name}
+          </h1>
 
           {shareCode && (
-            <div className="mt-4 rounded border border-keria-gold/30 bg-keria-gold/5 p-4">
+            <div className="border-keria-gold/30 bg-keria-gold/5 mt-4 rounded border p-4">
               <div className="flex items-center justify-between">
-                <p className="text-[10px] uppercase tracking-wider text-keria-gold">Code de partage</p>
+                <p className="text-keria-gold text-[10px] uppercase tracking-wider">
+                  Code de partage
+                </p>
                 <button
                   onClick={handleCopyCode}
-                  className="flex items-center gap-1 rounded px-2 py-1 text-[10px] uppercase tracking-wider text-keria-gold transition-colors hover:bg-keria-gold/10 hover:text-keria-gold"
+                  className="text-keria-gold hover:bg-keria-gold/10 hover:text-keria-gold flex items-center gap-1 rounded px-2 py-1 text-[10px] uppercase tracking-wider transition-colors"
                 >
                   {codeCopied ? (
                     <>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
                         <polyline points="20 6 9 17 4 12" />
                       </svg>
                       Copié
                     </>
                   ) : (
                     <>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                         <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
                       </svg>
@@ -261,19 +340,17 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
                   )}
                 </button>
               </div>
-              <p className="mt-1 font-mono text-3xl font-bold tracking-[0.2em] text-keria-gold">
+              <p className="text-keria-gold mt-1 font-mono text-3xl font-bold tracking-[0.2em]">
                 {shareCode}
               </p>
-              <p className="mt-2 text-[10px] text-keria-muted">
-                {shareUrl}
-              </p>
+              <p className="text-keria-muted mt-2 text-[10px]">{shareUrl}</p>
             </div>
           )}
         </div>
 
         {/* Participants */}
         <div className="mb-6">
-          <h2 className="mb-3 border-l-2 border-keria-gold pl-3 text-xs font-medium uppercase tracking-wider text-keria-muted">
+          <h2 className="border-keria-gold text-keria-muted mb-3 border-l-2 pl-3 text-xs font-medium uppercase tracking-wider">
             Participants ({participants?.length ?? 0})
           </h2>
           {participants && participants.length > 0 ? (
@@ -303,25 +380,29 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
                       <div className="flex items-center gap-3">
                         <div
                           className="h-3 w-3 rounded-full"
-                          style={{ backgroundColor: COLOR_HEX[MARKER_COLORS[i % MARKER_COLORS.length]!] }}
+                          style={{
+                            backgroundColor: COLOR_HEX[MARKER_COLORS[i % MARKER_COLORS.length]!],
+                          }}
                         />
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-medium text-keria-cream">{p.name}</span>
+                            <span className="text-keria-cream font-medium">{p.name}</span>
                             {p.isCreator && (
-                              <span className="text-[9px] uppercase tracking-wider text-keria-gold">Créateur</span>
+                              <span className="text-keria-gold text-[9px] uppercase tracking-wider">
+                                Créateur
+                              </span>
                             )}
                           </div>
                           {p.travelTimeMinutes !== undefined && p.travelTimeMinutes > 0 && (
-                            <p className="text-[10px] text-keria-muted">
+                            <p className="text-keria-muted text-[10px]">
                               {p.travelTimeMinutes} min • {p.travelDistanceKm} km
                             </p>
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 text-keria-muted">
+                      <div className="text-keria-muted flex items-center gap-2">
                         {currentParticipantId === p._id && (
-                          <span className="text-[10px] text-keria-gold">Vous</span>
+                          <span className="text-keria-gold text-[10px]">Vous</span>
                         )}
                         {TransportIcons[p.transportMode]}
                       </div>
@@ -333,9 +414,16 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
-                        className="mt-3 flex items-center justify-center gap-2 rounded bg-keria-gold px-3 py-2 text-[10px] font-medium uppercase tracking-wider text-keria-darker transition-colors hover:bg-keria-gold-light"
+                        className="bg-keria-gold text-keria-darker hover:bg-keria-gold-light mt-3 flex items-center justify-center gap-2 rounded px-3 py-2 text-[10px] font-medium uppercase tracking-wider transition-colors"
                       >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
                           <polygon points="3 11 22 2 13 21 11 13 3 11" />
                         </svg>
                         Itinéraire
@@ -346,56 +434,92 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
               })}
             </ul>
           ) : (
-            <p className="text-sm text-keria-muted">Aucun participant</p>
+            <p className="text-keria-muted text-sm">Aucun participant</p>
           )}
           {!currentParticipantId && participants && participants.length > 0 && (
-            <p className="mt-3 text-[10px] text-keria-gold">
-              Cliquez sur votre nom pour voter
-            </p>
+            <p className="text-keria-gold mt-3 text-[10px]">Cliquez sur votre nom pour voter</p>
           )}
         </div>
 
         {/* Midpoint Stats */}
         {midpointResult && (
-          <div className="mb-6 rounded border border-keria-forest/30 bg-keria-forest/10 p-4">
-            <h2 className="mb-3 border-l-2 border-keria-gold pl-3 text-xs font-medium uppercase tracking-wider text-keria-muted">
+          <div className="border-keria-forest/30 bg-keria-forest/10 mb-6 rounded border p-4">
+            <h2 className="border-keria-gold text-keria-muted mb-3 border-l-2 pl-3 text-xs font-medium uppercase tracking-wider">
               Point de rencontre
             </h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-keria-muted">Équité</p>
-                <p className="font-display text-3xl font-bold text-keria-gold">
+                <p className="text-keria-muted text-[10px] uppercase tracking-wider">Équité</p>
+                <p className="font-display text-keria-gold text-3xl font-bold">
                   {midpointResult.fairnessScore}%
                 </p>
               </div>
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-keria-muted">Distance moy.</p>
-                <p className="font-display text-3xl font-bold text-keria-cream">
+                <p className="text-keria-muted text-[10px] uppercase tracking-wider">
+                  Distance moy.
+                </p>
+                <p className="font-display text-keria-cream text-3xl font-bold">
                   {midpointResult.averageDistanceKm} <span className="text-lg">km</span>
                 </p>
               </div>
             </div>
 
             {maxTravelTime > 0 && (
-              <div className="mt-4 rounded bg-keria-darker/50 p-3 text-center">
-                <p className="text-[10px] uppercase tracking-wider text-keria-muted">Trajet max</p>
-                <p className="font-display text-2xl font-bold text-keria-cream">{maxTravelTime} min</p>
+              <div className="bg-keria-darker/50 mt-4 rounded p-3 text-center">
+                <p className="text-keria-muted text-[10px] uppercase tracking-wider">Trajet max</p>
+                <p className="font-display text-keria-cream text-2xl font-bold">
+                  {maxTravelTime} min
+                </p>
               </div>
             )}
 
             <div className="mt-4 flex gap-2">
-              <Button variant="outline" size="sm" className="flex-1 text-[10px] uppercase tracking-wider" onClick={handleRecalculate}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 text-[10px] uppercase tracking-wider"
+                onClick={handleRecalculate}
+              >
                 Recalculer
               </Button>
-              <Button variant="primary" size="sm" className="flex-1 text-[10px] uppercase tracking-wider" onClick={handleCalculateRoutes} isLoading={isCalculatingRoutes}>
+              <Button
+                variant="primary"
+                size="sm"
+                className="flex-1 text-[10px] uppercase tracking-wider"
+                onClick={handleCalculateRoutes}
+                isLoading={isCalculatingRoutes}
+              >
                 Trajets
               </Button>
             </div>
 
             {routes.length > 0 && (
-              <p className="mt-3 text-center text-[10px] text-keria-success-light">
-                {routes.filter(r => r.polyline && r.polyline.length > 0).length} trajets affichés
+              <p className="text-keria-success-light mt-3 text-center text-[10px]">
+                {routes.filter((r) => r.polyline && r.polyline.length > 0).length} trajets affichés
               </p>
+            )}
+          </div>
+        )}
+
+        {isEnabled && midpointResult && (
+          <div className="mb-6 space-y-4">
+            <PreferencesInput
+              meetId={meetId}
+              participantLocations={
+                participants?.map((p: Doc<"participants">) => ({
+                  lat: p.location.lat,
+                  lng: p.location.lng,
+                  city: p.address,
+                })) ?? []
+              }
+              onSuggestions={setAiCities}
+            />
+            {aiCities.length > 0 && (
+              <CitySuggestions
+                cities={aiCities}
+                onSelectCity={handleSelectCity}
+                selectedCityName={selectedCity?.name}
+              />
             )}
           </div>
         )}
@@ -403,16 +527,16 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
         {/* Places */}
         <PlacesList
           meetId={meetId}
-          midpoint={midpointResult?.midpoint ?? null}
+          midpoint={selectedCity?.coordinates ?? midpointResult?.midpoint ?? null}
           participantId={currentParticipantId ?? undefined}
         />
       </aside>
 
       {/* Map */}
-      <div className="relative z-0 flex-1 border border-keria-forest/20">
+      <div className="border-keria-forest/20 relative z-0 flex-1 border">
         <motion.button
           onClick={handleFitAllParticipants}
-          className="absolute left-4 top-4 z-10 rounded border border-keria-gold/30 bg-keria-darker/90 px-4 py-2 text-[10px] font-medium uppercase tracking-wider text-keria-cream backdrop-blur-md transition-colors hover:border-keria-gold/50 hover:text-keria-gold"
+          className="border-keria-gold/30 bg-keria-darker/90 text-keria-cream hover:border-keria-gold/50 hover:text-keria-gold absolute left-4 top-4 z-10 rounded border px-4 py-2 text-[10px] font-medium uppercase tracking-wider backdrop-blur-md transition-colors"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
@@ -428,13 +552,16 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
               routes={routes
                 .filter((r) => r.polyline && r.polyline.length > 0)
                 .map((route) => {
-                  const participantIndex = participants?.findIndex(
-                    (p: Doc<"participants">) => p._id === route.participantId
-                  ) ?? 0;
+                  const participantIndex =
+                    participants?.findIndex(
+                      (p: Doc<"participants">) => p._id === route.participantId
+                    ) ?? 0;
                   return {
                     participantId: route.participantId,
                     participantName: route.participantName,
-                    color: COLOR_HEX[MARKER_COLORS[participantIndex % MARKER_COLORS.length]!] ?? "#c9a227",
+                    color:
+                      COLOR_HEX[MARKER_COLORS[participantIndex % MARKER_COLORS.length]!] ??
+                      "#c9a227",
                     polyline: route.polyline!,
                     durationMinutes: route.durationMinutes ?? 0,
                     distanceKm: route.distanceKm ?? 0,
