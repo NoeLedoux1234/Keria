@@ -109,7 +109,7 @@ export const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(
   }
 
   return (
-    <div aria-label="Carte interactive" role="region">
+    <div aria-label="Carte interactive" role="region" className={className}>
       <span className="sr-only">
         Carte interactive affichant les positions des participants et lieux de rendez-vous
       </span>
