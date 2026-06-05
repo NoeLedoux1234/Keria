@@ -27,6 +27,25 @@ export default defineSchema({
 
     selectedPlaceId: v.optional(v.string()),
 
+    preferences: v.optional(v.string()),
+    suggestedCities: v.optional(
+      v.array(
+        v.object({
+          name: v.string(),
+          region: v.string(),
+          coordinates: v.object({ lat: v.number(), lng: v.number() }),
+          reason: v.string(),
+          matchScore: v.number(),
+        })
+      )
+    ),
+    selectedCity: v.optional(
+      v.object({
+        name: v.string(),
+        coordinates: v.object({ lat: v.number(), lng: v.number() }),
+      })
+    ),
+
     status: v.union(
       v.literal("draft"),
       v.literal("pending"),
@@ -173,11 +192,7 @@ export default defineSchema({
     estimatedDurationMinutes: v.optional(v.number()),
 
     order: v.number(),
-    stageType: v.union(
-      v.literal("departure"),
-      v.literal("intermediate"),
-      v.literal("arrival")
-    ),
+    stageType: v.union(v.literal("departure"), v.literal("intermediate"), v.literal("arrival")),
 
     createdAt: v.number(),
   })
