@@ -275,7 +275,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
       <PageBackground />
 
       {/* Sidebar */}
-      <aside className="border-keria-forest/20 bg-keria-darker relative z-10 max-h-[50vh] w-full overflow-y-auto border-b p-5 lg:max-h-none lg:w-[380px] lg:overflow-visible lg:border-b-0 lg:border-r">
+      <aside className="border-keria-forest/20 bg-keria-darker relative z-10 max-h-[50vh] w-full overflow-y-auto border-b p-5 lg:h-screen lg:w-[380px] lg:overflow-y-auto lg:border-b-0 lg:border-r">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <Link
