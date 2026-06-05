@@ -78,6 +78,8 @@ function buildSystemPrompt(): string {
     "Always answer with a single strict JSON object and nothing else.",
     'The JSON must have exactly this shape: { "understoodPreferences": string[], "cities": [{ "name": string, "region": string, "coordinates": { "lat": number, "lng": number }, "reason": string, "matchScore": number }] }.',
     "matchScore is an integer between 0 and 100 expressing how well the city matches the preferences.",
+    'Write the "reason" and "region" fields in French, addressed to the user.',
+    'The "reason" must be a single concise sentence and must never mention technical terms such as coordinates or bounding box.',
     "Provide between 3 and 5 cities.",
   ].join(" ");
 }
@@ -145,7 +147,7 @@ export const _suggestCities = internalAction({
         },
         body: JSON.stringify({
           model: ANTHROPIC_MODEL,
-          max_tokens: 1024,
+          max_tokens: 2048,
           system: systemPrompt,
           messages: [
             { role: "user", content: userPrompt },
