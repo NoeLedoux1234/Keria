@@ -1,5 +1,10 @@
 import type { Coordinates } from "@meetpoint/types";
-import { degreesToRadians, radiansToDegrees, distanceStandardDeviation, haversineDistance } from "./distance";
+import {
+  degreesToRadians,
+  radiansToDegrees,
+  distanceStandardDeviation,
+  haversineDistance,
+} from "./distance";
 
 export function calculateGeographicCenter(points: Coordinates[]): Coordinates {
   if (points.length === 0) {
@@ -38,10 +43,7 @@ export function calculateGeographicCenter(points: Coordinates[]): Coordinates {
   };
 }
 
-export function calculateWeightedMidpoint(
-  points: Coordinates[],
-  weights: number[]
-): Coordinates {
+export function calculateWeightedMidpoint(points: Coordinates[], weights: number[]): Coordinates {
   if (points.length !== weights.length) {
     throw new Error("Le nombre de points et de poids doit être identique");
   }
@@ -110,22 +112,27 @@ export function optimizeMeetingPoint(
   return bestPoint;
 }
 
-export type MidpointResult = {
-  midpoint: Coordinates;
+export type PointMetrics = {
   fairnessScore: number;
   averageDistanceKm: number;
   maxDistanceKm: number;
 };
 
-export function calculateMidpointWithMetrics(participants: Coordinates[]): MidpointResult {
+export type MidpointResult = PointMetrics & {
+  midpoint: Coordinates;
+};
+
+export function calculateMetricsForPoint(
+  point: Coordinates,
+  participants: Coordinates[]
+): PointMetrics {
   if (participants.length < 2) {
     throw new Error("Au moins 2 participants sont requis");
   }
 
-  const midpoint = optimizeMeetingPoint(participants);
-  const stdDev = distanceStandardDeviation(midpoint, participants);
+  const stdDev = distanceStandardDeviation(point, participants);
 
-  const distances = participants.map((p) => haversineDistance(midpoint, p));
+  const distances = participants.map((p) => haversineDistance(point, p));
   const avgDistance = distances.reduce((a, b) => a + b, 0) / distances.length;
   const maxDistance = Math.max(...distances);
 
@@ -133,9 +140,21 @@ export function calculateMidpointWithMetrics(participants: Coordinates[]): Midpo
   const fairnessScore = Math.max(0, Math.min(100, 100 * (1 - cv)));
 
   return {
-    midpoint,
     fairnessScore: Math.round(fairnessScore),
     averageDistanceKm: Math.round(avgDistance * 10) / 10,
     maxDistanceKm: Math.round(maxDistance * 10) / 10,
+  };
+}
+
+export function calculateMidpointWithMetrics(participants: Coordinates[]): MidpointResult {
+  if (participants.length < 2) {
+    throw new Error("Au moins 2 participants sont requis");
+  }
+
+  const midpoint = optimizeMeetingPoint(participants);
+
+  return {
+    midpoint,
+    ...calculateMetricsForPoint(midpoint, participants),
   };
 }

@@ -23,7 +23,7 @@ const PlacesList = dynamic(
   () => import("@/components/places-list").then((m) => ({ default: m.PlacesList })),
   { ssr: false }
 );
-import { calculateMidpointWithMetrics } from "@meetpoint/geo";
+import { calculateMidpointWithMetrics, calculateMetricsForPoint } from "@meetpoint/geo";
 import { api } from "../../../../../convex/_generated/api";
 import type { Id, Doc } from "../../../../../convex/_generated/dataModel";
 
@@ -110,10 +110,10 @@ interface RouteData {
   error?: string;
 }
 
-interface SelectedCity {
+type SelectedCity = {
   name: string;
   coordinates: { lat: number; lng: number };
-}
+};
 
 export default function MeetPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -189,23 +189,31 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
       coordinates: city.coordinates,
     };
     setSelectedCity(nextSelection);
+    setRoutes([]);
     mapRef.current?.flyTo(city.coordinates, 12);
     await selectCity({ meetId, selectedCity: nextSelection });
   };
 
+  const participantLocations = participants?.map((p: Doc<"participants">) => p.location) ?? [];
+
+  const midpointResult =
+    participantLocations.length >= 2 ? calculateMidpointWithMetrics(participantLocations) : null;
+
+  const effectiveDestination = selectedCity?.coordinates ?? midpointResult?.midpoint ?? null;
+
+  const effectiveMetrics =
+    selectedCity && participantLocations.length >= 2
+      ? calculateMetricsForPoint(selectedCity.coordinates, participantLocations)
+      : midpointResult;
+
   const handleFitAllParticipants = () => {
     if (!participants || participants.length === 0) return;
     const locations = participants.map((p: Doc<"participants">) => p.location);
-    if (midpointResult) {
-      locations.push(midpointResult.midpoint);
+    if (effectiveDestination) {
+      locations.push(effectiveDestination);
     }
     mapRef.current?.fitBounds(locations, 80);
   };
-
-  const midpointResult =
-    participants && participants.length >= 2
-      ? calculateMidpointWithMetrics(participants.map((p: Doc<"participants">) => p.location))
-      : null;
 
   const handleRecalculate = async () => {
     if (!midpointResult) return;
@@ -219,14 +227,14 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
   };
 
   const handleCalculateRoutes = async () => {
-    if (!midpointResult) return;
+    if (!effectiveDestination) return;
 
     setIsCalculatingRoutes(true);
     try {
       const result = await calculateAllRoutes({
         meetId,
-        midpointLat: midpointResult.midpoint.lat,
-        midpointLng: midpointResult.midpoint.lng,
+        midpointLat: effectiveDestination.lat,
+        midpointLng: effectiveDestination.lng,
       });
 
       if (result.success) {
@@ -356,8 +364,8 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
           {participants && participants.length > 0 ? (
             <ul className="space-y-2">
               {participants.map((p: Doc<"participants">, i: number) => {
-                const googleMapsUrl = midpointResult
-                  ? `https://www.google.com/maps/dir/?api=1&origin=${p.location.lat},${p.location.lng}&destination=${midpointResult.midpoint.lat},${midpointResult.midpoint.lng}&travelmode=${p.transportMode === "transit" ? "transit" : p.transportMode}`
+                const googleMapsUrl = effectiveDestination
+                  ? `https://www.google.com/maps/dir/?api=1&origin=${p.location.lat},${p.location.lng}&destination=${effectiveDestination.lat},${effectiveDestination.lng}&travelmode=${p.transportMode === "transit" ? "transit" : p.transportMode}`
                   : null;
 
                 return (
@@ -442,7 +450,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
         </div>
 
         {/* Midpoint Stats */}
-        {midpointResult && (
+        {effectiveMetrics && (
           <div className="border-keria-forest/30 bg-keria-forest/10 mb-6 rounded border p-4">
             <h2 className="border-keria-gold text-keria-muted mb-3 border-l-2 pl-3 text-xs font-medium uppercase tracking-wider">
               Point de rencontre
@@ -451,7 +459,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
               <div>
                 <p className="text-keria-muted text-[10px] uppercase tracking-wider">Équité</p>
                 <p className="font-display text-keria-gold text-3xl font-bold">
-                  {midpointResult.fairnessScore}%
+                  {effectiveMetrics.fairnessScore}%
                 </p>
               </div>
               <div>
@@ -459,7 +467,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
                   Distance moy.
                 </p>
                 <p className="font-display text-keria-cream text-3xl font-bold">
-                  {midpointResult.averageDistanceKm} <span className="text-lg">km</span>
+                  {effectiveMetrics.averageDistanceKm} <span className="text-lg">km</span>
                 </p>
               </div>
             </div>
@@ -580,10 +588,10 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
             />
           ))}
 
-          {midpointResult && (
+          {effectiveDestination && effectiveMetrics && (
             <MapMidpoint
-              coordinates={midpointResult.midpoint}
-              fairnessScore={midpointResult.fairnessScore}
+              coordinates={effectiveDestination}
+              fairnessScore={effectiveMetrics.fairnessScore}
             />
           )}
         </MapContainer>
