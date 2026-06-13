@@ -111,7 +111,7 @@ export function createORSClient(config: ORSConfig) {
       body: JSON.stringify({
         locations: allCoordinates,
         sources: sources.map((_, i) => i),
-        destinations: sources.map((_, i) => sources.length + i),
+        destinations: destinations.map((_, i) => sources.length + i),
         metrics: ["duration"],
       }),
     });
