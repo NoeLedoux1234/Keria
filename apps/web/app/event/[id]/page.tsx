@@ -12,13 +12,13 @@ import { StagesList, RSVPButtons, ParticipantsRSVPList } from "@/components/even
 import { PageBackground } from "@/components/page-background";
 import type { MapContainerHandle } from "@/components/map";
 import type { Id, Doc } from "../../../../../convex/_generated/dataModel";
+import type { RsvpStatus } from "@meetpoint/types";
 
 const MapContainer = dynamic(
   () => import("@/components/map/map-container").then((m) => ({ default: m.MapContainer })),
   { ssr: false }
 );
 
-type RSVPStatus = "yes" | "no" | "maybe" | "pending";
 type StageType = "departure" | "intermediate" | "arrival";
 
 export default function EventPage({ params }: { params: Promise<{ id: string }> }) {
@@ -261,7 +261,7 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
               <span className="text-keria-cream font-medium">{currentParticipant.name}</span>
             </p>
             <RSVPButtons
-              currentStatus={currentParticipant.rsvpStatus as RSVPStatus}
+              currentStatus={currentParticipant.rsvpStatus as RsvpStatus}
               onRSVP={handleRSVP}
             />
           </div>

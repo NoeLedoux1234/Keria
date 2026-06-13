@@ -1,9 +1,4 @@
-import type { Coordinates } from "@meetpoint/types";
-
-export interface SuggestedCity {
-  name: string;
-  region: string;
-  coordinates: Coordinates;
-  reason: string;
-  matchScore: number;
-}
+// Domain types live in @meetpoint/types so the schema, backend and frontend
+// share a single source of truth. Re-exported here to keep the @/types/ai
+// import path stable for existing consumers.
+export type { SuggestedCity, SelectedCity } from "@meetpoint/types";

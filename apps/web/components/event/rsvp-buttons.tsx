@@ -1,9 +1,9 @@
 "use client";
 
-type RSVPStatus = "yes" | "no" | "maybe" | "pending";
+import type { RsvpStatus } from "@meetpoint/types";
 
 interface RSVPButtonsProps {
-  currentStatus?: RSVPStatus;
+  currentStatus?: RsvpStatus;
   onRSVP: (status: "yes" | "no" | "maybe") => void;
   isLoading?: boolean;
   compact?: boolean;
@@ -65,8 +65,8 @@ export function RSVPButtons({
   );
 }
 
-export function RSVPBadge({ status }: { status: RSVPStatus }) {
-  const config: Record<RSVPStatus, { label: string; className: string }> = {
+export function RSVPBadge({ status }: { status: RsvpStatus }) {
+  const config: Record<RsvpStatus, { label: string; className: string }> = {
     yes: { label: "Participe", className: "bg-keria-success/20 text-keria-success-light" },
     maybe: { label: "Peut-être", className: "bg-keria-gold/20 text-keria-gold" },
     no: { label: "Ne participe pas", className: "bg-keria-error/20 text-keria-error-light" },

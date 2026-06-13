@@ -3,8 +3,7 @@
 import { Badge } from "@meetpoint/ui";
 import { RSVPBadge } from "./rsvp-buttons";
 import type { Doc } from "../../../../convex/_generated/dataModel";
-
-type RSVPStatus = "yes" | "no" | "maybe" | "pending";
+import type { RsvpStatus } from "@meetpoint/types";
 
 interface ParticipantsRSVPListProps {
   participants: Doc<"eventParticipants">[];
@@ -18,14 +17,14 @@ interface ParticipantsRSVPListProps {
   };
 }
 
-const SECTION_CONFIG: Record<RSVPStatus, { label: string; order: number }> = {
+const SECTION_CONFIG: Record<RsvpStatus, { label: string; order: number }> = {
   yes: { label: "Participants", order: 1 },
   maybe: { label: "Peut-être", order: 2 },
   pending: { label: "En attente", order: 3 },
   no: { label: "Ne participent pas", order: 4 },
 };
 
-const SectionIndicators: Record<RSVPStatus, React.ReactNode> = {
+const SectionIndicators: Record<RsvpStatus, React.ReactNode> = {
   yes: <span className="bg-keria-success h-2 w-2 rounded-full" />,
   maybe: <span className="bg-keria-gold h-2 w-2 rounded-full" />,
   pending: <span className="bg-keria-muted h-2 w-2 rounded-full" />,
@@ -39,15 +38,15 @@ export function ParticipantsRSVPList({
 }: ParticipantsRSVPListProps) {
   const groupedParticipants = participants.reduce(
     (acc, participant) => {
-      const status = participant.rsvpStatus as RSVPStatus;
+      const status = participant.rsvpStatus as RsvpStatus;
       if (!acc[status]) acc[status] = [];
       acc[status].push(participant);
       return acc;
     },
-    {} as Record<RSVPStatus, Doc<"eventParticipants">[]>
+    {} as Record<RsvpStatus, Doc<"eventParticipants">[]>
   );
 
-  const sortedStatuses = (Object.keys(SECTION_CONFIG) as RSVPStatus[]).sort(
+  const sortedStatuses = (Object.keys(SECTION_CONFIG) as RsvpStatus[]).sort(
     (a, b) => SECTION_CONFIG[a].order - SECTION_CONFIG[b].order
   );
 
@@ -149,7 +148,7 @@ export function ParticipantsRSVPList({
                       </div>
                     </div>
 
-                    <RSVPBadge status={participant.rsvpStatus as RSVPStatus} />
+                    <RSVPBadge status={participant.rsvpStatus as RsvpStatus} />
                   </li>
                 );
               })}

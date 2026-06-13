@@ -3,30 +3,6 @@ export type Coordinates = {
   lng: number;
 };
 
-export type Place = {
-  id: string;
-  name: string;
-  address: string;
-  coordinates: Coordinates;
-  category: PlaceCategory;
-  priceLevel?: PriceLevel;
-  rating?: number;
-  photoUrl?: string;
-  openNow?: boolean;
-};
-
-export type PlaceCategory =
-  | "restaurant"
-  | "cafe"
-  | "bar"
-  | "park"
-  | "museum"
-  | "cinema"
-  | "shopping"
-  | "other";
-
-export type PriceLevel = 1 | 2 | 3 | 4;
-
 export type TransportMode = "driving" | "walking" | "cycling" | "transit";
 
 export type Isochrone = {

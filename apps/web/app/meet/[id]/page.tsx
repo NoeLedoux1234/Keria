@@ -13,7 +13,7 @@ import { PageBackground } from "@/components/page-background";
 import { PreferencesInput } from "@/components/preferences-input";
 import { CitySuggestions } from "@/components/city-suggestions";
 import type { MapContainerHandle } from "@/components/map";
-import type { SuggestedCity } from "@/types/ai";
+import type { SuggestedCity, SelectedCity } from "@/types/ai";
 
 const MapContainer = dynamic(
   () => import("@/components/map/map-container").then((m) => ({ default: m.MapContainer })),
@@ -109,11 +109,6 @@ interface RouteData {
   polyline?: Array<{ lat: number; lng: number }>;
   error?: string;
 }
-
-type SelectedCity = {
-  name: string;
-  coordinates: { lat: number; lng: number };
-};
 
 export default function MeetPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
