@@ -11,6 +11,7 @@ Le Minimum Viable Product de Keria couvre les fonctionnalites essentielles perme
 ## Fonctionnalites incluses dans le MVP
 
 ### Core — MeetPoints
+
 - Creation d'un MeetPoint avec nom, position du createur et mode de transport
 - Generation et partage d'un code unique a 6 caracteres alphanumeriques
 - Rejoindre un MeetPoint existant via un code de partage
@@ -22,6 +23,7 @@ Le Minimum Viable Product de Keria couvre les fonctionnalites essentielles perme
 - Carte interactive Mapbox avec marqueurs participants, midpoint et polylines des routes
 
 ### Core — Suggestions de lieux et votes
+
 - Recherche de lieux a proximite du midpoint (Google Places API v1 + Overpass/OSM)
 - Recherche contextuelle adaptee a l'heure (cafe le matin, restaurant le midi, bar le soir)
 - Affichage detaille : nom, adresse, note, nombre d'avis, photos, categorie, niveau de prix
@@ -30,6 +32,7 @@ Le Minimum Viable Product de Keria couvre les fonctionnalites essentielles perme
 - Selection du lieu final par le createur
 
 ### Core — Evenements multi-etapes
+
 - Creation d'evenement avec minimum 2 etapes
 - Types d'etapes automatiques : depart, intermediaire, arrivee (calcule selon l'ordre chronologique)
 - Saisie par etape : nom, adresse (autocompletion), date/heure, duree estimee
@@ -39,6 +42,7 @@ Le Minimum Viable Product de Keria couvre les fonctionnalites essentielles perme
 - Carte de l'itineraire avec chemin trace entre les etapes
 
 ### Interface et design
+
 - Landing page cinematique avec animations Framer Motion
 - Design system Keria coherent : palette 16 couleurs, typographie Space Grotesk, composants UI CVA
 - Navigation hamburger avec overlay anime en plein ecran
@@ -49,18 +53,18 @@ Le Minimum Viable Product de Keria couvre les fonctionnalites essentielles perme
 
 ## Fonctionnalites exclues du MVP
 
-| Fonctionnalite | Raison de l'exclusion | Sprint prevu |
-|----------------|----------------------|--------------|
-| Authentification utilisateur | Complexite technique, pas necessaire pour valider le concept | Sprint 3+ |
-| Historique des rencontres | Necessite systeme d'authentification | Sprint 3+ |
-| Notifications push | Necessite service worker + authentification | Sprint 3+ |
-| Application mobile native | Hors scope PFE (focus application web) | Post-PFE |
-| Mode hors ligne | Complexite cache + synchronisation | Post-PFE |
-| Abonnement premium | Monetisation prematuree a ce stade | Post-PFE |
-| Integration calendrier | Fonctionnalite secondaire | Sprint 3+ |
-| Chat entre participants | Existe deja via WhatsApp/SMS | Post-PFE |
-| Export PDF itineraire | Fonctionnalite secondaire | Sprint 3+ |
-| Multi-langue (i18n) | Marche initial = France uniquement | Sprint 3+ |
+| Fonctionnalite               | Raison de l'exclusion                                        | Sprint prevu |
+| ---------------------------- | ------------------------------------------------------------ | ------------ |
+| Authentification utilisateur | Complexite technique, pas necessaire pour valider le concept | Sprint 3+    |
+| Historique des rencontres    | Necessite systeme d'authentification                         | Sprint 3+    |
+| Notifications push           | Necessite service worker + authentification                  | Sprint 3+    |
+| Application mobile native    | Hors scope PFE (focus application web)                       | Post-PFE     |
+| Mode hors ligne              | Complexite cache + synchronisation                           | Post-PFE     |
+| Abonnement premium           | Monetisation prematuree a ce stade                           | Post-PFE     |
+| Integration calendrier       | Fonctionnalite secondaire                                    | Sprint 3+    |
+| Chat entre participants      | Existe deja via WhatsApp/SMS                                 | Post-PFE     |
+| Export PDF itineraire        | Fonctionnalite secondaire                                    | Sprint 3+    |
+| Multi-langue (i18n)          | Marche initial = France uniquement                           | Sprint 3+    |
 
 ---
 

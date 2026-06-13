@@ -19,6 +19,19 @@ jobs:
           node-version: 20
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm format:check
-      - run: pnpm build
-      - run: pnpm test
+      - name: Format check
+        run: pnpm format:check
+      - name: Lint
+        run: pnpm lint
+      - name: Type check
+        run: pnpm type-check
+      - name: Build
+        run: pnpm build
+        env:
+          # next build evaluates lib/env.ts at import time, which requires a
+          # Convex URL. Use the repo secret when present, otherwise a harmless
+          # placeholder (no network call happens at build time).
+          NEXT_PUBLIC_CONVEX_URL: ${{ secrets.NEXT_PUBLIC_CONVEX_URL || 'https://placeholder.convex.cloud' }}
+          NEXT_PUBLIC_MAPBOX_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN || '' }}
+      - name: Test
+        run: pnpm test

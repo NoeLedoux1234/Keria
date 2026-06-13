@@ -51,14 +51,9 @@ export function StagesList({
         const isSelected = stage._id === selectedStageId;
 
         return (
-          <div
-            key={stage._id}
-            className={`relative flex gap-3 ${!isLast ? "pb-6" : ""}`}
-          >
+          <div key={stage._id} className={`relative flex gap-3 ${!isLast ? "pb-6" : ""}`}>
             {/* Ligne verticale de connexion */}
-            {!isLast && (
-              <div className="absolute left-4 top-8 h-full w-0.5 bg-keria-forest/50" />
-            )}
+            {!isLast && <div className="bg-keria-forest/50 absolute left-4 top-8 h-full w-0.5" />}
 
             {/* Cercle numéroté */}
             <div
@@ -71,7 +66,7 @@ export function StagesList({
             <div
               className={`flex-1 cursor-pointer rounded-lg border p-3 transition-all ${
                 isSelected
-                  ? "border-keria-gold bg-keria-gold/10 ring-1 ring-keria-gold"
+                  ? "border-keria-gold bg-keria-gold/10 ring-keria-gold ring-1"
                   : "border-keria-forest/50 bg-keria-forest/20 hover:border-keria-muted hover:bg-keria-forest/30"
               }`}
               onClick={() => onStageClick?.(stage)}
@@ -79,7 +74,7 @@ export function StagesList({
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <h4 className="font-medium text-keria-cream">{stage.name}</h4>
+                    <h4 className="text-keria-cream font-medium">{stage.name}</h4>
                     <Badge
                       variant={
                         stage.stageType === "departure"
@@ -93,14 +88,12 @@ export function StagesList({
                       {STAGE_LABELS[stage.stageType as StageType]}
                     </Badge>
                   </div>
-                  <p className="mt-0.5 text-xs text-keria-muted">
+                  <p className="text-keria-muted mt-0.5 text-xs">
                     {formatDateTime(stage.scheduledAt)}
                   </p>
-                  <p className="mt-1 text-sm text-keria-muted line-clamp-1">
-                    {stage.address}
-                  </p>
+                  <p className="text-keria-muted mt-1 line-clamp-1 text-sm">{stage.address}</p>
                   {stage.description && (
-                    <p className="mt-1 text-sm text-keria-muted line-clamp-2">
+                    <p className="text-keria-muted mt-1 line-clamp-2 text-sm">
                       {stage.description}
                     </p>
                   )}
@@ -113,7 +106,7 @@ export function StagesList({
                       e.stopPropagation();
                       onRemoveStage(stage._id);
                     }}
-                    className="rounded p-1 text-keria-muted transition-colors hover:bg-keria-error/20 hover:text-keria-error-light"
+                    className="text-keria-muted hover:bg-keria-error/20 hover:text-keria-error-light rounded p-1 transition-colors"
                     title="Supprimer cette étape"
                   >
                     <svg
@@ -137,7 +130,7 @@ export function StagesList({
 
               {/* Durée estimée */}
               {stage.estimatedDurationMinutes && (
-                <div className="mt-2 flex items-center gap-1 text-xs text-keria-muted">
+                <div className="text-keria-muted mt-2 flex items-center gap-1 text-xs">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="12"

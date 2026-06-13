@@ -12,7 +12,10 @@ function generateEventShareCode(): string {
   return code;
 }
 
-function getStageType(order: number, totalStages: number): "departure" | "intermediate" | "arrival" {
+function getStageType(
+  order: number,
+  totalStages: number
+): "departure" | "intermediate" | "arrival" {
   if (order === 0) return "departure";
   if (order === totalStages - 1) return "arrival";
   return "intermediate";

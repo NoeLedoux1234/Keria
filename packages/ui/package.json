@@ -9,6 +9,7 @@
     "./*": "./src/*.tsx"
   },
   "scripts": {
+    "lint": "eslint .",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
@@ -21,9 +22,11 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@meetpoint/config-eslint": "workspace:*",
     "@meetpoint/config-typescript": "workspace:*",
     "@types/react": "^19.0.3",
     "@types/react-dom": "^19.0.2",
+    "eslint": "^9.18.0",
     "typescript": "^5.7.3"
   }
 }

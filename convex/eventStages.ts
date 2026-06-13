@@ -1,7 +1,10 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-function getStageType(order: number, totalStages: number): "departure" | "intermediate" | "arrival" {
+function getStageType(
+  order: number,
+  totalStages: number
+): "departure" | "intermediate" | "arrival" {
   if (order === 0) return "departure";
   if (order === totalStages - 1) return "arrival";
   return "intermediate";
@@ -122,7 +125,9 @@ export const update = mutation({
         scheduledAt: s._id === args.stageId ? args.scheduledAt : s.scheduledAt,
       }));
 
-      const sortedStages = updatedStages.sort((a, b) => (a.scheduledAt ?? 0) - (b.scheduledAt ?? 0));
+      const sortedStages = updatedStages.sort(
+        (a, b) => (a.scheduledAt ?? 0) - (b.scheduledAt ?? 0)
+      );
       const totalStages = sortedStages.length;
 
       for (let i = 0; i < sortedStages.length; i++) {

@@ -45,7 +45,7 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
 
       localStorage.setItem(`meetpoint-event-participant-${eventId}`, participantId);
       router.push(`/event/${eventId}${shareCode ? `?code=${shareCode}` : ""}`);
-    } catch (err) {
+    } catch {
       setError("Erreur lors de l'inscription");
     } finally {
       setIsSubmitting(false);
@@ -69,11 +69,11 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
 
   if (isLoading) {
     return (
-      <main className="relative flex min-h-screen items-center justify-center bg-keria-darker">
+      <main className="bg-keria-darker relative flex min-h-screen items-center justify-center">
         <PageBackground />
         <div className="relative z-10 flex flex-col items-center gap-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-keria-gold border-t-transparent" />
-          <span className="text-sm text-keria-muted">Chargement...</span>
+          <div className="border-keria-gold h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+          <span className="text-keria-muted text-sm">Chargement...</span>
         </div>
       </main>
     );
@@ -81,11 +81,11 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
 
   if (!event) {
     return (
-      <main className="relative flex min-h-screen items-center justify-center bg-keria-darker">
+      <main className="bg-keria-darker relative flex min-h-screen items-center justify-center">
         <PageBackground />
         <div className="relative z-10 text-center">
           <p className="text-keria-muted">Événement non trouvé</p>
-          <Link href="/" className="mt-4 inline-block text-sm text-keria-gold hover:underline">
+          <Link href="/" className="text-keria-gold mt-4 inline-block text-sm hover:underline">
             Retour à l'accueil
           </Link>
         </div>
@@ -94,15 +94,18 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-keria-darker">
+    <main className="bg-keria-darker relative min-h-screen overflow-hidden">
       <PageBackground />
 
       {/* Header */}
       <header className="relative z-20 flex items-center justify-between px-6 py-6">
-        <Link href="/" className="font-display text-lg font-bold text-keria-cream/80 transition-colors hover:text-keria-cream">
+        <Link
+          href="/"
+          className="font-display text-keria-cream/80 hover:text-keria-cream text-lg font-bold transition-colors"
+        >
           KERIA
         </Link>
-        <span className="font-mono text-[10px] text-keria-muted/70">ÉVÉNEMENT</span>
+        <span className="text-keria-muted/70 font-mono text-[10px]">ÉVÉNEMENT</span>
       </header>
 
       {/* Content */}
@@ -116,7 +119,7 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
           {/* Title */}
           <div className="mb-8 text-center">
             <motion.p
-              className="mb-2 text-[10px] uppercase tracking-widest text-keria-muted"
+              className="text-keria-muted mb-2 text-[10px] uppercase tracking-widest"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
@@ -124,7 +127,7 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
               Rejoindre l'événement
             </motion.p>
             <motion.h1
-              className="font-display text-3xl font-bold tracking-tight text-keria-cream"
+              className="font-display text-keria-cream text-3xl font-bold tracking-tight"
               initial={{ opacity: 0, filter: "blur(10px)" }}
               animate={{ opacity: 1, filter: "blur(0px)" }}
               transition={{ duration: 0.8, delay: 0.3 }}
@@ -132,7 +135,7 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
               {event.name}
             </motion.h1>
             <motion.div
-              className="mx-auto mt-4 h-px w-16 bg-keria-gold/50"
+              className="bg-keria-gold/50 mx-auto mt-4 h-px w-16"
               initial={{ width: 0 }}
               animate={{ width: 64 }}
               transition={{ duration: 0.8, delay: 0.5 }}
@@ -140,26 +143,32 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
           </div>
 
           {/* Event summary */}
-          <div className="mb-8 rounded border border-keria-forest/30 bg-keria-darker/50 p-4 backdrop-blur-sm">
+          <div className="border-keria-forest/30 bg-keria-darker/50 mb-8 rounded border p-4 backdrop-blur-sm">
             {event.description && (
-              <p className="mb-3 text-sm text-keria-muted">{event.description}</p>
+              <p className="text-keria-muted mb-3 text-sm">{event.description}</p>
             )}
-            <div className="space-y-1 text-[10px] uppercase tracking-wider text-keria-muted">
+            <div className="text-keria-muted space-y-1 text-[10px] uppercase tracking-wider">
               <p className="text-keria-cream">{formatDate(event.startsAt)}</p>
               <p>
                 {formatTime(event.startsAt)}
                 {event.endsAt && ` — ${formatTime(event.endsAt)}`}
               </p>
               {stages && stages.length > 0 && (
-                <p className="mt-2 text-keria-gold">{stages.length} étapes prévues</p>
+                <p className="text-keria-gold mt-2">{stages.length} étapes prévues</p>
               )}
             </div>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6 rounded-xl border border-keria-forest/20 bg-keria-darker/40 p-8 backdrop-blur-md">
+          <form
+            onSubmit={handleSubmit}
+            className="border-keria-forest/20 bg-keria-darker/40 space-y-6 rounded-xl border p-8 backdrop-blur-md"
+          >
             <div>
-              <label htmlFor="event-participant-name" className="mb-2 block text-xs font-medium uppercase tracking-wider text-keria-muted">
+              <label
+                htmlFor="event-participant-name"
+                className="text-keria-muted mb-2 block text-xs font-medium uppercase tracking-wider"
+              >
                 Votre nom
               </label>
               <Input
@@ -172,17 +181,14 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
             </div>
 
             <div>
-              <label className="mb-3 block text-xs font-medium uppercase tracking-wider text-keria-muted">
+              <label className="text-keria-muted mb-3 block text-xs font-medium uppercase tracking-wider">
                 Votre réponse
               </label>
-              <RSVPButtons
-                currentStatus={rsvpStatus}
-                onRSVP={(status) => setRsvpStatus(status)}
-              />
+              <RSVPButtons currentStatus={rsvpStatus} onRSVP={(status) => setRsvpStatus(status)} />
             </div>
 
             {error && (
-              <div className="rounded border border-keria-error/30 bg-keria-error/10 p-3 text-sm text-keria-error-light">
+              <div className="border-keria-error/30 bg-keria-error/10 text-keria-error-light rounded border p-3 text-sm">
                 {error}
               </div>
             )}
@@ -202,7 +208,7 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
           <div className="mt-8 text-center">
             <Link
               href="/"
-              className="text-[10px] uppercase tracking-widest text-keria-muted/80 transition-colors hover:text-keria-gold"
+              className="text-keria-muted/80 hover:text-keria-gold text-[10px] uppercase tracking-widest transition-colors"
             >
               Retour à l'accueil
             </Link>
@@ -213,8 +219,8 @@ export default function JoinEventPage({ params }: { params: Promise<{ id: string
       {/* Decorative corner */}
       <div className="pointer-events-none fixed bottom-6 right-6 z-20">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] text-keria-muted/60">2026</span>
-          <div className="h-2 w-2 rounded-full bg-keria-gold/30" />
+          <span className="text-keria-muted/60 font-mono text-[10px]">2026</span>
+          <div className="bg-keria-gold/30 h-2 w-2 rounded-full" />
         </div>
       </div>
     </main>

@@ -26,10 +26,10 @@ const SECTION_CONFIG: Record<RSVPStatus, { label: string; order: number }> = {
 };
 
 const SectionIndicators: Record<RSVPStatus, React.ReactNode> = {
-  yes: <span className="h-2 w-2 rounded-full bg-keria-success" />,
-  maybe: <span className="h-2 w-2 rounded-full bg-keria-gold" />,
-  pending: <span className="h-2 w-2 rounded-full bg-keria-muted" />,
-  no: <span className="h-2 w-2 rounded-full bg-keria-error" />,
+  yes: <span className="bg-keria-success h-2 w-2 rounded-full" />,
+  maybe: <span className="bg-keria-gold h-2 w-2 rounded-full" />,
+  pending: <span className="bg-keria-muted h-2 w-2 rounded-full" />,
+  no: <span className="bg-keria-error h-2 w-2 rounded-full" />,
 };
 
 export function ParticipantsRSVPList({
@@ -69,23 +69,23 @@ export function ParticipantsRSVPList({
     <div className="space-y-4">
       {/* Résumé des RSVP */}
       {rsvpCounts && (
-        <div className="flex flex-wrap gap-2 rounded-lg bg-keria-forest/30 p-3">
+        <div className="bg-keria-forest/30 flex flex-wrap gap-2 rounded-lg p-3">
           <div className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-keria-success" />
-            <span className="text-sm text-keria-cream">{rsvpCounts.yes} oui</span>
+            <span className="bg-keria-success h-2 w-2 rounded-full" />
+            <span className="text-keria-cream text-sm">{rsvpCounts.yes} oui</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-keria-gold" />
-            <span className="text-sm text-keria-cream">{rsvpCounts.maybe} peut-être</span>
+            <span className="bg-keria-gold h-2 w-2 rounded-full" />
+            <span className="text-keria-cream text-sm">{rsvpCounts.maybe} peut-être</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-keria-error" />
-            <span className="text-sm text-keria-cream">{rsvpCounts.no} non</span>
+            <span className="bg-keria-error h-2 w-2 rounded-full" />
+            <span className="text-keria-cream text-sm">{rsvpCounts.no} non</span>
           </div>
           {rsvpCounts.pending > 0 && (
             <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-keria-muted" />
-              <span className="text-sm text-keria-cream">{rsvpCounts.pending} en attente</span>
+              <span className="bg-keria-muted h-2 w-2 rounded-full" />
+              <span className="text-keria-cream text-sm">{rsvpCounts.pending} en attente</span>
             </div>
           )}
         </div>
@@ -100,7 +100,7 @@ export function ParticipantsRSVPList({
 
         return (
           <div key={status}>
-            <h4 className="mb-2 flex items-center gap-2 text-sm font-medium text-keria-muted">
+            <h4 className="text-keria-muted mb-2 flex items-center gap-2 text-sm font-medium">
               {SectionIndicators[status]}
               <span>{config.label}</span>
               <span className="text-keria-forest">({participantsInStatus.length})</span>
@@ -115,7 +115,7 @@ export function ParticipantsRSVPList({
                     key={participant._id}
                     className={`flex items-center justify-between rounded-lg p-2 ${
                       isCurrent
-                        ? "bg-keria-gold/10 ring-1 ring-keria-gold/50"
+                        ? "bg-keria-gold/10 ring-keria-gold/50 ring-1"
                         : "bg-keria-forest/20"
                     }`}
                   >
@@ -129,18 +129,16 @@ export function ParticipantsRSVPList({
 
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-keria-cream">{participant.name}</span>
+                          <span className="text-keria-cream font-medium">{participant.name}</span>
                           {participant.isCreator && (
                             <Badge variant="primary" className="text-xs">
                               Organisateur
                             </Badge>
                           )}
-                          {isCurrent && (
-                            <span className="text-xs text-keria-gold">Vous</span>
-                          )}
+                          {isCurrent && <span className="text-keria-gold text-xs">Vous</span>}
                         </div>
                         {participant.respondedAt && (
-                          <p className="text-xs text-keria-muted">
+                          <p className="text-keria-muted text-xs">
                             Répondu{" "}
                             {new Date(participant.respondedAt).toLocaleDateString("fr-FR", {
                               day: "numeric",
@@ -161,7 +159,7 @@ export function ParticipantsRSVPList({
       })}
 
       {participants.length === 0 && (
-        <p className="py-4 text-center text-sm text-keria-muted">
+        <p className="text-keria-muted py-4 text-center text-sm">
           Aucun participant pour le moment
         </p>
       )}

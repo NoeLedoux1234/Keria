@@ -9,7 +9,7 @@ interface IntroScreenProps {
 export function LoadingScreen({ onComplete }: IntroScreenProps) {
   return (
     <motion.div
-      className="fixed inset-0 z-[100] bg-keria-darker"
+      className="bg-keria-darker fixed inset-0 z-[100]"
       initial={{ opacity: 1 }}
       animate={{ opacity: 0 }}
       transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}

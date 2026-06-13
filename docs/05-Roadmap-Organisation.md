@@ -45,6 +45,7 @@ L'année 2027 vise la maturité du produit. L'intelligence artificielle apporte 
 ## Suivi des Sprints
 
 ### Sprint 0 — Conception (Novembre 2025 — Janvier 2026) — TERMINÉ
+
 - Vision produit et pitch
 - Business model canvas
 - Étude de marché (SWOT, PESTEL, 5 forces de Porter)
@@ -52,44 +53,52 @@ L'année 2027 vise la maturité du produit. L'intelligence artificielle apporte 
 - [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/1)
 
 ### Sprint 1 — Setup et MeetPoint de base (1-14 février 2026) — TERMINÉ
+
 - 4 stories, 15 points : création MeetPoint, rejoindre par code, partage, design system
 - Setup monorepo Turborepo + Next.js 15 + Convex + Tailwind
 - [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/5)
 
 ### Sprint 2 — Participants et géolocalisation (15-28 février 2026) — TERMINÉ
+
 - 4 stories, 13 points : géolocalisation, adresse Mapbox, modes transport, landing page
 - Hook useGeolocation, composant AddressInput
 - [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/6)
 
 ### Sprint 3 — Carte et calcul du midpoint (1-14 mars 2026) — TERMINÉ
+
 - 2 stories, 13 points : algorithme midpoint équitable, routes OpenRouteService
 - Package @meetpoint/geo, carte Mapbox interactive
 - [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/7)
 
 ### Sprint 4 — Recherche de lieux et votes (15-28 mars 2026) — TERMINÉ
+
 - 3 stories, 15 points : Google Places, Overpass/OSM, votes up/down temps réel
 - Composant PlacesList, système de ranking
 - [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/8)
 
 ### Sprint 5 — Événements multi-étapes (29 mars — 11 avril 2026) — TERMINÉ
+
 - 3 stories, 14 points : création événement, étapes, RSVP
 - Formulaire multi-étapes, carte itinéraire
 - [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/9)
 
 ### Sprint 6 — Qualité et tests (12-25 avril 2026) — TERMINÉ
+
 - 4 stories, 8 points : Vitest, CI/CD, error boundaries, loading skeletons
 - Husky + commitlint, GitHub Actions
 - [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/10)
 
 ### Sprint 7 — UX Polish et finalisation (26 avril — 31 mai 2026) — EN COURS
+
 - 4 stories, 10 points : accessibilité, responsive, SEO, performance
 - [Milestone GitHub](https://github.com/NoeLedoux1234/Keria/milestone/11)
 
 ### Jalons à venir
-| Date | Jalon |
-|------|-------|
-| 31 mai 2026 | Livraison MVP final + documentation complète |
-| 12 juin 2026 | Remise des livrables au jury |
+
+| Date         | Jalon                                         |
+| ------------ | --------------------------------------------- |
+| 31 mai 2026  | Livraison MVP final + documentation complète  |
+| 12 juin 2026 | Remise des livrables au jury                  |
 | 19 juin 2026 | Soutenance (20 min présentation + 10 min Q&A) |
 
 ---
@@ -170,24 +179,24 @@ La surcharge du support présente une probabilité moyenne avec un impact moyen.
 
 ## Indicateurs Opérationnels
 
-| Catégorie | Indicateur | Cible |
-|-----------|------------|-------|
-| Disponibilité | Uptime | > 99.9% |
-| Performance | Temps de réponse P95 | < 200ms |
-| Qualité | Taux d'erreur | < 0.1% |
-| Sécurité | Incidents critiques | 0 |
-| Support | Satisfaction client | > 90% |
-| Développement | Vélocité sprint | Stable |
+| Catégorie     | Indicateur           | Cible   |
+| ------------- | -------------------- | ------- |
+| Disponibilité | Uptime               | > 99.9% |
+| Performance   | Temps de réponse P95 | < 200ms |
+| Qualité       | Taux d'erreur        | < 0.1%  |
+| Sécurité      | Incidents critiques  | 0       |
+| Support       | Satisfaction client  | > 90%   |
+| Développement | Vélocité sprint      | Stable  |
 
 ---
 
 ## Jalons Clés
 
-| Date | Jalon | Critère de succès |
-|------|-------|-------------------|
-| T1 2026 | MVP consolidé | 500 MAU, NPS > 30 |
-| T2 2026 | App mobile lancée | 1 000 téléchargements |
-| T3 2026 | Monétisation active | 100 abonnés Premium |
-| T4 2026 | Expansion B2B | 10 clients Business |
-| T1 2027 | Série A | Levée de fonds réalisée |
-| T4 2027 | Leader France | 100 000 MAU |
+| Date    | Jalon               | Critère de succès       |
+| ------- | ------------------- | ----------------------- |
+| T1 2026 | MVP consolidé       | 500 MAU, NPS > 30       |
+| T2 2026 | App mobile lancée   | 1 000 téléchargements   |
+| T3 2026 | Monétisation active | 100 abonnés Premium     |
+| T4 2026 | Expansion B2B       | 10 clients Business     |
+| T1 2027 | Série A             | Levée de fonds réalisée |
+| T4 2027 | Leader France       | 100 000 MAU             |

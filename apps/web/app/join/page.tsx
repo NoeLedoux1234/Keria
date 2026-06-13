@@ -34,20 +34,26 @@ export default function JoinPage() {
   }, [code.length, meet]);
 
   const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
+    const value = e.target.value
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "")
+      .slice(0, 6);
     setCode(value);
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-keria-darker">
+    <main className="bg-keria-darker relative min-h-screen overflow-hidden">
       <PageBackground />
 
       {/* Header */}
       <header className="relative z-20 flex items-center justify-between px-6 py-6">
-        <Link href="/" className="font-display text-lg font-bold text-keria-cream/80 transition-colors hover:text-keria-cream">
+        <Link
+          href="/"
+          className="font-display text-keria-cream/80 hover:text-keria-cream text-lg font-bold transition-colors"
+        >
           KERIA
         </Link>
-        <span className="font-mono text-[10px] text-keria-muted/70">MEETPOINT</span>
+        <span className="text-keria-muted/70 font-mono text-[10px]">MEETPOINT</span>
       </header>
 
       {/* Content */}
@@ -60,7 +66,7 @@ export default function JoinPage() {
         >
           {/* Title */}
           <motion.h1
-            className="font-display text-4xl font-bold tracking-tight text-keria-cream sm:text-5xl"
+            className="font-display text-keria-cream text-4xl font-bold tracking-tight sm:text-5xl"
             initial={{ opacity: 0, filter: "blur(10px)" }}
             animate={{ opacity: 1, filter: "blur(0px)" }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -70,7 +76,7 @@ export default function JoinPage() {
             <span className="text-keria-gold">MeetPoint</span>
           </motion.h1>
           <motion.p
-            className="mt-3 text-sm text-keria-muted"
+            className="text-keria-muted mt-3 text-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
@@ -78,14 +84,14 @@ export default function JoinPage() {
             Entrez le code de partage
           </motion.p>
           <motion.div
-            className="mx-auto mt-6 h-px w-16 bg-keria-gold/50"
+            className="bg-keria-gold/50 mx-auto mt-6 h-px w-16"
             initial={{ width: 0 }}
             animate={{ width: 64 }}
             transition={{ duration: 0.8, delay: 0.5 }}
           />
 
           {/* Code input */}
-          <div className="mt-10 rounded-xl border border-keria-forest/20 bg-keria-darker/40 p-8 backdrop-blur-md">
+          <div className="border-keria-forest/20 bg-keria-darker/40 mt-10 rounded-xl border p-8 backdrop-blur-md">
             <div className="space-y-6">
               <div>
                 <label htmlFor="share-code" className="sr-only">
@@ -99,20 +105,20 @@ export default function JoinPage() {
                   maxLength={6}
                   className="border-keria-forest/30 bg-keria-darker/50 text-center font-mono text-3xl tracking-[0.3em] backdrop-blur-sm"
                 />
-                <p className="mt-3 text-[10px] uppercase tracking-wider text-keria-muted/80">
+                <p className="text-keria-muted/80 mt-3 text-[10px] uppercase tracking-wider">
                   Code à 6 caractères
                 </p>
               </div>
 
               {meet === undefined && code.length === 6 && (
-                <div className="flex items-center justify-center gap-2 text-sm text-keria-muted">
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-keria-gold border-t-transparent" />
+                <div className="text-keria-muted flex items-center justify-center gap-2 text-sm">
+                  <div className="border-keria-gold h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
                   <span>Recherche...</span>
                 </div>
               )}
 
               {error && (
-                <div className="rounded border border-keria-error/30 bg-keria-error/10 p-3 text-sm text-keria-error-light">
+                <div className="border-keria-error/30 bg-keria-error/10 text-keria-error-light rounded border p-3 text-sm">
                   {error}
                 </div>
               )}
@@ -132,8 +138,8 @@ export default function JoinPage() {
       {/* Decorative elements */}
       <div className="pointer-events-none fixed bottom-6 right-6 z-20">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] text-keria-muted/60">2026</span>
-          <div className="h-2 w-2 rounded-full bg-keria-gold/30" />
+          <span className="text-keria-muted/60 font-mono text-[10px]">2026</span>
+          <div className="bg-keria-gold/30 h-2 w-2 rounded-full" />
         </div>
       </div>
     </main>

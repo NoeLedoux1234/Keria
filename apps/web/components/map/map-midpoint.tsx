@@ -27,12 +27,12 @@ export function MapMidpoint({ coordinates, fairnessScore, onClick }: MapMidpoint
       <div className="flex flex-col items-center">
         <div className="relative">
           {/* Cercle pulsant */}
-          <div className="absolute inset-0 animate-ping rounded-full bg-keria-gold opacity-25" />
+          <div className="bg-keria-gold absolute inset-0 animate-ping rounded-full opacity-25" />
 
           {/* Marqueur principal */}
-          <div className="relative flex h-10 w-10 items-center justify-center rounded-full border-4 border-keria-cream bg-keria-gold shadow-lg">
+          <div className="border-keria-cream bg-keria-gold relative flex h-10 w-10 items-center justify-center rounded-full border-4 shadow-lg">
             <svg
-              className="h-5 w-5 text-keria-darker"
+              className="text-keria-darker h-5 w-5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

@@ -116,13 +116,13 @@ Le processus se déroule en sept étapes. Le sourcing s'effectue via LinkedIn, W
 
 Les rémunérations combinent salaire fixe et participation au capital :
 
-| Niveau | Salaire annuel | Equity |
-|--------|----------------|--------|
-| Junior | 35-45k€ | 0.1-0.3% |
-| Confirmé | 45-60k€ | 0.3-0.5% |
-| Senior | 60-80k€ | 0.5-1.0% |
-| Lead/Manager | 70-90k€ | 1.0-2.0% |
-| C-Level | 80-120k€ | 2.0-5.0% |
+| Niveau       | Salaire annuel | Equity   |
+| ------------ | -------------- | -------- |
+| Junior       | 35-45k€        | 0.1-0.3% |
+| Confirmé     | 45-60k€        | 0.3-0.5% |
+| Senior       | 60-80k€        | 0.5-1.0% |
+| Lead/Manager | 70-90k€        | 1.0-2.0% |
+| C-Level      | 80-120k€       | 2.0-5.0% |
 
 ---
 
@@ -153,10 +153,10 @@ Le daily standup quotidien assure la synchronisation de l'équipe. Le sprint pla
 ## Budget Ressources Humaines
 
 | Année | Effectif | Masse salariale | Charges (40%) | Coût total |
-|-------|----------|-----------------|---------------|------------|
-| 1 | 1 | 0€ | 0€ | 0€ |
-| 2 | 4 | 160 000€ | 64 000€ | 224 000€ |
-| 3 | 8 | 400 000€ | 160 000€ | 560 000€ |
-| 4 | 12 | 700 000€ | 280 000€ | 980 000€ |
+| ----- | -------- | --------------- | ------------- | ---------- |
+| 1     | 1        | 0€              | 0€            | 0€         |
+| 2     | 4        | 160 000€        | 64 000€       | 224 000€   |
+| 3     | 8        | 400 000€        | 160 000€      | 560 000€   |
+| 4     | 12       | 700 000€        | 280 000€      | 980 000€   |
 
 Ces projections reposent sur un salaire moyen de quarante mille euros en deuxième année, cinquante mille en troisième année, et cinquante-huit mille en quatrième année.

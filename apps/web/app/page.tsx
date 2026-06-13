@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 export default function HomePage() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-keria-darker">
+    <main className="bg-keria-darker relative min-h-screen overflow-hidden">
       {/* Background image with heavy blur */}
       <div
         className="fixed inset-0"
@@ -20,7 +20,7 @@ export default function HomePage() {
 
       {/* Animated gradient overlay */}
       <div
-        className="pointer-events-none fixed inset-0 z-[5] animate-gradient-shift opacity-30"
+        className="animate-gradient-shift pointer-events-none fixed inset-0 z-[5] opacity-30"
         style={{
           background:
             "linear-gradient(135deg, rgba(198, 168, 124, 0.1) 0%, transparent 40%, rgba(61, 68, 53, 0.15) 70%, transparent 100%)",
@@ -40,8 +40,7 @@ export default function HomePage() {
       <div
         className="pointer-events-none fixed inset-0 z-10"
         style={{
-          background:
-            "radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.6) 100%)",
+          background: "radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.6) 100%)",
         }}
       />
 
@@ -58,8 +57,8 @@ export default function HomePage() {
             animate={{ y: [0, -5, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           >
-            <div className="h-4 w-4 rounded-full border-2 border-keria-gold" />
-            <div className="mx-auto h-8 w-px bg-gradient-to-b from-keria-gold to-transparent" />
+            <div className="border-keria-gold h-4 w-4 rounded-full border-2" />
+            <div className="from-keria-gold mx-auto h-8 w-px bg-gradient-to-b to-transparent" />
           </motion.div>
         </motion.div>
 
@@ -74,8 +73,8 @@ export default function HomePage() {
             animate={{ y: [0, -4, 0] }}
             transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
           >
-            <div className="h-3 w-3 rounded-full border border-keria-cream" />
-            <div className="mx-auto h-6 w-px bg-gradient-to-b from-keria-cream to-transparent" />
+            <div className="border-keria-cream h-3 w-3 rounded-full border" />
+            <div className="from-keria-cream mx-auto h-6 w-px bg-gradient-to-b to-transparent" />
           </motion.div>
         </motion.div>
 
@@ -90,8 +89,8 @@ export default function HomePage() {
             animate={{ y: [0, -6, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
           >
-            <div className="h-5 w-5 rounded-full border border-keria-muted" />
-            <div className="mx-auto h-10 w-px bg-gradient-to-b from-keria-muted to-transparent" />
+            <div className="border-keria-muted h-5 w-5 rounded-full border" />
+            <div className="from-keria-muted mx-auto h-10 w-px bg-gradient-to-b to-transparent" />
           </motion.div>
         </motion.div>
 
@@ -150,7 +149,7 @@ export default function HomePage() {
       <div className="relative z-20 flex min-h-screen flex-col items-center justify-center px-6">
         {/* Top decorative line */}
         <motion.div
-          className="absolute left-1/2 top-12 h-20 w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-keria-gold/50 to-keria-gold"
+          className="via-keria-gold/50 to-keria-gold absolute left-1/2 top-12 h-20 w-px -translate-x-1/2 bg-gradient-to-b from-transparent"
           initial={{ scaleY: 0 }}
           animate={{ scaleY: 1 }}
           transition={{ duration: 1.2, delay: 0.3 }}
@@ -160,7 +159,7 @@ export default function HomePage() {
         <div className="text-center">
           {/* Pre-title */}
           <motion.p
-            className="mb-6 font-mono text-[10px] uppercase tracking-[0.5em] text-keria-muted/70"
+            className="text-keria-muted/70 mb-6 font-mono text-[10px] uppercase tracking-[0.5em]"
             initial={{ opacity: 0, filter: "blur(10px)" }}
             animate={{ opacity: 1, filter: "blur(0px)" }}
             transition={{ duration: 1, delay: 0.5 }}
@@ -174,11 +173,12 @@ export default function HomePage() {
             <div
               className="pointer-events-none absolute inset-0 -inset-x-20 -inset-y-10"
               style={{
-                background: "radial-gradient(ellipse at center, rgba(198, 168, 124, 0.08) 0%, transparent 70%)",
+                background:
+                  "radial-gradient(ellipse at center, rgba(198, 168, 124, 0.08) 0%, transparent 70%)",
               }}
             />
             <motion.h1
-              className="relative font-display text-[clamp(6rem,25vw,18rem)] font-bold leading-[0.8] tracking-[-0.04em] text-keria-cream"
+              className="font-display text-keria-cream relative text-[clamp(6rem,25vw,18rem)] font-bold leading-[0.8] tracking-[-0.04em]"
               initial={{ opacity: 0, y: 60, filter: "blur(30px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{
@@ -193,7 +193,7 @@ export default function HomePage() {
 
           {/* Accent line */}
           <motion.div
-            className="mx-auto my-8 h-[2px] bg-gradient-to-r from-transparent via-keria-gold to-transparent"
+            className="via-keria-gold mx-auto my-8 h-[2px] bg-gradient-to-r from-transparent to-transparent"
             initial={{ width: 0 }}
             animate={{ width: 180 }}
             transition={{ duration: 1.2, delay: 1.2 }}
@@ -201,7 +201,7 @@ export default function HomePage() {
 
           {/* Tagline */}
           <motion.p
-            className="text-lg tracking-wide text-keria-cream/90 sm:text-xl"
+            className="text-keria-cream/90 text-lg tracking-wide sm:text-xl"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 1.4 }}
@@ -219,7 +219,7 @@ export default function HomePage() {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/new"
-                className="inline-block min-w-[200px] border border-keria-gold bg-keria-gold px-8 py-4 text-center font-display text-xs font-semibold uppercase tracking-[0.2em] text-keria-darker transition-all hover:bg-keria-gold-light"
+                className="border-keria-gold bg-keria-gold font-display text-keria-darker hover:bg-keria-gold-light inline-block min-w-[200px] border px-8 py-4 text-center text-xs font-semibold uppercase tracking-[0.2em] transition-all"
               >
                 MeetPoint
               </Link>
@@ -227,7 +227,7 @@ export default function HomePage() {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/event/new"
-                className="inline-block min-w-[200px] border border-white/10 bg-white/5 px-8 py-4 text-center font-display text-xs font-semibold uppercase tracking-[0.2em] text-keria-cream/80 backdrop-blur-md transition-all hover:border-keria-gold/50 hover:text-keria-gold"
+                className="font-display text-keria-cream/80 hover:border-keria-gold/50 hover:text-keria-gold inline-block min-w-[200px] border border-white/10 bg-white/5 px-8 py-4 text-center text-xs font-semibold uppercase tracking-[0.2em] backdrop-blur-md transition-all"
               >
                 Événement
               </Link>
@@ -243,14 +243,14 @@ export default function HomePage() {
           >
             <Link
               href="/join"
-              className="text-[10px] uppercase tracking-[0.25em] text-keria-muted/80 transition-colors hover:text-keria-gold"
+              className="text-keria-muted/80 hover:text-keria-gold text-[10px] uppercase tracking-[0.25em] transition-colors"
             >
               Rejoindre
             </Link>
-            <div className="h-3 w-px bg-keria-forest/30" />
+            <div className="bg-keria-forest/30 h-3 w-px" />
             <Link
               href="/join-event"
-              className="text-[10px] uppercase tracking-[0.25em] text-keria-muted/80 transition-colors hover:text-keria-gold"
+              className="text-keria-muted/80 hover:text-keria-gold text-[10px] uppercase tracking-[0.25em] transition-colors"
             >
               Code événement
             </Link>
@@ -269,7 +269,7 @@ export default function HomePage() {
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           >
-            <div className="h-8 w-px bg-gradient-to-b from-keria-gold/40 to-transparent" />
+            <div className="from-keria-gold/40 h-8 w-px bg-gradient-to-b to-transparent" />
           </motion.div>
         </motion.div>
 
@@ -281,10 +281,8 @@ export default function HomePage() {
           transition={{ delay: 1.5 }}
         >
           <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-keria-gold/40" />
-            <span className="font-mono text-[10px] text-keria-muted/70">
-              48.8566° N
-            </span>
+            <div className="bg-keria-gold/40 h-2 w-2 rounded-full" />
+            <span className="text-keria-muted/70 font-mono text-[10px]">48.8566° N</span>
           </div>
         </motion.div>
 
@@ -295,15 +293,13 @@ export default function HomePage() {
           transition={{ delay: 1.5 }}
         >
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[10px] text-keria-muted/70">
-              2.3522° E
-            </span>
-            <div className="h-2 w-2 rounded-full bg-keria-gold/40" />
+            <span className="text-keria-muted/70 font-mono text-[10px]">2.3522° E</span>
+            <div className="bg-keria-gold/40 h-2 w-2 rounded-full" />
           </div>
         </motion.div>
 
         <motion.span
-          className="absolute right-6 top-6 font-mono text-[10px] text-keria-muted"
+          className="text-keria-muted absolute right-6 top-6 font-mono text-[10px]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.8 }}
@@ -313,7 +309,7 @@ export default function HomePage() {
       </div>
 
       {/* Features section */}
-      <section className="relative z-20 border-t border-keria-forest/10 px-6 py-32">
+      <section className="border-keria-forest/10 relative z-20 border-t px-6 py-32">
         <div className="mx-auto max-w-4xl">
           {/* Section title */}
           <motion.div
@@ -322,7 +318,7 @@ export default function HomePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="font-display text-5xl font-bold tracking-tight text-keria-cream sm:text-6xl lg:text-7xl">
+            <h2 className="font-display text-keria-cream text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
               L'équité
               <br />
               <span className="text-keria-muted/80">avant tout</span>
@@ -343,7 +339,13 @@ export default function HomePage() {
           >
             <Feature
               icon={
-                <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <svg
+                  className="h-8 w-8"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
                   <circle cx="12" cy="9" r="2.5" />
                 </svg>
@@ -353,7 +355,13 @@ export default function HomePage() {
             />
             <Feature
               icon={
-                <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <svg
+                  className="h-8 w-8"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
                   <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" />
                   <polyline points="16 6 12 2 8 6" />
                   <line x1="12" y1="2" x2="12" y2="15" />
@@ -364,7 +372,13 @@ export default function HomePage() {
             />
             <Feature
               icon={
-                <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <svg
+                  className="h-8 w-8"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
                   <circle cx="12" cy="12" r="10" />
                   <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
                 </svg>
@@ -385,14 +399,18 @@ export default function HomePage() {
           viewport={{ once: true }}
         >
           {/* Big decorative text */}
-          <span className="block font-display text-[clamp(5rem,20vw,12rem)] font-bold leading-none tracking-tighter text-keria-forest/20">
+          <span className="font-display text-keria-forest/20 block text-[clamp(5rem,20vw,12rem)] font-bold leading-none tracking-tighter">
             GO
           </span>
 
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="mt-8 inline-block">
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="mt-8 inline-block"
+          >
             <Link
               href="/new"
-              className="inline-block border border-keria-gold bg-keria-gold px-16 py-5 font-display text-xs font-semibold uppercase tracking-[0.25em] text-keria-darker transition-all hover:bg-keria-gold-light"
+              className="border-keria-gold bg-keria-gold font-display text-keria-darker hover:bg-keria-gold-light inline-block border px-16 py-5 text-xs font-semibold uppercase tracking-[0.25em] transition-all"
             >
               Commencer
             </Link>
@@ -403,31 +421,45 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="relative z-20 px-6 pb-8 pt-0">
         {/* Gold separator line */}
-        <div className="mx-auto mb-8 h-px max-w-4xl bg-gradient-to-r from-transparent via-keria-gold/30 to-transparent" />
+        <div className="via-keria-gold/30 mx-auto mb-8 h-px max-w-4xl bg-gradient-to-r from-transparent to-transparent" />
 
         <div className="mx-auto flex max-w-4xl items-center justify-between">
-          <span className="font-display text-sm font-bold text-keria-cream/70">
-            KERIA
-          </span>
+          <span className="font-display text-keria-cream/70 text-sm font-bold">KERIA</span>
 
           {/* Social icons placeholder */}
           <div className="flex items-center gap-4">
-            <svg className="h-4 w-4 text-keria-muted transition-colors hover:text-keria-cream" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <svg
+              className="text-keria-muted hover:text-keria-cream h-4 w-4 transition-colors"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            >
               <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" />
             </svg>
-            <svg className="h-4 w-4 text-keria-muted transition-colors hover:text-keria-cream" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <svg
+              className="text-keria-muted hover:text-keria-cream h-4 w-4 transition-colors"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            >
               <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
               <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
               <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
             </svg>
-            <svg className="h-4 w-4 text-keria-muted transition-colors hover:text-keria-cream" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <svg
+              className="text-keria-muted hover:text-keria-cream h-4 w-4 transition-colors"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            >
               <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22" />
             </svg>
           </div>
 
-          <span className="font-mono text-[10px] text-keria-muted">
-            © 2026
-          </span>
+          <span className="text-keria-muted font-mono text-[10px]">© 2026</span>
         </div>
       </footer>
     </main>
@@ -451,16 +483,14 @@ function Feature({
         visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
       }}
     >
-      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center text-keria-gold/60">
+      <div className="text-keria-gold/60 mx-auto mb-4 flex h-12 w-12 items-center justify-center">
         {icon}
       </div>
-      <h3 className="mb-2 font-display text-2xl font-bold text-keria-cream">
-        {title}
-      </h3>
-      <p className="text-sm text-keria-muted/70">{description}</p>
+      <h3 className="font-display text-keria-cream mb-2 text-2xl font-bold">{title}</h3>
+      <p className="text-keria-muted/70 text-sm">{description}</p>
 
       {/* Mobile separator */}
-      <div className="mx-auto mt-8 h-px w-16 bg-keria-gold/20 sm:hidden" />
+      <div className="bg-keria-gold/20 mx-auto mt-8 h-px w-16 sm:hidden" />
     </motion.div>
   );
 }

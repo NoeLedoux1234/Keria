@@ -34,7 +34,9 @@ export const join = mutation({
       .first();
 
     if (existingParticipant) {
-      throw new Error("A participant with this name already exists in this meeting. Please choose a different name.");
+      throw new Error(
+        "A participant with this name already exists in this meeting. Please choose a different name."
+      );
     }
 
     const participantId = await ctx.db.insert("participants", {

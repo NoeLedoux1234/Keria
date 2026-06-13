@@ -3,3 +3,6 @@ node_modules
 dist
 .turbo
 pnpm-lock.yaml
+
+# Convex codegen output — never hand-format generated files
+**/_generated

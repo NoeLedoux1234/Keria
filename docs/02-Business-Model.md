@@ -58,12 +58,12 @@ Cette activité sera conditionnée au strict respect du RGPD : anonymisation irr
 
 ### Évolution sur Trois Ans
 
-| Indicateur | Année 1 | Année 2 | Année 3 |
-|------------|---------|---------|---------|
-| Utilisateurs actifs mensuels | 10 000 | 50 000 | 200 000 |
-| Abonnés Premium | 300 | 2 000 | 10 000 |
-| Clients Business | 5 | 30 | 100 |
-| **Chiffre d'affaires** | **25 000€** | **160 000€** | **700 000€** |
+| Indicateur                   | Année 1     | Année 2      | Année 3      |
+| ---------------------------- | ----------- | ------------ | ------------ |
+| Utilisateurs actifs mensuels | 10 000      | 50 000       | 200 000      |
+| Abonnés Premium              | 300         | 2 000        | 10 000       |
+| Clients Business             | 5           | 30           | 100          |
+| **Chiffre d'affaires**       | **25 000€** | **160 000€** | **700 000€** |
 
 La croissance est portée par l'effet réseau et le lancement de l'application mobile en deuxième année. Les partenariats avec les établissements commencent à générer des revenus complémentaires en troisième année.
 
@@ -73,14 +73,14 @@ Ces projections reposent sur des hypothèses conservatrices. Le taux de conversi
 
 ### Structure de Coûts et Rentabilité
 
-| Poste | Année 1 | Année 2 | Année 3 |
-|-------|---------|---------|---------|
-| Infrastructure | 3 000€ | 15 000€ | 50 000€ |
-| Ressources humaines | 0€ | 80 000€ | 200 000€ |
-| Marketing | 2 000€ | 20 000€ | 100 000€ |
-| Frais généraux | 1 000€ | 5 000€ | 20 000€ |
-| **Total charges** | **6 000€** | **120 000€** | **370 000€** |
-| **Résultat net** | **19 000€** | **40 000€** | **330 000€** |
+| Poste               | Année 1     | Année 2      | Année 3      |
+| ------------------- | ----------- | ------------ | ------------ |
+| Infrastructure      | 3 000€      | 15 000€      | 50 000€      |
+| Ressources humaines | 0€          | 80 000€      | 200 000€     |
+| Marketing           | 2 000€      | 20 000€      | 100 000€     |
+| Frais généraux      | 1 000€      | 5 000€       | 20 000€      |
+| **Total charges**   | **6 000€**  | **120 000€** | **370 000€** |
+| **Résultat net**    | **19 000€** | **40 000€**  | **330 000€** |
 
 Le point d'équilibre est atteint dès la première année grâce à une structure de coûts légère, rendue possible par l'architecture serverless et l'absence de salaires en phase initiale.
 
@@ -90,17 +90,17 @@ Le point d'équilibre est atteint dès la première année grâce à une structu
 
 Le pilotage de l'activité repose sur les métriques suivantes :
 
-| Indicateur | Description | Cible |
-|------------|-------------|-------|
-| MAU | Utilisateurs actifs mensuels | +20%/mois en Y1 |
-| Taux de conversion | Gratuit → Premium | > 3% |
-| Taux de complétion | Sessions aboutissant à un choix | > 60% |
-| Coefficient viral | Nouveaux users par user existant | > 1.2 |
-| LTV | Valeur vie client Premium | > 150€ |
-| CAC | Coût d'acquisition client | < 30€ |
-| Ratio LTV/CAC | Rentabilité acquisition | > 3 |
-| NPS | Net Promoter Score | > 40 |
-| Churn mensuel | Taux de désabonnement | < 5% |
+| Indicateur         | Description                      | Cible           |
+| ------------------ | -------------------------------- | --------------- |
+| MAU                | Utilisateurs actifs mensuels     | +20%/mois en Y1 |
+| Taux de conversion | Gratuit → Premium                | > 3%            |
+| Taux de complétion | Sessions aboutissant à un choix  | > 60%           |
+| Coefficient viral  | Nouveaux users par user existant | > 1.2           |
+| LTV                | Valeur vie client Premium        | > 150€          |
+| CAC                | Coût d'acquisition client        | < 30€           |
+| Ratio LTV/CAC      | Rentabilité acquisition          | > 3             |
+| NPS                | Net Promoter Score               | > 40            |
+| Churn mensuel      | Taux de désabonnement            | < 5%            |
 
 Ces indicateurs permettent de valider la proposition de valeur et d'ajuster la stratégie en continu.
 

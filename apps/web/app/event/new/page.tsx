@@ -45,11 +45,7 @@ export default function NewEventPage() {
       ...stage,
       order: index,
       stageType:
-        index === 0
-          ? "departure"
-          : index === sorted.length - 1
-            ? "arrival"
-            : "intermediate",
+        index === 0 ? "departure" : index === sorted.length - 1 ? "arrival" : "intermediate",
     }));
   };
 
@@ -114,7 +110,7 @@ export default function NewEventPage() {
 
       localStorage.setItem(`meetpoint-event-participant-${result.eventId}`, result.participantId);
       router.push(`/event/${result.eventId}?code=${result.shareCode}`);
-    } catch (err) {
+    } catch {
       setError("Erreur lors de la création de l'événement");
     } finally {
       setIsSubmitting(false);
@@ -125,24 +121,27 @@ export default function NewEventPage() {
   const canProceedToStep3 = stages.length >= 2;
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-keria-darker">
+    <main className="bg-keria-darker relative min-h-screen overflow-hidden">
       <PageBackground />
 
       {/* Header */}
       <header className="relative z-20 flex items-center justify-between px-6 py-6">
-        <Link href="/" className="font-display text-lg font-bold text-keria-cream/80 transition-colors hover:text-keria-cream">
+        <Link
+          href="/"
+          className="font-display text-keria-cream/80 hover:text-keria-cream text-lg font-bold transition-colors"
+        >
           KERIA
         </Link>
         <div className="flex items-center gap-4">
-          <span className="font-mono text-[10px] text-keria-muted/70">ÉVÉNEMENT</span>
+          <span className="text-keria-muted/70 font-mono text-[10px]">ÉVÉNEMENT</span>
           <div className="flex gap-1">
             {[1, 2, 3].map((s) => (
               <div
                 key={s}
-                className="relative h-1.5 w-6 overflow-hidden rounded-full bg-keria-forest/30"
+                className="bg-keria-forest/30 relative h-1.5 w-6 overflow-hidden rounded-full"
               >
                 <motion.div
-                  className="absolute inset-0 rounded-full bg-keria-gold"
+                  className="bg-keria-gold absolute inset-0 rounded-full"
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: s <= step ? 1 : 0 }}
                   transition={{ duration: 0.4, ease: "easeInOut" }}
@@ -173,20 +172,23 @@ export default function NewEventPage() {
                 transition={{ duration: 0.3 }}
               >
                 <div className="mb-10 text-center">
-                  <span className="mb-2 block text-[10px] font-medium uppercase tracking-widest text-keria-gold">
+                  <span className="text-keria-gold mb-2 block text-[10px] font-medium uppercase tracking-widest">
                     Étape 1/3
                   </span>
-                  <h1 className="font-display text-4xl font-bold tracking-tight text-keria-cream">
+                  <h1 className="font-display text-keria-cream text-4xl font-bold tracking-tight">
                     Nouvel
                     <br />
                     <span className="text-keria-gold">Événement</span>
                   </h1>
-                  <div className="mx-auto mt-4 h-px w-16 bg-keria-gold/50" />
+                  <div className="bg-keria-gold/50 mx-auto mt-4 h-px w-16" />
                 </div>
 
-                <div className="space-y-5 rounded-xl border border-keria-forest/20 bg-keria-darker/40 p-8 backdrop-blur-md">
+                <div className="border-keria-forest/20 bg-keria-darker/40 space-y-5 rounded-xl border p-8 backdrop-blur-md">
                   <div>
-                    <label htmlFor="event-name" className="mb-2 block text-xs font-medium uppercase tracking-wider text-keria-muted">
+                    <label
+                      htmlFor="event-name"
+                      className="text-keria-muted mb-2 block text-xs font-medium uppercase tracking-wider"
+                    >
                       Nom de l'événement
                     </label>
                     <Input
@@ -199,7 +201,10 @@ export default function NewEventPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="event-description" className="mb-2 block text-xs font-medium uppercase tracking-wider text-keria-muted">
+                    <label
+                      htmlFor="event-description"
+                      className="text-keria-muted mb-2 block text-xs font-medium uppercase tracking-wider"
+                    >
                       Description <span className="text-keria-forest">(optionnel)</span>
                     </label>
                     <Input
@@ -212,7 +217,10 @@ export default function NewEventPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="event-creator-name" className="mb-2 block text-xs font-medium uppercase tracking-wider text-keria-muted">
+                    <label
+                      htmlFor="event-creator-name"
+                      className="text-keria-muted mb-2 block text-xs font-medium uppercase tracking-wider"
+                    >
                       Votre nom
                     </label>
                     <Input
@@ -246,13 +254,13 @@ export default function NewEventPage() {
                 transition={{ duration: 0.3 }}
               >
                 <div className="mb-8 text-center">
-                  <span className="mb-2 block text-[10px] font-medium uppercase tracking-widest text-keria-gold">
+                  <span className="text-keria-gold mb-2 block text-[10px] font-medium uppercase tracking-widest">
                     Étape 2/3
                   </span>
-                  <h1 className="font-display text-3xl font-bold tracking-tight text-keria-cream">
+                  <h1 className="font-display text-keria-cream text-3xl font-bold tracking-tight">
                     Les étapes
                   </h1>
-                  <p className="mt-2 text-sm text-keria-muted">
+                  <p className="text-keria-muted mt-2 text-sm">
                     Ajoutez au moins 2 étapes (départ et arrivée)
                   </p>
                 </div>
@@ -266,7 +274,7 @@ export default function NewEventPage() {
                         .map((stage, index) => (
                           <motion.div
                             key={stage.id}
-                            className="flex items-center gap-3 rounded border border-keria-forest/30 bg-keria-darker/50 p-3 backdrop-blur-sm"
+                            className="border-keria-forest/30 bg-keria-darker/50 flex items-center gap-3 rounded border p-3 backdrop-blur-sm"
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3, delay: index * 0.08 }}
@@ -282,9 +290,9 @@ export default function NewEventPage() {
                             >
                               {index + 1}
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="truncate font-medium text-keria-cream">{stage.name}</p>
-                              <p className="text-[10px] uppercase tracking-wider text-keria-muted">
+                            <div className="min-w-0 flex-1">
+                              <p className="text-keria-cream truncate font-medium">{stage.name}</p>
+                              <p className="text-keria-muted text-[10px] uppercase tracking-wider">
                                 {new Date(stage.scheduledAt).toLocaleString("fr-FR", {
                                   weekday: "short",
                                   day: "numeric",
@@ -297,9 +305,16 @@ export default function NewEventPage() {
                             {stages.length > 2 && (
                               <button
                                 onClick={() => handleRemoveStage(stage.id)}
-                                className="rounded p-1.5 text-keria-muted transition-colors hover:bg-keria-error/20 hover:text-keria-error-light"
+                                className="text-keria-muted hover:bg-keria-error/20 hover:text-keria-error-light rounded p-1.5 transition-colors"
                               >
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <svg
+                                  width="14"
+                                  height="14"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                >
                                   <path d="M18 6L6 18M6 6l12 12" />
                                 </svg>
                               </button>
@@ -311,8 +326,8 @@ export default function NewEventPage() {
 
                   {/* Add stage form */}
                   {isAddingStage ? (
-                    <div className="rounded border border-keria-gold/30 bg-keria-gold/5 p-4">
-                      <h4 className="mb-4 text-xs font-medium uppercase tracking-wider text-keria-gold">
+                    <div className="border-keria-gold/30 bg-keria-gold/5 rounded border p-4">
+                      <h4 className="text-keria-gold mb-4 text-xs font-medium uppercase tracking-wider">
                         Nouvelle étape
                       </h4>
                       <StageForm
@@ -324,9 +339,16 @@ export default function NewEventPage() {
                   ) : (
                     <button
                       onClick={() => setIsAddingStage(true)}
-                      className="flex w-full items-center justify-center gap-2 rounded border border-dashed border-keria-forest/50 bg-transparent p-4 text-sm text-keria-muted transition-all hover:border-keria-gold/50 hover:text-keria-gold"
+                      className="border-keria-forest/50 text-keria-muted hover:border-keria-gold/50 hover:text-keria-gold flex w-full items-center justify-center gap-2 rounded border border-dashed bg-transparent p-4 text-sm transition-all"
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
                         <path d="M12 5v14M5 12h14" />
                       </svg>
                       Ajouter une étape
@@ -365,26 +387,26 @@ export default function NewEventPage() {
                 transition={{ duration: 0.3 }}
               >
                 <div className="mb-6 text-center">
-                  <span className="mb-2 block text-[10px] font-medium uppercase tracking-widest text-keria-gold">
+                  <span className="text-keria-gold mb-2 block text-[10px] font-medium uppercase tracking-widest">
                     Étape 3/3
                   </span>
-                  <h1 className="font-display text-3xl font-bold tracking-tight text-keria-cream">
+                  <h1 className="font-display text-keria-cream text-3xl font-bold tracking-tight">
                     Aperçu
                   </h1>
                 </div>
 
                 <div className="space-y-4">
                   {/* Summary */}
-                  <div className="rounded border border-keria-forest/30 bg-keria-darker/50 p-4 backdrop-blur-sm">
-                    <h3 className="font-display text-lg font-semibold text-keria-cream">{name}</h3>
-                    {description && <p className="mt-1 text-sm text-keria-muted">{description}</p>}
-                    <p className="mt-2 text-[10px] uppercase tracking-wider text-keria-muted">
+                  <div className="border-keria-forest/30 bg-keria-darker/50 rounded border p-4 backdrop-blur-sm">
+                    <h3 className="font-display text-keria-cream text-lg font-semibold">{name}</h3>
+                    {description && <p className="text-keria-muted mt-1 text-sm">{description}</p>}
+                    <p className="text-keria-muted mt-2 text-[10px] uppercase tracking-wider">
                       Organisé par {creatorName} • {stages.length} étapes
                     </p>
                   </div>
 
                   {/* Map */}
-                  <div className="h-48 overflow-hidden rounded border border-keria-forest/30">
+                  <div className="border-keria-forest/30 h-48 overflow-hidden rounded border">
                     <MapContainer
                       ref={mapRef}
                       initialCenter={stages[0]?.location ?? { lat: 48.8566, lng: 2.3522 }}
@@ -425,9 +447,9 @@ export default function NewEventPage() {
                                   : "bg-keria-gold"
                             }`}
                           />
-                          <span className="font-medium text-keria-cream">{stage.name}</span>
+                          <span className="text-keria-cream font-medium">{stage.name}</span>
                           <span className="text-keria-forest">—</span>
-                          <span className="text-xs text-keria-muted">
+                          <span className="text-keria-muted text-xs">
                             {new Date(stage.scheduledAt).toLocaleString("fr-FR", {
                               weekday: "short",
                               hour: "2-digit",
@@ -439,7 +461,7 @@ export default function NewEventPage() {
                   </div>
 
                   {error && (
-                    <div className="rounded border border-keria-error/30 bg-keria-error/10 p-3 text-sm text-keria-error-light">
+                    <div className="border-keria-error/30 bg-keria-error/10 text-keria-error-light rounded border p-3 text-sm">
                       {error}
                     </div>
                   )}
@@ -471,7 +493,7 @@ export default function NewEventPage() {
           <div className="mt-8 text-center">
             <Link
               href="/"
-              className="text-[10px] uppercase tracking-widest text-keria-muted/80 transition-colors hover:text-keria-gold"
+              className="text-keria-muted/80 hover:text-keria-gold text-[10px] uppercase tracking-widest transition-colors"
             >
               Retour à l'accueil
             </Link>
@@ -482,8 +504,8 @@ export default function NewEventPage() {
       {/* Decorative corner */}
       <div className="pointer-events-none fixed bottom-6 right-6 z-20">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] text-keria-muted/60">2026</span>
-          <div className="h-2 w-2 rounded-full bg-keria-gold/30" />
+          <span className="text-keria-muted/60 font-mono text-[10px]">2026</span>
+          <div className="bg-keria-gold/30 h-2 w-2 rounded-full" />
         </div>
       </div>
     </main>
