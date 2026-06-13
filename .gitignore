@@ -35,6 +35,8 @@ coverage
 
 # Convex
 .convex
+# Stale generated output (source of truth is the root convex/ dir)
+apps/web/convex
 
 # Misc
 *.tsbuildinfo
