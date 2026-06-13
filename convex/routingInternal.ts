@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { internalAction } from "./_generated/server";
+import { fetchWithTimeout } from "./lib/http";
 
 const ORS_BASE_URL = "https://api.openrouteservice.org";
 
@@ -15,6 +16,23 @@ type ORSIsochroneFeature = {
     coordinates: Array<Array<[number, number]>>;
   };
 };
+
+type ORSSummary = { distance: number; duration: number };
+
+interface ORSDirectionsResponse {
+  features?: Array<{
+    properties?: { summary?: ORSSummary };
+    geometry?: { coordinates?: Array<[number, number]> };
+  }>;
+  routes?: Array<{
+    summary?: ORSSummary;
+    geometry?: string | { coordinates?: Array<[number, number]> };
+  }>;
+}
+
+interface ORSIsochroneResponse {
+  features?: ORSIsochroneFeature[];
+}
 
 function decodePolyline(encoded: string): Array<[number, number]> {
   const coordinates: Array<[number, number]> = [];
@@ -78,7 +96,7 @@ export const calculateRoute = internalAction({
     const url = `${ORS_BASE_URL}/v2/directions/${profile}`;
 
     try {
-      const response = await fetch(url, {
+      const response = await fetchWithTimeout(url, {
         method: "POST",
         headers: {
           Authorization: apiKey,
@@ -104,9 +122,9 @@ export const calculateRoute = internalAction({
         };
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as ORSDirectionsResponse;
 
-      let summary: { distance: number; duration: number } | undefined;
+      let summary: ORSSummary | undefined;
       let coordinates: Array<[number, number]> = [];
 
       if ("features" in data && Array.isArray(data.features) && data.features[0]) {
@@ -179,7 +197,7 @@ export const calculateIsochrone = internalAction({
     const url = `${ORS_BASE_URL}/v2/isochrones/${profile}`;
 
     try {
-      const response = await fetch(url, {
+      const response = await fetchWithTimeout(url, {
         method: "POST",
         headers: {
           Authorization: apiKey,
@@ -205,11 +223,26 @@ export const calculateIsochrone = internalAction({
         };
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as ORSIsochroneResponse;
 
-      const isochrones = data.features.map((feature: ORSIsochroneFeature, index: number) => ({
+      if (!Array.isArray(data.features)) {
+        console.error(
+          "ORS isochrone response missing features:",
+          JSON.stringify(data).slice(0, 500)
+        );
+        return {
+          success: false as const,
+          error: "Unexpected ORS isochrone response",
+          isochrones: [] as Array<{
+            durationMinutes: number | undefined;
+            polygon: Array<{ lat: number; lng: number }>;
+          }>,
+        };
+      }
+
+      const isochrones = data.features.map((feature, index) => ({
         durationMinutes: args.durationMinutes[index],
-        polygon: (feature.geometry.coordinates[0] ?? []).map(([lng, lat]: [number, number]) => ({
+        polygon: (feature.geometry.coordinates[0] ?? []).map(([lng, lat]) => ({
           lat,
           lng,
         })),

@@ -1,6 +1,10 @@
 import { action, internalAction, mutation, query } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
+import { fetchWithTimeout } from "./lib/http";
+
+// Allow suggestions slightly outside the participants' bounding box (~55 km).
+const BBOX_MARGIN_DEG = 0.5;
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const ANTHROPIC_MODEL = "claude-haiku-4-5";
@@ -72,6 +76,24 @@ function computeCenter(locations: ParticipantLocation[]): GeoCenter {
     lat: sumLat / total,
     lng: sumLng / total,
   };
+}
+
+function clampMatchScore(score: number): number {
+  if (!Number.isFinite(score)) return 0;
+  return Math.max(0, Math.min(100, Math.round(score)));
+}
+
+function isWithinBoundingBox(
+  coordinates: { lat: number; lng: number },
+  box: BoundingBox,
+  margin: number
+): boolean {
+  return (
+    coordinates.lat >= box.minLat - margin &&
+    coordinates.lat <= box.maxLat + margin &&
+    coordinates.lng >= box.minLng - margin &&
+    coordinates.lng <= box.maxLng + margin
+  );
 }
 
 function isValidCity(value: unknown): value is SuggestedCity {
@@ -186,8 +208,9 @@ export const _suggestCities = internalAction({
     );
 
     try {
-      const response = await fetch(ANTHROPIC_API_URL, {
+      const response = await fetchWithTimeout(ANTHROPIC_API_URL, {
         method: "POST",
+        timeoutMs: 30_000,
         headers: {
           "x-api-key": apiKey,
           "anthropic-version": "2023-06-01",
@@ -236,16 +259,18 @@ export const _suggestCities = internalAction({
         };
       }
 
-      const cities: SuggestedCity[] = parsed.cities.map((city) => ({
-        name: city.name,
-        region: city.region,
-        coordinates: {
-          lat: city.coordinates.lat,
-          lng: city.coordinates.lng,
-        },
-        reason: sanitizeReason(city.reason),
-        matchScore: city.matchScore,
-      }));
+      const cities: SuggestedCity[] = parsed.cities
+        .filter((city) => isWithinBoundingBox(city.coordinates, boundingBox, BBOX_MARGIN_DEG))
+        .map((city) => ({
+          name: city.name,
+          region: city.region,
+          coordinates: {
+            lat: city.coordinates.lat,
+            lng: city.coordinates.lng,
+          },
+          reason: sanitizeReason(city.reason),
+          matchScore: clampMatchScore(city.matchScore),
+        }));
 
       return {
         success: true,

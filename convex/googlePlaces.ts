@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { action, internalAction } from "./_generated/server";
 import { api, internal } from "./_generated/api";
+import { fetchWithTimeout } from "./lib/http";
 
 const GOOGLE_PLACES_BASE_URL = "https://places.googleapis.com/v1/places";
 
@@ -172,8 +173,9 @@ export const _searchNearby = internalAction({
     }
 
     try {
-      const response = await fetch(`${GOOGLE_PLACES_BASE_URL}:searchNearby`, {
+      const response = await fetchWithTimeout(`${GOOGLE_PLACES_BASE_URL}:searchNearby`, {
         method: "POST",
+        timeoutMs: 15_000,
         headers: {
           "Content-Type": "application/json",
           "X-Goog-Api-Key": apiKey,

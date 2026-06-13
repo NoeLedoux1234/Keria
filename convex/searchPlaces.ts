@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { action, internalAction } from "./_generated/server";
 import { api, internal } from "./_generated/api";
+import { fetchWithTimeout } from "./lib/http";
 
 const PLACE_CATEGORIES = {
   restaurant: ["amenity=restaurant"],
@@ -76,11 +77,14 @@ export const _searchNearby = internalAction({
     `;
 
     try {
-      const response = await fetch("https://overpass-api.de/api/interpreter", {
+      const response = await fetchWithTimeout("https://overpass-api.de/api/interpreter", {
         method: "POST",
+        timeoutMs: 30_000,
         body: `data=${encodeURIComponent(overpassQuery)}`,
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
+          // Overpass' usage policy asks clients to identify themselves.
+          "User-Agent": "Keria/1.0 (https://github.com/NoeLedoux1234/Keria)",
         },
       });
 
@@ -88,8 +92,8 @@ export const _searchNearby = internalAction({
         throw new Error(`Overpass API error: ${response.status}`);
       }
 
-      const data = await response.json();
-      const elements: OverpassElement[] = data.elements || [];
+      const data = (await response.json()) as { elements?: OverpassElement[] };
+      const elements: OverpassElement[] = data.elements ?? [];
 
       const places = elements
         .filter((el) => el.tags?.name)
