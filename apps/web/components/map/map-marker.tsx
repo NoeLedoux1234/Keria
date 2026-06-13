@@ -64,8 +64,10 @@ export function MapMarker({
     >
       <div className="flex flex-col items-center">
         {label && (
-          <div className="mb-1 flex items-center gap-1 rounded-full bg-keria-darker/90 backdrop-blur-sm px-2 py-0.5 text-xs font-medium text-keria-cream shadow-md">
-            {transportMode && <span className="text-keria-muted">{TransportIconsSvg[transportMode]}</span>}
+          <div className="bg-keria-darker/90 text-keria-cream mb-1 flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium shadow-md backdrop-blur-sm">
+            {transportMode && (
+              <span className="text-keria-muted">{TransportIconsSvg[transportMode]}</span>
+            )}
             {label}
           </div>
         )}

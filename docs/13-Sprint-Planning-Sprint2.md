@@ -4,12 +4,12 @@
 
 ## Informations du sprint
 
-| Élément | Détail |
-|---------|--------|
-| Sprint | Sprint 2 — Participants et géolocalisation |
-| Période | 15 — 28 février 2026 |
-| Durée | 2 semaines |
-| Équipe | 1 développeur full-stack |
+| Élément          | Détail                                        |
+| ---------------- | --------------------------------------------- |
+| Sprint           | Sprint 2 — Participants et géolocalisation    |
+| Période          | 15 — 28 février 2026                          |
+| Durée            | 2 semaines                                    |
+| Équipe           | 1 développeur full-stack                      |
 | Capacité estimée | 15 story points (basée sur vélocité Sprint 1) |
 
 ---
@@ -25,13 +25,13 @@
 
 ## Stories sélectionnées
 
-| Issue | Story | Points | Priorité |
-|-------|-------|--------|----------|
-| [#4](https://github.com/NoeLedoux1234/Keria/issues/4) | Rejoindre avec géolocalisation | 3 | Must |
-| [#5](https://github.com/NoeLedoux1234/Keria/issues/5) | Rejoindre avec adresse manuelle | 3 | Must |
-| [#6](https://github.com/NoeLedoux1234/Keria/issues/6) | Choisir un mode de transport | 2 | Must |
-| [#15](https://github.com/NoeLedoux1234/Keria/issues/15) | Landing page et navigation | 5 | Must |
-| **Total** | | **13** | |
+| Issue                                                   | Story                           | Points | Priorité |
+| ------------------------------------------------------- | ------------------------------- | ------ | -------- |
+| [#4](https://github.com/NoeLedoux1234/Keria/issues/4)   | Rejoindre avec géolocalisation  | 3      | Must     |
+| [#5](https://github.com/NoeLedoux1234/Keria/issues/5)   | Rejoindre avec adresse manuelle | 3      | Must     |
+| [#6](https://github.com/NoeLedoux1234/Keria/issues/6)   | Choisir un mode de transport    | 2      | Must     |
+| [#15](https://github.com/NoeLedoux1234/Keria/issues/15) | Landing page et navigation      | 5      | Must     |
+| **Total**                                               |                                 | **13** |          |
 
 ---
 

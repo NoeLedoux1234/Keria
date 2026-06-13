@@ -31,18 +31,12 @@ export function StageForm({
 }: StageFormProps) {
   const [name, setName] = useState(initialData?.name ?? "");
   const [description, setDescription] = useState(initialData?.description ?? "");
-  const [location, setLocation] = useState<Coordinates | null>(
-    initialData?.location ?? null
-  );
+  const [location, setLocation] = useState<Coordinates | null>(initialData?.location ?? null);
   const [address, setAddress] = useState(initialData?.address ?? "");
   const [date, setDate] = useState(
-    initialData?.scheduledAt
-      ? new Date(initialData.scheduledAt).toISOString().slice(0, 16)
-      : ""
+    initialData?.scheduledAt ? new Date(initialData.scheduledAt).toISOString().slice(0, 16) : ""
   );
-  const [duration, setDuration] = useState(
-    initialData?.estimatedDurationMinutes?.toString() ?? ""
-  );
+  const [duration, setDuration] = useState(initialData?.estimatedDurationMinutes?.toString() ?? "");
 
   const handleAddressSelect = (coords: Coordinates, addr: string) => {
     setLocation(coords);
@@ -70,9 +64,7 @@ export function StageForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Nom de l'étape */}
       <div>
-        <label className="mb-1 block text-sm font-medium text-keria-cream">
-          Nom de l'étape *
-        </label>
+        <label className="text-keria-cream mb-1 block text-sm font-medium">Nom de l'étape *</label>
         <Input
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -83,7 +75,7 @@ export function StageForm({
 
       {/* Description */}
       <div>
-        <label className="mb-1 block text-sm font-medium text-keria-cream">
+        <label className="text-keria-cream mb-1 block text-sm font-medium">
           Description (optionnel)
         </label>
         <Input
@@ -95,38 +87,30 @@ export function StageForm({
 
       {/* Adresse */}
       <div>
-        <label className="mb-1 block text-sm font-medium text-keria-cream">
-          Lieu *
-        </label>
+        <label className="text-keria-cream mb-1 block text-sm font-medium">Lieu *</label>
         <AddressInput
           onSelect={handleAddressSelect}
           placeholder="Rechercher une adresse..."
           initialValue={address}
         />
-        {location && (
-          <p className="mt-1 text-xs text-keria-success-light">
-            Lieu sélectionné
-          </p>
-        )}
+        {location && <p className="text-keria-success-light mt-1 text-xs">Lieu sélectionné</p>}
       </div>
 
       {/* Date et heure */}
       <div>
-        <label className="mb-1 block text-sm font-medium text-keria-cream">
-          Date et heure *
-        </label>
+        <label className="text-keria-cream mb-1 block text-sm font-medium">Date et heure *</label>
         <input
           type="datetime-local"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="w-full rounded-lg border border-keria-forest bg-keria-darker/50 px-3 py-2 text-sm text-keria-cream focus:border-keria-gold focus:outline-none focus:ring-2 focus:ring-keria-gold/20"
+          className="border-keria-forest bg-keria-darker/50 text-keria-cream focus:border-keria-gold focus:ring-keria-gold/20 w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2"
           required
         />
       </div>
 
       {/* Durée estimée */}
       <div>
-        <label className="mb-1 block text-sm font-medium text-keria-cream">
+        <label className="text-keria-cream mb-1 block text-sm font-medium">
           Durée estimée (minutes, optionnel)
         </label>
         <Input
@@ -141,12 +125,7 @@ export function StageForm({
       {/* Boutons */}
       <div className="flex gap-2 pt-2">
         {onCancel && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            className="flex-1"
-          >
+          <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
             Annuler
           </Button>
         )}

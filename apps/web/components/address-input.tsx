@@ -100,7 +100,11 @@ export function AddressInput({
 
       {isLoading && (
         <div className="absolute right-3 top-1/2 -translate-y-1/2">
-          <svg className="h-4 w-4 animate-spin text-keria-muted" viewBox="0 0 24 24" aria-hidden="true">
+          <svg
+            className="text-keria-muted h-4 w-4 animate-spin"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
             <circle
               className="opacity-25"
               cx="12"
@@ -128,7 +132,7 @@ export function AddressInput({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
-            className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-keria-forest/50 bg-keria-darker shadow-lg"
+            className="border-keria-forest/50 bg-keria-darker absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border shadow-lg"
           >
             {suggestions.map((suggestion, index) => (
               <motion.li
@@ -138,11 +142,9 @@ export function AddressInput({
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.15, delay: index * 0.05 }}
                 onClick={() => handleSelect(suggestion)}
-                className="cursor-pointer px-4 py-3 text-sm text-keria-cream hover:bg-keria-forest/30 transition-colors"
+                className="text-keria-cream hover:bg-keria-forest/30 cursor-pointer px-4 py-3 text-sm transition-colors"
               >
-                <span className="font-medium">
-                  {suggestion.place_name.split(",")[0]}
-                </span>
+                <span className="font-medium">{suggestion.place_name.split(",")[0]}</span>
                 <span className="text-keria-muted">
                   {suggestion.place_name.includes(",") &&
                     ", " + suggestion.place_name.split(",").slice(1).join(",")}

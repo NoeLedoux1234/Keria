@@ -4,25 +4,25 @@
 
 ## Informations du sprint
 
-| Élément | Détail |
-|---------|--------|
-| Sprint | Sprint 1 — Setup et MeetPoint de base |
-| Période | 1 — 14 février 2026 |
-| Durée | 2 semaines |
-| Équipe | 1 développeur full-stack |
+| Élément  | Détail                                                                             |
+| -------- | ---------------------------------------------------------------------------------- |
+| Sprint   | Sprint 1 — Setup et MeetPoint de base                                              |
+| Période  | 1 — 14 février 2026                                                                |
+| Durée    | 2 semaines                                                                         |
+| Équipe   | 1 développeur full-stack                                                           |
 | Objectif | Poser les fondations techniques et livrer le flux de création/partage de MeetPoint |
 
 ---
 
 ## Stories complétées
 
-| Issue | Story | Epic | Points | Statut |
-|-------|-------|------|--------|--------|
-| [#1](https://github.com/NoeLedoux1234/Keria/issues/1) | Créer un MeetPoint | EP01 | 5 | Done |
-| [#2](https://github.com/NoeLedoux1234/Keria/issues/2) | Rejoindre par code | EP01 | 3 | Done |
-| [#3](https://github.com/NoeLedoux1234/Keria/issues/3) | Partager le code | EP01 | 2 | Done |
-| [#16](https://github.com/NoeLedoux1234/Keria/issues/16) | Design system Keria | EP06 | 5 | Done |
-| **Total** | | | **15** | **4/4 Done** |
+| Issue                                                   | Story               | Epic | Points | Statut       |
+| ------------------------------------------------------- | ------------------- | ---- | ------ | ------------ |
+| [#1](https://github.com/NoeLedoux1234/Keria/issues/1)   | Créer un MeetPoint  | EP01 | 5      | Done         |
+| [#2](https://github.com/NoeLedoux1234/Keria/issues/2)   | Rejoindre par code  | EP01 | 3      | Done         |
+| [#3](https://github.com/NoeLedoux1234/Keria/issues/3)   | Partager le code    | EP01 | 2      | Done         |
+| [#16](https://github.com/NoeLedoux1234/Keria/issues/16) | Design system Keria | EP06 | 5      | Done         |
+| **Total**                                               |                     |      | **15** | **4/4 Done** |
 
 ---
 
@@ -62,10 +62,10 @@
 
 ## Stories prévues Sprint 2
 
-| Issue | Story | Points |
-|-------|-------|--------|
-| [#4](https://github.com/NoeLedoux1234/Keria/issues/4) | Rejoindre avec géolocalisation | 3 |
-| [#5](https://github.com/NoeLedoux1234/Keria/issues/5) | Rejoindre avec adresse manuelle | 3 |
-| [#6](https://github.com/NoeLedoux1234/Keria/issues/6) | Choisir un mode de transport | 2 |
-| [#15](https://github.com/NoeLedoux1234/Keria/issues/15) | Landing page et navigation | 5 |
-| **Total** | | **13** |
+| Issue                                                   | Story                           | Points |
+| ------------------------------------------------------- | ------------------------------- | ------ |
+| [#4](https://github.com/NoeLedoux1234/Keria/issues/4)   | Rejoindre avec géolocalisation  | 3      |
+| [#5](https://github.com/NoeLedoux1234/Keria/issues/5)   | Rejoindre avec adresse manuelle | 3      |
+| [#6](https://github.com/NoeLedoux1234/Keria/issues/6)   | Choisir un mode de transport    | 2      |
+| [#15](https://github.com/NoeLedoux1234/Keria/issues/15) | Landing page et navigation      | 5      |
+| **Total**                                               |                                 | **13** |

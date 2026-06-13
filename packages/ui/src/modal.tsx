@@ -78,22 +78,22 @@ export function Modal({
         aria-modal="true"
         className={cn(
           "relative z-10 w-full max-w-lg transition-all duration-300",
-          "max-h-[90vh] overflow-auto rounded-t-2xl bg-keria-darker border border-keria-forest/30 shadow-2xl sm:rounded-2xl sm:m-4",
+          "bg-keria-darker border-keria-forest/30 max-h-[90vh] overflow-auto rounded-t-2xl border shadow-2xl sm:m-4 sm:rounded-2xl",
           isAnimating
-            ? "translate-y-0 opacity-100 scale-100"
+            ? "translate-y-0 scale-100 opacity-100"
             : "translate-y-full opacity-0 sm:translate-y-4 sm:scale-95",
           className
         )}
       >
         {/* Drag bar (mobile) */}
-        <div className="sticky top-0 z-10 flex justify-center bg-keria-darker pt-3 pb-2 sm:hidden">
-          <div className="h-1 w-10 rounded-full bg-keria-forest" />
+        <div className="bg-keria-darker sticky top-0 z-10 flex justify-center pb-2 pt-3 sm:hidden">
+          <div className="bg-keria-forest h-1 w-10 rounded-full" />
         </div>
 
         {showCloseButton && (
           <button
             onClick={onClose}
-            className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-keria-forest/50 text-keria-muted transition-colors hover:bg-keria-forest hover:text-keria-cream"
+            className="bg-keria-forest/50 text-keria-muted hover:bg-keria-forest hover:text-keria-cream absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full transition-colors"
             aria-label="Fermer"
           >
             <svg

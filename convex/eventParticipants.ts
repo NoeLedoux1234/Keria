@@ -6,12 +6,7 @@ export const join = mutation({
     eventId: v.id("events"),
     name: v.string(),
     rsvpStatus: v.optional(
-      v.union(
-        v.literal("yes"),
-        v.literal("no"),
-        v.literal("maybe"),
-        v.literal("pending")
-      )
+      v.union(v.literal("yes"), v.literal("no"), v.literal("maybe"), v.literal("pending"))
     ),
   },
   handler: async (ctx, args) => {
@@ -35,7 +30,9 @@ export const join = mutation({
       .first();
 
     if (existing) {
-      throw new Error("A participant with this name already exists in this event. Please choose a different name.");
+      throw new Error(
+        "A participant with this name already exists in this event. Please choose a different name."
+      );
     }
 
     const participantId = await ctx.db.insert("eventParticipants", {
@@ -58,11 +55,7 @@ export const join = mutation({
 export const rsvp = mutation({
   args: {
     participantId: v.id("eventParticipants"),
-    rsvpStatus: v.union(
-      v.literal("yes"),
-      v.literal("no"),
-      v.literal("maybe")
-    ),
+    rsvpStatus: v.union(v.literal("yes"), v.literal("no"), v.literal("maybe")),
   },
   handler: async (ctx, args) => {
     const participant = await ctx.db.get(args.participantId);

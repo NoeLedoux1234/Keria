@@ -29,29 +29,34 @@ L'application calcule un **centroide geographique optimise**, propose des **lieu
 ## Fonctionnalites
 
 ### Point de rencontre
+
 - Calcul du point central optimal (centroide spherique)
 - Score d'equite (0-100%) base sur l'ecart-type des distances
 - Support multi-transport : voiture, velo, marche, transports en commun
 - Partage via code unique (6 caracteres) ou lien direct
 
 ### Carte interactive
+
 - Visualisation des participants avec marqueurs colores
 - Affichage du point central calcule
 - Trace des itineraires sur la carte
 - Zoom automatique pour englober tous les participants
 
 ### Suggestions de lieux
+
 - Recherche contextuelle selon l'heure (cafe le matin, restaurant le midi, bar le soir)
 - Double source : Google Places API + OpenStreetMap (Overpass)
 - Filtres par categorie, prix, ouverture, rayon
 - Fiches detaillees avec avis, photos, horaires
 
 ### Systeme de vote
+
 - Vote pour/contre les lieux suggeres
 - Classement en temps reel
 - Selection du lieu final par le createur
 
 ### Evenements multi-etapes
+
 - Planification d'evenements avec plusieurs etapes (depart, intermediaire, arrivee)
 - Systeme RSVP (oui, non, peut-etre)
 - Horaires par etape
@@ -60,16 +65,16 @@ L'application calcule un **centroide geographique optimise**, propose des **lieu
 
 ## Stack technique
 
-| Couche | Technologie | Role |
-|--------|-------------|------|
-| Frontend | Next.js 15, React 19 | Application web (App Router) |
-| Langage | TypeScript | Typage statique bout en bout |
-| Style | Tailwind CSS | Design responsive |
-| Backend | Convex | Base de donnees temps reel, serverless |
-| Cartes | Mapbox GL | Rendu cartographique vectoriel |
-| Itineraires | OpenRouteService | Calcul de trajets et isochrones |
-| Lieux | Google Places + Overpass API | Recherche d'etablissements |
-| Monorepo | Turborepo + pnpm | Gestion multi-packages |
+| Couche      | Technologie                  | Role                                   |
+| ----------- | ---------------------------- | -------------------------------------- |
+| Frontend    | Next.js 15, React 19         | Application web (App Router)           |
+| Langage     | TypeScript                   | Typage statique bout en bout           |
+| Style       | Tailwind CSS                 | Design responsive                      |
+| Backend     | Convex                       | Base de donnees temps reel, serverless |
+| Cartes      | Mapbox GL                    | Rendu cartographique vectoriel         |
+| Itineraires | OpenRouteService             | Calcul de trajets et isochrones        |
+| Lieux       | Google Places + Overpass API | Recherche d'etablissements             |
+| Monorepo    | Turborepo + pnpm             | Gestion multi-packages                 |
 
 ---
 
@@ -152,37 +157,37 @@ L'application est accessible sur `http://localhost:3000`.
 
 ## Variables d'environnement
 
-| Variable | Description | Ou l'obtenir |
-|----------|-------------|--------------|
-| `NEXT_PUBLIC_CONVEX_URL` | URL du deploiement Convex | `npx convex dev` (genere automatiquement) |
-| `NEXT_PUBLIC_MAPBOX_TOKEN` | Token d'acces Mapbox | [account.mapbox.com](https://account.mapbox.com/access-tokens/) |
-| `ORS_API_KEY` | Cle API OpenRouteService | [openrouteservice.org](https://openrouteservice.org/dev/#/signup) |
-| `GOOGLE_PLACES_API_KEY` | Cle API Google Places (optionnel) | [console.cloud.google.com](https://console.cloud.google.com/) |
-| `CONVEX_DEPLOYMENT` | ID du deploiement Convex | `npx convex dev` (genere automatiquement) |
+| Variable                   | Description                       | Ou l'obtenir                                                      |
+| -------------------------- | --------------------------------- | ----------------------------------------------------------------- |
+| `NEXT_PUBLIC_CONVEX_URL`   | URL du deploiement Convex         | `npx convex dev` (genere automatiquement)                         |
+| `NEXT_PUBLIC_MAPBOX_TOKEN` | Token d'acces Mapbox              | [account.mapbox.com](https://account.mapbox.com/access-tokens/)   |
+| `ORS_API_KEY`              | Cle API OpenRouteService          | [openrouteservice.org](https://openrouteservice.org/dev/#/signup) |
+| `GOOGLE_PLACES_API_KEY`    | Cle API Google Places (optionnel) | [console.cloud.google.com](https://console.cloud.google.com/)     |
+| `CONVEX_DEPLOYMENT`        | ID du deploiement Convex          | `npx convex dev` (genere automatiquement)                         |
 
 ---
 
 ## Scripts
 
-| Commande | Description |
-|----------|-------------|
-| `pnpm dev` | Developement (Next.js + Convex) |
-| `pnpm build` | Build de production |
-| `pnpm lint` | Verification ESLint |
-| `pnpm type-check` | Verification TypeScript |
-| `pnpm format` | Formatage Prettier |
-| `pnpm clean` | Nettoyage des builds |
+| Commande          | Description                     |
+| ----------------- | ------------------------------- |
+| `pnpm dev`        | Developement (Next.js + Convex) |
+| `pnpm build`      | Build de production             |
+| `pnpm lint`       | Verification ESLint             |
+| `pnpm type-check` | Verification TypeScript         |
+| `pnpm format`     | Formatage Prettier              |
+| `pnpm clean`      | Nettoyage des builds            |
 
 ---
 
 ## APIs externes
 
-| Service | Usage | Tier gratuit |
-|---------|-------|--------------|
-| [Mapbox](https://www.mapbox.com/) | Cartes vectorielles interactives | 100K chargements/mois |
-| [OpenRouteService](https://openrouteservice.org/) | Itineraires, isochrones | Illimite (open source) |
-| [Google Places](https://developers.google.com/maps/documentation/places) | Recherche de lieux, avis, photos | 10K requetes/mois |
-| [Overpass API](https://overpass-api.de/) | Donnees OpenStreetMap | Illimite (open source) |
+| Service                                                                  | Usage                            | Tier gratuit           |
+| ------------------------------------------------------------------------ | -------------------------------- | ---------------------- |
+| [Mapbox](https://www.mapbox.com/)                                        | Cartes vectorielles interactives | 100K chargements/mois  |
+| [OpenRouteService](https://openrouteservice.org/)                        | Itineraires, isochrones          | Illimite (open source) |
+| [Google Places](https://developers.google.com/maps/documentation/places) | Recherche de lieux, avis, photos | 10K requetes/mois      |
+| [Overpass API](https://overpass-api.de/)                                 | Donnees OpenStreetMap            | Illimite (open source) |
 
 ---
 

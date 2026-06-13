@@ -8,8 +8,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-keria-forest text-keria-cream hover:bg-keria-muted",
-        primary:
-          "bg-keria-gold text-keria-darker font-semibold hover:bg-keria-gold-dark",
+        primary: "bg-keria-gold text-keria-darker font-semibold hover:bg-keria-gold-dark",
         secondary: "bg-keria-darker text-keria-cream hover:bg-keria-forest",
         outline:
           "border border-keria-forest text-keria-cream hover:bg-keria-forest/20 hover:border-keria-muted",
@@ -31,16 +30,12 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-  extends ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   isLoading?: boolean;
 }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    { className, variant, size, isLoading, children, disabled, ...props },
-    ref
-  ) => {
+  ({ className, variant, size, isLoading, children, disabled, ...props }, ref) => {
     return (
       <button
         className={cn(buttonVariants({ variant, size, className }))}

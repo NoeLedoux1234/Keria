@@ -15,11 +15,7 @@ interface MapStagePathProps {
   dashed?: boolean;
 }
 
-export function MapStagePath({
-  stages,
-  color = "#6366f1",
-  dashed = true,
-}: MapStagePathProps) {
+export function MapStagePath({ stages, color = "#6366f1", dashed = true }: MapStagePathProps) {
   const uniqueId = useId();
   const sortedStages = [...stages].sort((a, b) => a.order - b.order);
 
@@ -29,10 +25,7 @@ export function MapStagePath({
   const outlineLayerId = `stages-path-outline-${uniqueId}`;
   const lineLayerId = `stages-path-line-${uniqueId}`;
 
-  const coordinates = sortedStages.map((stage) => [
-    stage.location.lng,
-    stage.location.lat,
-  ]);
+  const coordinates = sortedStages.map((stage) => [stage.location.lng, stage.location.lat]);
 
   const geojson: GeoJSON.Feature<GeoJSON.LineString> = {
     type: "Feature",

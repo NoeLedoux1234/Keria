@@ -25,7 +25,7 @@ export function Navigation() {
       {!isHomepage && (
         <motion.button
           onClick={() => setIsOpen(!isOpen)}
-          className="fixed right-6 top-6 z-[60] flex h-12 w-12 items-center justify-center rounded-full border border-keria-forest/30 bg-keria-darker/90 backdrop-blur-md transition-all hover:ring-1 hover:ring-keria-gold/30"
+          className="border-keria-forest/30 bg-keria-darker/90 hover:ring-keria-gold/30 fixed right-6 top-6 z-[60] flex h-12 w-12 items-center justify-center rounded-full border backdrop-blur-md transition-all hover:ring-1"
           aria-label="Menu"
           aria-expanded={isOpen}
           initial={{ opacity: 0, scale: 0.8 }}
@@ -34,7 +34,7 @@ export function Navigation() {
         >
           <div className="flex flex-col items-center justify-center gap-1.5">
             <motion.span
-              className="block h-0.5 w-5 bg-keria-cream"
+              className="bg-keria-cream block h-0.5 w-5"
               animate={{
                 rotate: isOpen ? 45 : 0,
                 y: isOpen ? 8 : 0,
@@ -42,12 +42,12 @@ export function Navigation() {
               transition={{ duration: 0.2 }}
             />
             <motion.span
-              className="block h-0.5 w-5 bg-keria-cream"
+              className="bg-keria-cream block h-0.5 w-5"
               animate={{ opacity: isOpen ? 0 : 1 }}
               transition={{ duration: 0.2 }}
             />
             <motion.span
-              className="block h-0.5 w-5 bg-keria-cream"
+              className="bg-keria-cream block h-0.5 w-5"
               animate={{
                 rotate: isOpen ? -45 : 0,
                 y: isOpen ? -8 : 0,
@@ -66,13 +66,10 @@ export function Navigation() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 flex items-center justify-center bg-keria-darker/95 backdrop-blur-lg"
+            className="bg-keria-darker/95 fixed inset-0 z-40 flex items-center justify-center backdrop-blur-lg"
           >
             {/* Close on backdrop click */}
-            <div
-              className="absolute inset-0"
-              onClick={() => setIsOpen(false)}
-            />
+            <div className="absolute inset-0" onClick={() => setIsOpen(false)} />
 
             <motion.ul
               initial="hidden"
@@ -101,23 +98,21 @@ export function Navigation() {
                   <Link
                     href={link.href}
                     onClick={() => setIsOpen(false)}
-                    className={`group relative inline-flex items-center gap-4 font-display text-2xl font-bold transition-colors sm:text-3xl lg:text-4xl ${
+                    className={`font-display group relative inline-flex items-center gap-4 text-2xl font-bold transition-colors sm:text-3xl lg:text-4xl ${
                       pathname === link.href
                         ? "text-keria-gold"
                         : "text-keria-cream hover:text-keria-gold"
                     }`}
                   >
                     {/* Editorial number */}
-                    <span className="font-mono text-xs text-keria-gold/60">
+                    <span className="text-keria-gold/60 font-mono text-xs">
                       {String(index + 1).padStart(2, "0")}.
                     </span>
                     {link.label}
                     {/* Underline effect */}
                     <span
-                      className={`absolute -bottom-1 left-0 h-px bg-keria-gold transition-all duration-300 ${
-                        pathname === link.href
-                          ? "w-full"
-                          : "w-0 group-hover:w-full"
+                      className={`bg-keria-gold absolute -bottom-1 left-0 h-px transition-all duration-300 ${
+                        pathname === link.href ? "w-full" : "w-0 group-hover:w-full"
                       }`}
                     />
                   </Link>
@@ -127,7 +122,7 @@ export function Navigation() {
 
             {/* Decorative elements */}
             <motion.span
-              className="absolute bottom-8 left-8 font-mono text-xs uppercase tracking-widest text-keria-muted"
+              className="text-keria-muted absolute bottom-8 left-8 font-mono text-xs uppercase tracking-widest"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
@@ -135,7 +130,7 @@ export function Navigation() {
               Navigation
             </motion.span>
             <motion.span
-              className="absolute bottom-8 right-8 font-mono text-xs text-keria-muted"
+              className="text-keria-muted absolute bottom-8 right-8 font-mono text-xs"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}

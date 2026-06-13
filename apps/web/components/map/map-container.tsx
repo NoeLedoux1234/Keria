@@ -1,6 +1,13 @@
 "use client";
 
-import { useRef, useCallback, useState, useImperativeHandle, forwardRef, type ReactNode } from "react";
+import {
+  useRef,
+  useCallback,
+  useState,
+  useImperativeHandle,
+  forwardRef,
+  type ReactNode,
+} from "react";
 import Map, { type MapRef, type ViewStateChangeEvent } from "react-map-gl";
 import type { Coordinates } from "@meetpoint/types";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -22,18 +29,17 @@ interface MapContainerProps {
 const DEFAULT_CENTER: Coordinates = { lat: 48.8566, lng: 2.3522 };
 const DEFAULT_ZOOM = 12;
 
-export const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(
-  function MapContainer(
-    {
-      initialCenter = DEFAULT_CENTER,
-      initialZoom = DEFAULT_ZOOM,
-      children,
-      onMove,
-      onClick,
-      className = "h-full w-full",
-    },
-    ref
-  ) {
+export const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(function MapContainer(
+  {
+    initialCenter = DEFAULT_CENTER,
+    initialZoom = DEFAULT_ZOOM,
+    children,
+    onMove,
+    onClick,
+    className = "h-full w-full",
+  },
+  ref
+) {
   const mapRef = useRef<MapRef>(null);
   const [viewState, setViewState] = useState({
     latitude: initialCenter.lat,
@@ -91,16 +97,20 @@ export const MapContainer = forwardRef<MapContainerHandle, MapContainerProps>(
     );
   }, []);
 
-  useImperativeHandle(ref, () => ({
-    flyTo,
-    fitBounds,
-  }), [flyTo, fitBounds]);
+  useImperativeHandle(
+    ref,
+    () => ({
+      flyTo,
+      fitBounds,
+    }),
+    [flyTo, fitBounds]
+  );
 
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
   if (!mapboxToken) {
     return (
-      <div className={`flex items-center justify-center bg-keria-darker ${className}`}>
+      <div className={`bg-keria-darker flex items-center justify-center ${className}`}>
         <p className="text-keria-muted">
           Token Mapbox non configuré. Ajoutez NEXT_PUBLIC_MAPBOX_TOKEN dans .env.local
         </p>

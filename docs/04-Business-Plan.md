@@ -22,13 +22,13 @@ L'application mobile native reste à développer et constitue une priorité de l
 
 ### Technologies
 
-| Couche | Solution | Justification |
-|--------|----------|---------------|
-| Frontend | Next.js 15, React 19, TypeScript | Performance, maintenabilité |
-| Backend | Convex | Temps réel natif, serverless |
-| Cartographie | Mapbox GL | Qualité, SDK React |
-| Routage | OpenRouteService | Gratuit, multi-modal |
-| Places | Google Places API | Exhaustivité des données |
+| Couche       | Solution                         | Justification                |
+| ------------ | -------------------------------- | ---------------------------- |
+| Frontend     | Next.js 15, React 19, TypeScript | Performance, maintenabilité  |
+| Backend      | Convex                           | Temps réel natif, serverless |
+| Cartographie | Mapbox GL                        | Qualité, SDK React           |
+| Routage      | OpenRouteService                 | Gratuit, multi-modal         |
+| Places       | Google Places API                | Exhaustivité des données     |
 
 ### Équipe Actuelle
 
@@ -56,21 +56,21 @@ L'objectif commercial à douze mois est d'atteindre cent abonnés Premium et tro
 
 ### Besoin Initial : 30 000€
 
-| Allocation | Montant | Détail |
-|------------|---------|--------|
-| Développement mobile | 15 000€ | Freelance senior, 6 mois mi-temps |
-| Design UX/UI | 5 000€ | Refonte interface, charte graphique |
-| Marketing | 5 000€ | Contenu, acquisition initiale |
-| Infrastructure | 5 000€ | APIs, hébergement, marge |
+| Allocation           | Montant | Détail                              |
+| -------------------- | ------- | ----------------------------------- |
+| Développement mobile | 15 000€ | Freelance senior, 6 mois mi-temps   |
+| Design UX/UI         | 5 000€  | Refonte interface, charte graphique |
+| Marketing            | 5 000€  | Contenu, acquisition initiale       |
+| Infrastructure       | 5 000€  | APIs, hébergement, marge            |
 
 ### Sources de Financement
 
-| Source | Montant | Probabilité |
-|--------|---------|-------------|
-| Autofinancement | 10 000€ | Certaine |
-| Prêt d'honneur | 10 000€ | Élevée |
-| Subvention (Bpifrance, Région) | 10 000€ | Moyenne |
-| Love money | Variable | Selon réseau |
+| Source                         | Montant  | Probabilité  |
+| ------------------------------ | -------- | ------------ |
+| Autofinancement                | 10 000€  | Certaine     |
+| Prêt d'honneur                 | 10 000€  | Élevée       |
+| Subvention (Bpifrance, Région) | 10 000€  | Moyenne      |
+| Love money                     | Variable | Selon réseau |
 
 ---
 
@@ -78,18 +78,18 @@ L'objectif commercial à douze mois est d'atteindre cent abonnés Premium et tro
 
 ### Compte de Résultat Prévisionnel
 
-| Ligne | Année 1 | Année 2 | Année 3 |
-|-------|---------|---------|---------|
+| Ligne                  | Année 1     | Année 2      | Année 3      |
+| ---------------------- | ----------- | ------------ | ------------ |
 | **Chiffre d'affaires** | **25 000€** | **160 000€** | **700 000€** |
-| Premium | 13 500€ | 90 000€ | 450 000€ |
-| Business | 12 000€ | 72 000€ | 240 000€ |
-| Partenariats | - | - | 10 000€ |
-| **Charges** | **6 000€** | **120 000€** | **370 000€** |
-| Infrastructure | 3 000€ | 15 000€ | 50 000€ |
-| RH | - | 80 000€ | 200 000€ |
-| Marketing | 2 000€ | 20 000€ | 100 000€ |
-| Divers | 1 000€ | 5 000€ | 20 000€ |
-| **Résultat net** | **19 000€** | **40 000€** | **330 000€** |
+| Premium                | 13 500€     | 90 000€      | 450 000€     |
+| Business               | 12 000€     | 72 000€      | 240 000€     |
+| Partenariats           | -           | -            | 10 000€      |
+| **Charges**            | **6 000€**  | **120 000€** | **370 000€** |
+| Infrastructure         | 3 000€      | 15 000€      | 50 000€      |
+| RH                     | -           | 80 000€      | 200 000€     |
+| Marketing              | 2 000€      | 20 000€      | 100 000€     |
+| Divers                 | 1 000€      | 5 000€       | 20 000€      |
+| **Résultat net**       | **19 000€** | **40 000€**  | **330 000€** |
 
 ### Point Mort
 
@@ -115,13 +115,13 @@ Du neuvième au douzième mois, la publicité payante démarre avec des campagne
 
 ## Analyse des Risques
 
-| Risque | Probabilité | Impact | Mitigation |
-|--------|-------------|--------|------------|
-| Entrée d'un concurrent majeur | Moyenne | Élevé | Accélération acquisition, différenciation |
-| Absence de traction | Moyenne | Élevé | Pivot B2B si B2C insuffisant |
-| Problèmes de scalabilité | Faible | Moyen | Architecture serverless éprouvée |
-| Hausse coûts APIs | Moyenne | Moyen | Alternatives techniques identifiées |
-| Difficultés recrutement | Moyenne | Moyen | Freelances, remote élargi |
+| Risque                        | Probabilité | Impact | Mitigation                                |
+| ----------------------------- | ----------- | ------ | ----------------------------------------- |
+| Entrée d'un concurrent majeur | Moyenne     | Élevé  | Accélération acquisition, différenciation |
+| Absence de traction           | Moyenne     | Élevé  | Pivot B2B si B2C insuffisant              |
+| Problèmes de scalabilité      | Faible      | Moyen  | Architecture serverless éprouvée          |
+| Hausse coûts APIs             | Moyenne     | Moyen  | Alternatives techniques identifiées       |
+| Difficultés recrutement       | Moyenne     | Moyen  | Freelances, remote élargi                 |
 
 ---
 

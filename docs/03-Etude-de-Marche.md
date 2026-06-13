@@ -10,12 +10,12 @@ En France, quinze millions de personnes organisent régulièrement des sorties d
 
 Des applications de référence ont démontré la viabilité de ce marché :
 
-| Application | Fonction | Utilisateurs |
-|-------------|----------|--------------|
-| Doodle | Planification de dates | 30 millions |
-| Tricount | Partage de dépenses | 10 millions |
-| Splitwise | Partage de dépenses | 20 millions |
-| WhatsApp | Communication | 2 milliards |
+| Application | Fonction               | Utilisateurs |
+| ----------- | ---------------------- | ------------ |
+| Doodle      | Planification de dates | 30 millions  |
+| Tricount    | Partage de dépenses    | 10 millions  |
+| Splitwise   | Partage de dépenses    | 20 millions  |
+| WhatsApp    | Communication          | 2 milliards  |
 
 Un constat s'impose néanmoins : aucune solution ne s'attaque spécifiquement à la question de l'équité géographique des points de rencontre. Ce segment reste vacant, offrant une opportunité de positionnement claire pour Keria.
 
