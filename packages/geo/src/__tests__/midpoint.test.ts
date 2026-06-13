@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { calculateGeographicCenter, calculateMidpointWithMetrics } from "../midpoint";
+import {
+  calculateGeographicCenter,
+  calculateMidpointWithMetrics,
+  optimizeMeetingPoint,
+} from "../midpoint";
+import { distanceStandardDeviation, haversineDistance } from "../distance";
 import type { Coordinates } from "@meetpoint/types";
 
 describe("calculateGeographicCenter", () => {
@@ -52,5 +57,51 @@ describe("calculateMidpointWithMetrics", () => {
     expect(typeof result.maxDistanceKm).toBe("number");
     expect(result.averageDistanceKm).toBeGreaterThan(0);
     expect(result.maxDistanceKm).toBeGreaterThanOrEqual(result.averageDistanceKm);
+  });
+});
+
+describe("optimizeMeetingPoint", () => {
+  it("never increases dispersion relative to the geographic centre", () => {
+    const pts: Coordinates[] = [
+      { lat: 48.85, lng: 2.35 },
+      { lat: 48.86, lng: 2.36 },
+      { lat: 45.76, lng: 4.83 },
+    ];
+
+    const stdCenter = distanceStandardDeviation(calculateGeographicCenter(pts), pts);
+    const stdOptimized = distanceStandardDeviation(optimizeMeetingPoint(pts), pts);
+
+    expect(stdOptimized).toBeLessThanOrEqual(stdCenter);
+  });
+
+  it("reaches a fairer point far from the centroid (search radius scales with spread)", () => {
+    // Two nearby points + one far away: the fair point sits tens of km from the
+    // vector centroid, well beyond the old fixed 2 km search box.
+    const pts: Coordinates[] = [
+      { lat: 48.85, lng: 2.35 },
+      { lat: 48.87, lng: 2.4 },
+      { lat: 43.3, lng: 5.4 },
+    ];
+
+    const center = calculateGeographicCenter(pts);
+    const optimized = optimizeMeetingPoint(pts);
+
+    expect(distanceStandardDeviation(optimized, pts)).toBeLessThan(
+      distanceStandardDeviation(center, pts)
+    );
+    expect(haversineDistance(center, optimized)).toBeGreaterThan(5);
+  });
+
+  it("returns the centre for two already-equidistant points", () => {
+    const points: Coordinates[] = [
+      { lat: 49.0, lng: 2.35 },
+      { lat: 48.7, lng: 2.35 },
+    ];
+
+    const center = calculateGeographicCenter(points);
+    const optimized = optimizeMeetingPoint(points);
+
+    expect(optimized.lat).toBeCloseTo(center.lat, 5);
+    expect(optimized.lng).toBeCloseTo(center.lng, 5);
   });
 });

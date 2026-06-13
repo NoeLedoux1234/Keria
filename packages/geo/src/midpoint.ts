@@ -82,31 +82,56 @@ export function calculateWeightedMidpoint(points: Coordinates[], weights: number
   };
 }
 
+const KM_PER_DEGREE_LAT = 111;
+
 export function optimizeMeetingPoint(
   participants: Coordinates[],
   gridSize: number = 5,
-  radiusKm: number = 2
+  radiusKm?: number
 ): Coordinates {
   const center = calculateGeographicCenter(participants);
 
-  const radiusDeg = radiusKm / 111;
+  if (participants.length < 2) {
+    return center;
+  }
+
+  // Scale the search area to how spread out the participants are: refining
+  // inside a fixed 2 km box is meaningless when people are tens of km apart.
+  const distancesToCenter = participants.map((p) => haversineDistance(center, p));
+  const avgDistanceKm = distancesToCenter.reduce((a, b) => a + b, 0) / distancesToCenter.length;
+  let searchRadiusKm = radiusKm ?? Math.max(2, avgDistanceKm * 0.5);
 
   let bestPoint = center;
   let bestStdDev = distanceStandardDeviation(center, participants);
 
-  for (let i = -gridSize; i <= gridSize; i++) {
-    for (let j = -gridSize; j <= gridSize; j++) {
-      const candidate: Coordinates = {
-        lat: center.lat + (i * radiusDeg) / gridSize,
-        lng: center.lng + (j * radiusDeg) / gridSize,
-      };
+  // Coarse-to-fine: scan a grid around the best point, then zoom in and repeat.
+  // This covers a wide area without losing resolution near the optimum.
+  const REFINEMENT_PASSES = 4;
+  for (let pass = 0; pass < REFINEMENT_PASSES; pass++) {
+    const origin = bestPoint;
+    const latRadiusDeg = searchRadiusKm / KM_PER_DEGREE_LAT;
+    // 1° of longitude shrinks with latitude, so the grid must not be square in
+    // degrees, otherwise it is anisotropic on the ground.
+    const cosLat = Math.cos(degreesToRadians(origin.lat));
+    const lngRadiusDeg = searchRadiusKm / (KM_PER_DEGREE_LAT * Math.max(Math.abs(cosLat), 1e-6));
 
-      const stdDev = distanceStandardDeviation(candidate, participants);
-      if (stdDev < bestStdDev) {
-        bestStdDev = stdDev;
-        bestPoint = candidate;
+    for (let i = -gridSize; i <= gridSize; i++) {
+      for (let j = -gridSize; j <= gridSize; j++) {
+        const candidate: Coordinates = {
+          lat: origin.lat + (i * latRadiusDeg) / gridSize,
+          lng: origin.lng + (j * lngRadiusDeg) / gridSize,
+        };
+
+        const stdDev = distanceStandardDeviation(candidate, participants);
+        if (stdDev < bestStdDev) {
+          bestStdDev = stdDev;
+          bestPoint = candidate;
+        }
       }
     }
+
+    // Zoom in: next pass searches within one step of the current best point.
+    searchRadiusKm /= gridSize;
   }
 
   return bestPoint;
