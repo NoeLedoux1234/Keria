@@ -2,7 +2,7 @@
 
 import { useState, useRef, useId } from "react";
 import { useAction } from "convex/react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button, Card, CardHeader, CardTitle, CardContent, Badge, Modal } from "@meetpoint/ui";
 import { api } from "../../../convex/_generated/api";
 import { usePlaces, useVotes } from "@/hooks";
@@ -42,9 +42,26 @@ const CATEGORY_FILTERS = [
 
 const PRICE_LEVELS = ["", "€", "€€", "€€€", "€€€€"];
 
-function StarIcon({ filled, half, size, gradientId }: { filled?: boolean; half?: boolean; size: number; gradientId?: string }) {
+function StarIcon({
+  filled,
+  half,
+  size,
+  gradientId,
+}: {
+  filled?: boolean;
+  half?: boolean;
+  size: number;
+  gradientId?: string;
+}) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
       {half && gradientId ? (
         <>
           <defs>
@@ -82,11 +99,17 @@ function StarRating({ rating, size = "sm" }: { rating: number; size?: "sm" | "lg
   const iconSize = size === "lg" ? 20 : 14;
 
   return (
-    <div className="flex items-center gap-0.5" role="img" aria-label={`Note : ${rating.toFixed(1)} sur 5`}>
+    <div
+      className="flex items-center gap-0.5"
+      role="img"
+      aria-label={`Note : ${rating.toFixed(1)} sur 5`}
+    >
       {Array.from({ length: fullStars }).map((_, i) => (
         <StarIcon key={`full-${i}`} filled size={iconSize} />
       ))}
-      {hasHalfStar ? <StarIcon key="half" half size={iconSize} gradientId={`halfStar-${uniqueId}`} /> : null}
+      {hasHalfStar ? (
+        <StarIcon key="half" half size={iconSize} gradientId={`halfStar-${uniqueId}`} />
+      ) : null}
       {Array.from({ length: emptyStars }).map((_, i) => (
         <StarIcon key={`empty-${i}`} size={iconSize} />
       ))}
@@ -112,7 +135,7 @@ function PhotoCarousel({ photos, name }: { photos: string[]; name: string }) {
   };
 
   return (
-    <div className="relative h-56 w-full bg-keria-darker/50">
+    <div className="bg-keria-darker/50 relative h-56 w-full">
       <img
         src={photos[currentIndex]}
         alt={`${name} - Photo ${currentIndex + 1}`}
@@ -127,17 +150,33 @@ function PhotoCarousel({ photos, name }: { photos: string[]; name: string }) {
         <>
           <button
             onClick={goPrev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70"
+            className="absolute left-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
           <button
             onClick={goNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70"
+            className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/70"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <polyline points="9 18 15 12 9 6" />
             </svg>
           </button>
@@ -160,7 +199,7 @@ function PhotoCarousel({ photos, name }: { photos: string[]; name: string }) {
       )}
 
       {/* Photo count */}
-      <div className="absolute top-3 left-3 rounded-full bg-black/50 px-2 py-1 text-xs text-white">
+      <div className="absolute left-3 top-3 rounded-full bg-black/50 px-2 py-1 text-xs text-white">
         {currentIndex + 1} / {photos.length}
       </div>
     </div>
@@ -175,24 +214,38 @@ const AVATAR_COLORS = [
   "bg-keria-forest/50 text-keria-cream",
 ];
 
-function ReviewCard({ review, index }: { review: { authorName: string; authorPhoto?: string; rating: number; text: string; relativeTime: string }; index: number }) {
+function ReviewCard({
+  review,
+  index,
+}: {
+  review: {
+    authorName: string;
+    authorPhoto?: string;
+    rating: number;
+    text: string;
+    relativeTime: string;
+  };
+  index: number;
+}) {
   const [expanded, setExpanded] = useState(false);
   const isLong = review.text.length > 150;
   const avatarColor = AVATAR_COLORS[index % AVATAR_COLORS.length];
 
   return (
-    <div className="rounded-lg bg-keria-forest/20 p-3">
+    <div className="bg-keria-forest/20 rounded-lg p-3">
       <div className="flex items-start gap-3">
         {/* Avatar avec initiale - les photos de profil Google ne sont pas accessibles directement */}
-        <div className={`flex h-10 w-10 items-center justify-center rounded-full ${avatarColor} font-semibold flex-shrink-0`}>
+        <div
+          className={`flex h-10 w-10 items-center justify-center rounded-full ${avatarColor} flex-shrink-0 font-semibold`}
+        >
           {review.authorName.charAt(0).toUpperCase()}
         </div>
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2">
-            <span className="font-medium text-sm truncate">{review.authorName}</span>
-            <span className="text-xs text-keria-muted flex-shrink-0">{review.relativeTime}</span>
+            <span className="truncate text-sm font-medium">{review.authorName}</span>
+            <span className="text-keria-muted flex-shrink-0 text-xs">{review.relativeTime}</span>
           </div>
-          <div className="flex items-center gap-1 mt-0.5">
+          <div className="mt-0.5 flex items-center gap-1">
             {Array.from({ length: 5 }).map((_, i) => (
               <span
                 key={i}
@@ -203,12 +256,12 @@ function ReviewCard({ review, index }: { review: { authorName: string; authorPho
             ))}
           </div>
           {review.text && (
-            <p className="mt-2 text-sm text-keria-cream/80">
+            <p className="text-keria-cream/80 mt-2 text-sm">
               {isLong && !expanded ? `${review.text.slice(0, 150)}...` : review.text}
               {isLong && (
                 <button
                   onClick={() => setExpanded(!expanded)}
-                  className="ml-1 text-keria-gold hover:underline"
+                  className="text-keria-gold ml-1 hover:underline"
                 >
                   {expanded ? "Voir moins" : "Voir plus"}
                 </button>
@@ -273,30 +326,34 @@ function PlaceModal({
           )}
         </div>
       ) : (
-        <div className="h-32 bg-keria-forest/20 flex items-center justify-center">
-          <span className="text-lg font-medium text-keria-muted">{categoryInfo.label}</span>
+        <div className="bg-keria-forest/20 flex h-32 items-center justify-center">
+          <span className="text-keria-muted text-lg font-medium">{categoryInfo.label}</span>
         </div>
       )}
 
       <div className="p-5">
         {/* En-tête */}
         <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             <h2 className="text-xl font-bold">{place.name}</h2>
-            <p className="text-sm text-keria-muted">{categoryInfo.label}</p>
+            <p className="text-keria-muted text-sm">{categoryInfo.label}</p>
           </div>
 
           {/* Score */}
-          <div className="text-center flex-shrink-0">
+          <div className="flex-shrink-0 text-center">
             <div
               className={`text-2xl font-bold ${
-                score > 0 ? "text-keria-success-light" : score < 0 ? "text-keria-error-light" : "text-keria-muted"
+                score > 0
+                  ? "text-keria-success-light"
+                  : score < 0
+                    ? "text-keria-error-light"
+                    : "text-keria-muted"
               }`}
             >
               {score > 0 ? "+" : ""}
               {score}
             </div>
-            <div className="text-xs text-keria-muted">
+            <div className="text-keria-muted text-xs">
               {upvotes}↑ {downvotes}↓
             </div>
           </div>
@@ -308,12 +365,10 @@ function PlaceModal({
             <StarRating rating={place.rating} size="lg" />
             <span className="text-lg font-semibold">{place.rating.toFixed(1)}</span>
             {place.userRatingsTotal && (
-              <span className="text-sm text-keria-muted">
-                ({place.userRatingsTotal} avis)
-              </span>
+              <span className="text-keria-muted text-sm">({place.userRatingsTotal} avis)</span>
             )}
             {place.priceLevel !== undefined && place.priceLevel > 0 && (
-              <span className="text-sm font-medium text-keria-success-light">
+              <span className="text-keria-success-light text-sm font-medium">
                 • {PRICE_LEVELS[place.priceLevel]}
               </span>
             )}
@@ -321,12 +376,12 @@ function PlaceModal({
         )}
 
         {/* Tabs */}
-        <div className="mt-4 flex border-b border-keria-forest/30">
+        <div className="border-keria-forest/30 mt-4 flex border-b">
           <button
             onClick={() => setActiveTab("info")}
             className={`flex-1 pb-2 text-sm font-medium transition-colors ${
               activeTab === "info"
-                ? "border-b-2 border-keria-gold text-keria-gold"
+                ? "border-keria-gold text-keria-gold border-b-2"
                 : "text-keria-muted hover:text-keria-cream"
             }`}
           >
@@ -336,7 +391,7 @@ function PlaceModal({
             onClick={() => setActiveTab("reviews")}
             className={`flex-1 pb-2 text-sm font-medium transition-colors ${
               activeTab === "reviews"
-                ? "border-b-2 border-keria-gold text-keria-gold"
+                ? "border-keria-gold text-keria-gold border-b-2"
                 : "text-keria-muted hover:text-keria-cream"
             }`}
           >
@@ -346,7 +401,7 @@ function PlaceModal({
             onClick={() => setActiveTab("hours")}
             className={`flex-1 pb-2 text-sm font-medium transition-colors ${
               activeTab === "hours"
-                ? "border-b-2 border-keria-gold text-keria-gold"
+                ? "border-keria-gold text-keria-gold border-b-2"
                 : "text-keria-muted hover:text-keria-cream"
             }`}
           >
@@ -360,22 +415,34 @@ function PlaceModal({
             <div className="space-y-3">
               {/* Adresse */}
               <div className="flex items-start gap-3">
-                <svg className="h-4 w-4 text-keria-muted mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  className="text-keria-muted mt-0.5 h-4 w-4 flex-shrink-0"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                   <circle cx="12" cy="10" r="3" />
                 </svg>
-                <p className="text-sm text-keria-cream/80">{place.address}</p>
+                <p className="text-keria-cream/80 text-sm">{place.address}</p>
               </div>
 
               {/* Téléphone */}
               {place.phoneNumber && (
                 <div className="flex items-center gap-3">
-                  <svg className="h-4 w-4 text-keria-muted flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    className="text-keria-muted h-4 w-4 flex-shrink-0"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
                   </svg>
                   <a
                     href={`tel:${place.phoneNumber}`}
-                    className="text-sm text-keria-gold hover:underline"
+                    className="text-keria-gold text-sm hover:underline"
                   >
                     {place.phoneNumber}
                   </a>
@@ -385,7 +452,13 @@ function PlaceModal({
               {/* Site web */}
               {place.website && (
                 <div className="flex items-center gap-3">
-                  <svg className="h-4 w-4 text-keria-muted flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    className="text-keria-muted h-4 w-4 flex-shrink-0"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <circle cx="12" cy="12" r="10" />
                     <line x1="2" y1="12" x2="22" y2="12" />
                     <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
@@ -394,7 +467,7 @@ function PlaceModal({
                     href={place.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-keria-gold hover:underline truncate"
+                    className="text-keria-gold truncate text-sm hover:underline"
                   >
                     {place.website.replace(/^https?:\/\//, "").split("/")[0]}
                   </a>
@@ -404,7 +477,7 @@ function PlaceModal({
           )}
 
           {activeTab === "reviews" && (
-            <div className="space-y-3 max-h-[250px] overflow-y-auto">
+            <div className="max-h-[250px] space-y-3 overflow-y-auto">
               {reviews.length > 0 ? (
                 <>
                   {reviews.map((review, index) => (
@@ -412,13 +485,14 @@ function PlaceModal({
                   ))}
                   {/* Note sur la limite des avis */}
                   {place.userRatingsTotal && place.userRatingsTotal > 5 && (
-                    <p className="text-center text-xs text-keria-muted py-2">
+                    <p className="text-keria-muted py-2 text-center text-xs">
                       Seuls les 5 avis les plus récents sont affichés.
                       <br />
                       <a
-                        href={place.externalId.startsWith("google-")
-                          ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name)}&query_place_id=${place.externalId.replace("google-", "")}`
-                          : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + " " + place.address)}`
+                        href={
+                          place.externalId.startsWith("google-")
+                            ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name)}&query_place_id=${place.externalId.replace("google-", "")}`
+                            : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + " " + place.address)}`
                         }
                         target="_blank"
                         rel="noopener noreferrer"
@@ -430,9 +504,7 @@ function PlaceModal({
                   )}
                 </>
               ) : (
-                <p className="text-center text-sm text-keria-muted py-4">
-                  Aucun avis disponible
-                </p>
+                <p className="text-keria-muted py-4 text-center text-sm">Aucun avis disponible</p>
               )}
             </div>
           )}
@@ -441,15 +513,12 @@ function PlaceModal({
             <div className="space-y-2">
               {openingHours.length > 0 ? (
                 openingHours.map((hours, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between text-sm"
-                  >
+                  <div key={index} className="flex justify-between text-sm">
                     <span className="text-keria-cream/80">{hours}</span>
                   </div>
                 ))
               ) : (
-                <p className="text-center text-sm text-keria-muted py-4">
+                <p className="text-keria-muted py-4 text-center text-sm">
                   Horaires non disponibles
                 </p>
               )}
@@ -464,13 +533,20 @@ function PlaceModal({
               whileTap={{ scale: 0.9 }}
               onClick={() => onVote("up")}
               aria-label={`Voter pour ${place.name}`}
-              className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-colors ${
+              className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-colors ${
                 userVote === "up"
-                  ? "bg-keria-success/20 text-keria-success-light ring-2 ring-keria-success"
+                  ? "bg-keria-success/20 text-keria-success-light ring-keria-success ring-2"
                   : "bg-keria-forest/30 text-keria-cream hover:bg-keria-success/10"
               }`}
             >
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <svg
+                className="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
                 <path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3" />
               </svg>
               Pour
@@ -479,20 +555,27 @@ function PlaceModal({
               whileTap={{ scale: 0.9 }}
               onClick={() => onVote("down")}
               aria-label={`Voter contre ${place.name}`}
-              className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-colors ${
+              className={`flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-colors ${
                 userVote === "down"
-                  ? "bg-keria-error/20 text-keria-error-light ring-2 ring-keria-error"
+                  ? "bg-keria-error/20 text-keria-error-light ring-keria-error ring-2"
                   : "bg-keria-forest/30 text-keria-cream hover:bg-keria-error/10"
               }`}
             >
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <svg
+                className="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
                 <path d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3zm7-13h2.67A2.31 2.31 0 0122 4v7a2.31 2.31 0 01-2.33 2H17" />
               </svg>
               Contre
             </motion.button>
           </div>
         ) : (
-          <p className="mt-4 text-center text-sm text-keria-gold">
+          <p className="text-keria-gold mt-4 text-center text-sm">
             Sélectionnez-vous dans la liste des participants pour voter
           </p>
         )}
@@ -502,7 +585,7 @@ function PlaceModal({
           href={googleMapsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-4 flex items-center justify-center gap-2 rounded-lg bg-keria-gold px-4 py-3 text-sm font-medium text-keria-darker transition-colors hover:bg-keria-gold-dark"
+          className="bg-keria-gold text-keria-darker hover:bg-keria-gold-dark mt-4 flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition-colors"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -574,9 +657,10 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
             lat: midpoint.lat,
             lng: midpoint.lng,
             radiusMeters: searchRadius,
-            categories: categoryFilter === "all"
-              ? ["restaurant", "cafe", "bar", "fast_food"]
-              : [categoryFilter],
+            categories:
+              categoryFilter === "all"
+                ? ["restaurant", "cafe", "bar", "fast_food"]
+                : [categoryFilter],
           });
         }
 
@@ -595,9 +679,10 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
               lat: midpoint.lat,
               lng: midpoint.lng,
               radiusMeters: searchRadius,
-              categories: categoryFilter === "all"
-                ? ["restaurant", "cafe", "bar", "fast_food"]
-                : [categoryFilter],
+              categories:
+                categoryFilter === "all"
+                  ? ["restaurant", "cafe", "bar", "fast_food"]
+                  : [categoryFilter],
             });
           }
         }
@@ -615,9 +700,10 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
             lat: midpoint.lat,
             lng: midpoint.lng,
             radiusMeters: searchRadius,
-            categories: categoryFilter === "all"
-              ? ["restaurant", "cafe", "bar", "fast_food"]
-              : [categoryFilter],
+            categories:
+              categoryFilter === "all"
+                ? ["restaurant", "cafe", "bar", "fast_food"]
+                : [categoryFilter],
           });
         }
       }
@@ -680,9 +766,7 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-base">Lieux suggérés</CardTitle>
-            {ranking && ranking.length > 0 && (
-              <Badge variant="default">{ranking.length}</Badge>
-            )}
+            {ranking && ranking.length > 0 && <Badge variant="default">{ranking.length}</Badge>}
           </div>
         </CardHeader>
 
@@ -706,11 +790,11 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="text-xs text-keria-muted">Rayon:</span>
+                <span className="text-keria-muted text-xs">Rayon:</span>
                 <select
                   value={searchRadius}
                   onChange={(e) => setSearchRadius(Number(e.target.value))}
-                  className="rounded border border-keria-forest/30 bg-keria-darker px-3 py-1.5 text-xs text-keria-cream"
+                  className="border-keria-forest/30 bg-keria-darker text-keria-cream rounded border px-3 py-1.5 text-xs"
                 >
                   <option value={500}>500m</option>
                   <option value={1000}>1 km</option>
@@ -740,16 +824,12 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
                 </Button>
               </div>
 
-              {searchError && (
-                <p className="text-xs text-keria-error-light">{searchError}</p>
-              )}
+              {searchError && <p className="text-keria-error-light text-xs">{searchError}</p>}
             </div>
           )}
 
           {isLoading ? (
-            <div className="py-4 text-center text-sm text-keria-muted">
-              Chargement...
-            </div>
+            <div className="text-keria-muted py-4 text-center text-sm">Chargement...</div>
           ) : filteredRanking && filteredRanking.length > 0 ? (
             <motion.ul
               className="space-y-3"
@@ -774,10 +854,10 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
                     }}
                     whileHover={{ scale: 1.01 }}
                     onClick={() => setSelectedPlace(item)}
-                    className="cursor-pointer rounded-lg border border-keria-forest/30 bg-keria-forest/10 overflow-hidden transition-all hover:border-keria-gold/50 hover:bg-keria-forest/20"
+                    className="border-keria-forest/30 bg-keria-forest/10 hover:border-keria-gold/50 hover:bg-keria-forest/20 cursor-pointer overflow-hidden rounded-lg border transition-all"
                   >
                     {place.photoUrl && (
-                      <div className="relative h-32 w-full bg-keria-darker/50">
+                      <div className="bg-keria-darker/50 relative h-32 w-full">
                         <img
                           src={place.photoUrl}
                           alt={place.name}
@@ -788,7 +868,7 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
                         />
                         {place.openNow !== undefined && (
                           <div
-                            className={`absolute top-2 right-2 rounded-full px-2 py-0.5 text-xs font-medium ${
+                            className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-xs font-medium ${
                               place.openNow
                                 ? "bg-keria-success text-keria-cream"
                                 : "bg-keria-error text-keria-cream"
@@ -802,61 +882,69 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
 
                     <div className="p-3">
                       <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 min-w-0">
+                        <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-[10px] text-keria-muted uppercase">{categoryInfo.label}</span>
+                            <span className="text-keria-muted text-[10px] uppercase">
+                              {categoryInfo.label}
+                            </span>
                             <span className="text-keria-forest">·</span>
-                            <span className="font-medium text-keria-cream truncate">{place.name}</span>
+                            <span className="text-keria-cream truncate font-medium">
+                              {place.name}
+                            </span>
                           </div>
 
                           {place.rating && (
-                            <div className="flex items-center gap-2 mt-1">
+                            <div className="mt-1 flex items-center gap-2">
                               <StarRating rating={place.rating} />
-                              <span className="text-sm font-medium text-keria-cream">
+                              <span className="text-keria-cream text-sm font-medium">
                                 {place.rating.toFixed(1)}
                               </span>
                               {place.userRatingsTotal && (
-                                <span className="text-xs text-keria-muted">
+                                <span className="text-keria-muted text-xs">
                                   ({place.userRatingsTotal})
                                 </span>
                               )}
                             </div>
                           )}
 
-                          <div className="flex items-center gap-2 mt-1">
+                          <div className="mt-1 flex items-center gap-2">
                             {place.priceLevel !== undefined && place.priceLevel > 0 && (
-                              <span className="text-xs font-medium text-keria-success-light">
+                              <span className="text-keria-success-light text-xs font-medium">
                                 {PRICE_LEVELS[place.priceLevel]}
                               </span>
                             )}
-                            <p className="text-xs text-keria-muted truncate">
-                              {place.address}
-                            </p>
+                            <p className="text-keria-muted truncate text-xs">{place.address}</p>
                           </div>
                         </div>
 
-                        <div className="text-center flex-shrink-0">
+                        <div className="flex-shrink-0 text-center">
                           <div
                             className={`text-lg font-bold ${
                               score > 0
                                 ? "text-keria-success-light"
                                 : score < 0
-                                ? "text-keria-error-light"
-                                : "text-keria-muted"
+                                  ? "text-keria-error-light"
+                                  : "text-keria-muted"
                             }`}
                           >
                             {score > 0 ? "+" : ""}
                             {score}
                           </div>
-                          <div className="text-xs text-keria-muted">
+                          <div className="text-keria-muted text-xs">
                             {upvotes}↑ {downvotes}↓
                           </div>
                         </div>
                       </div>
 
                       {userVote && (
-                        <div className="mt-2 text-xs text-center">
-                          <span className={userVote === "up" ? "text-keria-success-light" : "text-keria-error-light"}>
+                        <div className="mt-2 text-center text-xs">
+                          <span
+                            className={
+                              userVote === "up"
+                                ? "text-keria-success-light"
+                                : "text-keria-error-light"
+                            }
+                          >
                             Vous avez voté {userVote === "up" ? "Pour" : "Contre"}
                           </span>
                         </div>
@@ -867,7 +955,7 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
               })}
             </motion.ul>
           ) : (
-            <div className="py-4 text-center text-sm text-keria-muted">
+            <div className="text-keria-muted py-4 text-center text-sm">
               {midpoint
                 ? "Cliquez sur 'Rechercher' pour trouver des lieux"
                 : "Ajoutez des participants pour voir les suggestions"}

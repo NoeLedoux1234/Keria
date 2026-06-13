@@ -13,6 +13,16 @@ const PLACE_CATEGORIES = {
 
 type PlaceCategory = keyof typeof PLACE_CATEGORIES;
 
+// Explicit return type breaks the self-referential inference (TS7022/7023) caused
+// by these actions calling back into api.*/internal.*. `places` is consumed via
+// the reactive query on the client, so its element shape is left opaque here.
+interface OverpassSearchResult {
+  success: boolean;
+  count: number;
+  places: unknown[];
+  error?: string;
+}
+
 interface OverpassElement {
   type: string;
   id: number;
@@ -42,7 +52,7 @@ export const _searchNearby = internalAction({
     categories: v.optional(v.array(v.string())),
     limit: v.optional(v.number()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<OverpassSearchResult> => {
     const radius = args.radiusMeters ?? 1000;
     const limit = args.limit ?? 15;
     const categories = (args.categories ?? ["restaurant", "cafe", "bar"]) as PlaceCategory[];
@@ -148,7 +158,7 @@ export const searchNearby = action({
     categories: v.optional(v.array(v.string())),
     limit: v.optional(v.number()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<OverpassSearchResult> => {
     return await ctx.runAction(internal.searchPlaces._searchNearby, args);
   },
 });
@@ -160,7 +170,7 @@ export const searchContextual = action({
     lng: v.number(),
     radiusMeters: v.optional(v.number()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<OverpassSearchResult> => {
     const hour = new Date().getHours();
 
     let categories: PlaceCategory[];

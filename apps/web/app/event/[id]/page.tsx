@@ -4,7 +4,7 @@ import { use, useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Button, Badge } from "@meetpoint/ui";
+import { Badge } from "@meetpoint/ui";
 import dynamic from "next/dynamic";
 import { useEvent, useEventParticipants } from "@/hooks";
 import { MapStageMarker, MapStagePath } from "@/components/map";
@@ -31,7 +31,9 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
   const { rsvp } = useEventParticipants(eventId);
 
   const mapRef = useRef<MapContainerHandle>(null);
-  const [currentParticipantId, setCurrentParticipantId] = useState<Id<"eventParticipants"> | null>(null);
+  const [currentParticipantId, setCurrentParticipantId] = useState<Id<"eventParticipants"> | null>(
+    null
+  );
   const [selectedStage, setSelectedStage] = useState<Doc<"eventStages"> | null>(null);
   const [codeCopied, setCodeCopied] = useState(false);
 
@@ -75,11 +77,11 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
 
   if (isLoading) {
     return (
-      <main className="relative flex min-h-screen items-center justify-center bg-keria-darker">
+      <main className="bg-keria-darker relative flex min-h-screen items-center justify-center">
         <PageBackground />
         <div className="relative z-10 flex flex-col items-center gap-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-keria-gold border-t-transparent" />
-          <span className="text-sm text-keria-muted">Chargement...</span>
+          <div className="border-keria-gold h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+          <span className="text-keria-muted text-sm">Chargement...</span>
         </div>
       </main>
     );
@@ -87,11 +89,11 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
 
   if (!event) {
     return (
-      <main className="relative flex min-h-screen items-center justify-center bg-keria-darker">
+      <main className="bg-keria-darker relative flex min-h-screen items-center justify-center">
         <PageBackground />
         <div className="relative z-10 text-center">
           <p className="text-keria-muted">Événement non trouvé</p>
-          <Link href="/" className="mt-4 inline-block text-sm text-keria-gold hover:underline">
+          <Link href="/" className="text-keria-gold mt-4 inline-block text-sm hover:underline">
             Retour à l'accueil
           </Link>
         </div>
@@ -100,7 +102,9 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
   }
 
   const shareUrl = typeof window !== "undefined" ? `${window.location.origin}/join-event` : "";
-  const currentParticipant = participants?.find((p: Doc<"eventParticipants">) => p._id === currentParticipantId);
+  const currentParticipant = participants?.find(
+    (p: Doc<"eventParticipants">) => p._id === currentParticipantId
+  );
 
   const handleCopyCode = () => {
     if (!shareCode) return;
@@ -134,14 +138,17 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
   };
 
   return (
-    <main className="relative flex h-screen flex-col lg:flex-row bg-keria-darker">
+    <main className="bg-keria-darker relative flex h-screen flex-col lg:flex-row">
       <PageBackground />
 
       {/* Sidebar */}
-      <aside className="relative z-10 max-h-[50vh] w-full overflow-y-auto border-b border-keria-forest/20 bg-keria-darker p-5 lg:max-h-none lg:w-[380px] lg:overflow-visible lg:border-b-0 lg:border-r">
+      <aside className="border-keria-forest/20 bg-keria-darker relative z-10 max-h-[50vh] w-full overflow-y-auto border-b p-5 lg:max-h-none lg:w-[380px] lg:overflow-visible lg:border-b-0 lg:border-r">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
-          <Link href="/" className="font-display text-lg font-bold text-keria-cream/80 transition-colors hover:text-keria-cream">
+          <Link
+            href="/"
+            className="font-display text-keria-cream/80 hover:text-keria-cream text-lg font-bold transition-colors"
+          >
             KERIA
           </Link>
           <Badge
@@ -162,12 +169,14 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
 
         {/* Event info */}
         <div className="mb-6">
-          <h1 className="border-l-2 border-keria-gold pl-3 font-display text-2xl font-bold text-keria-cream">{event.name}</h1>
+          <h1 className="border-keria-gold font-display text-keria-cream border-l-2 pl-3 text-2xl font-bold">
+            {event.name}
+          </h1>
           {event.description && (
-            <p className="mt-2 text-sm text-keria-muted">{event.description}</p>
+            <p className="text-keria-muted mt-2 text-sm">{event.description}</p>
           )}
 
-          <div className="mt-3 space-y-1 text-[10px] uppercase tracking-wider text-keria-muted">
+          <div className="text-keria-muted mt-3 space-y-1 text-[10px] uppercase tracking-wider">
             <p className="text-keria-cream">{formatDate(event.startsAt)}</p>
             <p>
               {formatTime(event.startsAt)}
@@ -176,23 +185,39 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
           </div>
 
           {shareCode && (
-            <div className="mt-4 rounded border border-keria-gold/30 bg-keria-gold/5 p-4">
+            <div className="border-keria-gold/30 bg-keria-gold/5 mt-4 rounded border p-4">
               <div className="flex items-center justify-between">
-                <p className="text-[10px] uppercase tracking-wider text-keria-gold">Code de partage</p>
+                <p className="text-keria-gold text-[10px] uppercase tracking-wider">
+                  Code de partage
+                </p>
                 <button
                   onClick={handleCopyCode}
-                  className="flex items-center gap-1 rounded px-2 py-1 text-[10px] uppercase tracking-wider text-keria-gold transition-colors hover:bg-keria-gold/10 hover:text-keria-gold"
+                  className="text-keria-gold hover:bg-keria-gold/10 hover:text-keria-gold flex items-center gap-1 rounded px-2 py-1 text-[10px] uppercase tracking-wider transition-colors"
                 >
                   {codeCopied ? (
                     <>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
                         <polyline points="20 6 9 17 4 12" />
                       </svg>
                       Copié
                     </>
                   ) : (
                     <>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                         <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
                       </svg>
@@ -201,19 +226,17 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
                   )}
                 </button>
               </div>
-              <p className="mt-1 font-mono text-3xl font-bold tracking-[0.2em] text-keria-gold">
+              <p className="text-keria-gold mt-1 font-mono text-3xl font-bold tracking-[0.2em]">
                 {shareCode}
               </p>
-              <p className="mt-2 text-[10px] text-keria-muted">
-                {shareUrl}
-              </p>
+              <p className="text-keria-muted mt-2 text-[10px]">{shareUrl}</p>
             </div>
           )}
         </div>
 
         {/* Stages */}
         <div className="mb-6">
-          <h2 className="mb-3 border-l-2 border-keria-gold pl-3 text-xs font-medium uppercase tracking-wider text-keria-muted">
+          <h2 className="border-keria-gold text-keria-muted mb-3 border-l-2 pl-3 text-xs font-medium uppercase tracking-wider">
             Étapes ({stages?.length ?? 0})
           </h2>
           {stages && stages.length > 0 ? (
@@ -223,18 +246,19 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
               selectedStageId={selectedStage?._id}
             />
           ) : (
-            <p className="text-sm text-keria-muted">Aucune étape</p>
+            <p className="text-keria-muted text-sm">Aucune étape</p>
           )}
         </div>
 
         {/* Current participant RSVP */}
         {currentParticipant && (
-          <div className="mb-6 rounded border border-keria-forest/30 bg-keria-forest/10 p-4">
-            <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-keria-muted">
+          <div className="border-keria-forest/30 bg-keria-forest/10 mb-6 rounded border p-4">
+            <h2 className="text-keria-muted mb-2 text-xs font-medium uppercase tracking-wider">
               Votre réponse
             </h2>
-            <p className="mb-3 text-sm text-keria-muted">
-              Vous participez en tant que <span className="font-medium text-keria-cream">{currentParticipant.name}</span>
+            <p className="text-keria-muted mb-3 text-sm">
+              Vous participez en tant que{" "}
+              <span className="text-keria-cream font-medium">{currentParticipant.name}</span>
             </p>
             <RSVPButtons
               currentStatus={currentParticipant.rsvpStatus as RSVPStatus}
@@ -245,11 +269,11 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
 
         {/* Join prompt */}
         {!currentParticipantId && participants && participants.length > 0 && (
-          <div className="mb-6 rounded border border-keria-gold/30 bg-keria-gold/5 p-4">
-            <p className="text-sm text-keria-muted">Vous n'êtes pas encore inscrit.</p>
+          <div className="border-keria-gold/30 bg-keria-gold/5 mb-6 rounded border p-4">
+            <p className="text-keria-muted text-sm">Vous n'êtes pas encore inscrit.</p>
             <a
               href={`/event/${eventId}/join${shareCode ? `?code=${shareCode}` : ""}`}
-              className="mt-2 inline-block text-xs font-medium uppercase tracking-wider text-keria-gold hover:underline"
+              className="text-keria-gold mt-2 inline-block text-xs font-medium uppercase tracking-wider hover:underline"
             >
               Rejoindre l'événement
             </a>
@@ -258,7 +282,7 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
 
         {/* Participants */}
         <div>
-          <h2 className="mb-3 border-l-2 border-keria-gold pl-3 text-xs font-medium uppercase tracking-wider text-keria-muted">
+          <h2 className="border-keria-gold text-keria-muted mb-3 border-l-2 pl-3 text-xs font-medium uppercase tracking-wider">
             Participants ({participants?.length ?? 0})
           </h2>
           {participants && participants.length > 0 ? (
@@ -268,16 +292,16 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
               rsvpCounts={rsvpCounts ?? undefined}
             />
           ) : (
-            <p className="text-sm text-keria-muted">Aucun participant</p>
+            <p className="text-keria-muted text-sm">Aucun participant</p>
           )}
         </div>
       </aside>
 
       {/* Map */}
-      <div className="relative z-0 flex-1 border border-keria-forest/20">
+      <div className="border-keria-forest/20 relative z-0 flex-1 border">
         <motion.button
           onClick={handleFitAllStages}
-          className="absolute left-4 top-4 z-10 rounded border border-keria-gold/30 bg-keria-darker/90 px-4 py-2 text-[10px] font-medium uppercase tracking-wider text-keria-cream backdrop-blur-md transition-colors hover:border-keria-gold/50 hover:text-keria-gold"
+          className="border-keria-gold/30 bg-keria-darker/90 text-keria-cream hover:border-keria-gold/50 hover:text-keria-gold absolute left-4 top-4 z-10 rounded border px-4 py-2 text-[10px] font-medium uppercase tracking-wider backdrop-blur-md transition-colors"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >

@@ -4,8 +4,33 @@ import { api, internal } from "./_generated/api";
 
 const GOOGLE_PLACES_BASE_URL = "https://places.googleapis.com/v1/places";
 
+// Explicit return type: the search actions call back into api.*/internal.* which
+// makes Convex's inferred type self-referential (TS7022/7023). Annotating the
+// handlers breaks the cycle. `places` is only consumed via the reactive query on
+// the client, so its precise element shape is intentionally left opaque here.
+interface PlaceSearchResult {
+  success: boolean;
+  count: number;
+  places: unknown[];
+  fromCache?: boolean;
+  error?: string;
+}
+
 const CATEGORY_TO_GOOGLE_TYPES: Record<string, string[]> = {
-  restaurant: ["restaurant", "french_restaurant", "italian_restaurant", "japanese_restaurant", "chinese_restaurant", "indian_restaurant", "mexican_restaurant", "thai_restaurant", "vietnamese_restaurant", "korean_restaurant", "mediterranean_restaurant", "american_restaurant"],
+  restaurant: [
+    "restaurant",
+    "french_restaurant",
+    "italian_restaurant",
+    "japanese_restaurant",
+    "chinese_restaurant",
+    "indian_restaurant",
+    "mexican_restaurant",
+    "thai_restaurant",
+    "vietnamese_restaurant",
+    "korean_restaurant",
+    "mediterranean_restaurant",
+    "american_restaurant",
+  ],
   cafe: ["cafe", "coffee_shop"],
   bar: ["bar", "wine_bar"],
   fast_food: ["fast_food_restaurant", "hamburger_restaurant", "pizza_restaurant", "sandwich_shop"],
@@ -71,7 +96,12 @@ function getCategoryFromTypes(types: string[] | undefined): string {
     if (type.includes("restaurant") || type === "restaurant") return "restaurant";
     if (type === "cafe" || type === "coffee_shop") return "cafe";
     if (type.includes("bar")) return "bar";
-    if (type.includes("fast_food") || type === "hamburger_restaurant" || type === "pizza_restaurant") return "fast_food";
+    if (
+      type.includes("fast_food") ||
+      type === "hamburger_restaurant" ||
+      type === "pizza_restaurant"
+    )
+      return "fast_food";
     if (type === "movie_theater") return "cinema";
     if (type.includes("park")) return "park";
   }
@@ -83,11 +113,11 @@ function getPriceLevelNumber(priceLevel: string | undefined): number | undefined
   if (!priceLevel) return undefined;
 
   const mapping: Record<string, number> = {
-    "PRICE_LEVEL_FREE": 0,
-    "PRICE_LEVEL_INEXPENSIVE": 1,
-    "PRICE_LEVEL_MODERATE": 2,
-    "PRICE_LEVEL_EXPENSIVE": 3,
-    "PRICE_LEVEL_VERY_EXPENSIVE": 4,
+    PRICE_LEVEL_FREE: 0,
+    PRICE_LEVEL_INEXPENSIVE: 1,
+    PRICE_LEVEL_MODERATE: 2,
+    PRICE_LEVEL_EXPENSIVE: 3,
+    PRICE_LEVEL_VERY_EXPENSIVE: 4,
   };
 
   return mapping[priceLevel];
@@ -104,11 +134,11 @@ export const _searchNearby = internalAction({
     categories: v.optional(v.array(v.string())),
     limit: v.optional(v.number()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<PlaceSearchResult> => {
     const meet = await ctx.runQuery(api.meets.get, { id: args.meetId });
     const now = Date.now();
 
-    if (meet?.lastSearchedAt && (now - meet.lastSearchedAt) < CACHE_TTL_MS) {
+    if (meet?.lastSearchedAt && now - meet.lastSearchedAt < CACHE_TTL_MS) {
       const cached = await ctx.runQuery(api.places.listByMeet, { meetId: args.meetId });
       if (cached.length > 0) {
         return {
@@ -135,9 +165,7 @@ export const _searchNearby = internalAction({
     const limit = args.limit ?? 15;
     const categories = args.categories ?? ["restaurant", "cafe", "bar"];
 
-    const includedTypes = categories.flatMap(
-      (cat) => CATEGORY_TO_GOOGLE_TYPES[cat] ?? []
-    );
+    const includedTypes = categories.flatMap((cat) => CATEGORY_TO_GOOGLE_TYPES[cat] ?? []);
 
     if (includedTypes.length === 0) {
       includedTypes.push("restaurant", "cafe", "bar");
@@ -149,7 +177,8 @@ export const _searchNearby = internalAction({
         headers: {
           "Content-Type": "application/json",
           "X-Goog-Api-Key": apiKey,
-          "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.priceLevel,places.photos,places.regularOpeningHours,places.primaryType,places.types,places.nationalPhoneNumber,places.websiteUri,places.reviews",
+          "X-Goog-FieldMask":
+            "places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.priceLevel,places.photos,places.regularOpeningHours,places.primaryType,places.types,places.nationalPhoneNumber,places.websiteUri,places.reviews",
         },
         body: JSON.stringify({
           includedTypes,
@@ -185,19 +214,19 @@ export const _searchNearby = internalAction({
       const places = googlePlaces.map((place) => {
         const category = getCategoryFromTypes(place.types);
 
-        const photos = place.photos?.slice(0, 5).map((photo) =>
-          getPhotoUrl(photo.name, apiKey, 800)
-        ) ?? [];
+        const photos =
+          place.photos?.slice(0, 5).map((photo) => getPhotoUrl(photo.name, apiKey, 800)) ?? [];
 
         const photoUrl = photos[0];
 
-        const reviews = place.reviews?.slice(0, 5).map((review) => ({
-          authorName: review.authorAttribution.displayName,
-          authorPhoto: review.authorAttribution.photoUri,
-          rating: review.rating,
-          text: review.text?.text ?? "",
-          relativeTime: review.relativePublishTimeDescription,
-        })) ?? [];
+        const reviews =
+          place.reviews?.slice(0, 5).map((review) => ({
+            authorName: review.authorAttribution.displayName,
+            authorPhoto: review.authorAttribution.photoUri,
+            rating: review.rating,
+            text: review.text?.text ?? "",
+            relativeTime: review.relativePublishTimeDescription,
+          })) ?? [];
 
         return {
           externalId: `google-${place.id}`,
@@ -271,7 +300,7 @@ export const searchNearby = action({
     categories: v.optional(v.array(v.string())),
     limit: v.optional(v.number()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<PlaceSearchResult> => {
     return await ctx.runAction(internal.googlePlaces._searchNearby, args);
   },
 });
@@ -283,7 +312,7 @@ export const searchContextual = action({
     lng: v.number(),
     radiusMeters: v.optional(v.number()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<PlaceSearchResult> => {
     const hour = new Date().getHours();
 
     let categories: string[];

@@ -22,12 +22,6 @@ const STAGE_COLORS: Record<StageType, string> = {
   arrival: "#a65a4a",
 };
 
-const StageTypeLabels: Record<StageType, string> = {
-  departure: "Départ",
-  intermediate: "Étape",
-  arrival: "Arrivée",
-};
-
 export function MapStageMarker({
   coordinates,
   name,
@@ -58,7 +52,7 @@ export function MapStageMarker({
           onClick?.();
         }}
       >
-        <div className="flex flex-col items-center cursor-pointer">
+        <div className="flex cursor-pointer flex-col items-center">
           {/* Numéro de l'étape */}
           <div
             className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold text-white shadow-lg transition-transform hover:scale-110"
@@ -67,7 +61,7 @@ export function MapStageMarker({
             {order + 1}
           </div>
           {/* Label */}
-          <div className="mt-1 rounded-full bg-keria-darker/90 backdrop-blur-sm px-2 py-0.5 text-xs font-medium text-keria-cream shadow-md">
+          <div className="bg-keria-darker/90 text-keria-cream mt-1 rounded-full px-2 py-0.5 text-xs font-medium shadow-md backdrop-blur-sm">
             {name}
           </div>
         </div>
@@ -92,11 +86,9 @@ export function MapStageMarker({
               </span>
               <h3 className="font-semibold">{name}</h3>
             </div>
-            <p className="mt-1 text-xs text-keria-muted">{formattedTime}</p>
-            {description && (
-              <p className="mt-2 text-sm text-keria-cream/80">{description}</p>
-            )}
-            <div className="mt-2 flex items-center gap-1 text-xs text-keria-muted">
+            <p className="text-keria-muted mt-1 text-xs">{formattedTime}</p>
+            {description && <p className="text-keria-cream/80 mt-2 text-sm">{description}</p>}
+            <div className="text-keria-muted mt-2 flex items-center gap-1 text-xs">
               {stageType === "departure" && "Point de départ"}
               {stageType === "intermediate" && "Étape intermédiaire"}
               {stageType === "arrival" && "Point d'arrivée"}

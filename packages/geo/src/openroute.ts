@@ -88,7 +88,7 @@ export function createORSClient(config: ORSConfig) {
       coordinates: center,
       durationMinutes: durationsMinutes[index],
       transportMode: mode,
-      polygon: feature.geometry.coordinates[0].map(([lng, lat]: [number, number]) => ({
+      polygon: (feature.geometry.coordinates[0] ?? []).map(([lng, lat]: [number, number]) => ({
         lat,
         lng,
       })),

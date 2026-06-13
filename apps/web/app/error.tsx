@@ -14,23 +14,22 @@ interface ErrorPageProps {
 export default function ErrorPage({ error, reset }: ErrorPageProps) {
   useEffect(() => {
     if (error.digest) {
-      // eslint-disable-next-line no-console
       console.error("Error digest:", error.digest);
     }
   }, [error.digest]);
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-keria-darker">
+    <main className="bg-keria-darker relative min-h-screen overflow-hidden">
       <PageBackground />
 
       <header className="relative z-20 flex items-center justify-between px-6 py-6">
         <Link
           href="/"
-          className="font-display text-lg font-bold text-keria-cream/80 transition-colors hover:text-keria-cream"
+          className="font-display text-keria-cream/80 hover:text-keria-cream text-lg font-bold transition-colors"
         >
           KERIA
         </Link>
-        <span className="font-mono text-[10px] text-keria-muted/70">ERREUR</span>
+        <span className="text-keria-muted/70 font-mono text-[10px]">ERREUR</span>
       </header>
 
       <div className="relative z-20 flex min-h-[calc(100vh-88px)] items-center justify-center px-6 pb-12">
@@ -41,13 +40,13 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
           className="w-full max-w-sm text-center"
         >
           <motion.div
-            className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-full border border-keria-error/30 bg-keria-error/10"
+            className="border-keria-error/30 bg-keria-error/10 mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-full border"
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2, type: "spring", stiffness: 200 }}
           >
             <svg
-              className="h-10 w-10 text-keria-error-light"
+              className="text-keria-error-light h-10 w-10"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -59,7 +58,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
           </motion.div>
 
           <motion.h1
-            className="font-display text-4xl font-bold tracking-tight text-keria-cream sm:text-5xl"
+            className="font-display text-keria-cream text-4xl font-bold tracking-tight sm:text-5xl"
             initial={{ opacity: 0, filter: "blur(10px)" }}
             animate={{ opacity: 1, filter: "blur(0px)" }}
             transition={{ duration: 0.8, delay: 0.3 }}
@@ -70,7 +69,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
           </motion.h1>
 
           <motion.p
-            className="mt-3 text-sm text-keria-muted"
+            className="text-keria-muted mt-3 text-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
@@ -79,7 +78,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
           </motion.p>
 
           <motion.div
-            className="mx-auto mt-6 h-px w-16 bg-keria-error/50"
+            className="bg-keria-error/50 mx-auto mt-6 h-px w-16"
             initial={{ width: 0 }}
             animate={{ width: 64 }}
             transition={{ duration: 0.8, delay: 0.6 }}
@@ -101,7 +100,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
 
             <Link
               href="/"
-              className="block text-[10px] uppercase tracking-widest text-keria-muted/80 transition-colors hover:text-keria-gold"
+              className="text-keria-muted/80 hover:text-keria-gold block text-[10px] uppercase tracking-widest transition-colors"
             >
               Retour à l'accueil
             </Link>
@@ -109,7 +108,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
 
           {error.digest && (
             <motion.p
-              className="mt-8 font-mono text-[10px] text-keria-forest"
+              className="text-keria-forest mt-8 font-mono text-[10px]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
@@ -122,8 +121,8 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
 
       <div className="pointer-events-none fixed bottom-6 right-6 z-20">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] text-keria-muted/60">2026</span>
-          <div className="h-2 w-2 rounded-full bg-keria-error/30" />
+          <span className="text-keria-muted/60 font-mono text-[10px]">2026</span>
+          <div className="bg-keria-error/30 h-2 w-2 rounded-full" />
         </div>
       </div>
     </main>

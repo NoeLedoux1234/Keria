@@ -27,6 +27,12 @@ interface ParsedAiResponse {
   cities: SuggestedCity[];
 }
 
+interface SuggestCitiesResult {
+  success: boolean;
+  cities: SuggestedCity[];
+  error?: string;
+}
+
 interface ParticipantLocation {
   lat: number;
   lng: number;
@@ -268,7 +274,7 @@ export const suggestCities = action({
       })
     ),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<SuggestCitiesResult> => {
     return await ctx.runAction(internal.ai._suggestCities, {
       participantLocations: args.participantLocations,
       preferences: args.preferences,

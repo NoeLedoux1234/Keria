@@ -168,7 +168,10 @@ export const calculateIsochrone = internalAction({
       return {
         success: false as const,
         error: "ORS_API_KEY not configured",
-        isochrones: [] as Array<{ durationMinutes: number | undefined; polygon: Array<{ lat: number; lng: number }> }>,
+        isochrones: [] as Array<{
+          durationMinutes: number | undefined;
+          polygon: Array<{ lat: number; lng: number }>;
+        }>,
       };
     }
 
@@ -195,7 +198,10 @@ export const calculateIsochrone = internalAction({
         return {
           success: false as const,
           error: `ORS API error: ${response.status}`,
-          isochrones: [] as Array<{ durationMinutes: number | undefined; polygon: Array<{ lat: number; lng: number }> }>,
+          isochrones: [] as Array<{
+            durationMinutes: number | undefined;
+            polygon: Array<{ lat: number; lng: number }>;
+          }>,
         };
       }
 
@@ -203,7 +209,7 @@ export const calculateIsochrone = internalAction({
 
       const isochrones = data.features.map((feature: ORSIsochroneFeature, index: number) => ({
         durationMinutes: args.durationMinutes[index],
-        polygon: feature.geometry.coordinates[0].map(([lng, lat]: [number, number]) => ({
+        polygon: (feature.geometry.coordinates[0] ?? []).map(([lng, lat]: [number, number]) => ({
           lat,
           lng,
         })),
@@ -218,7 +224,10 @@ export const calculateIsochrone = internalAction({
       return {
         success: false as const,
         error: error instanceof Error ? error.message : "Unknown error",
-        isochrones: [] as Array<{ durationMinutes: number | undefined; polygon: Array<{ lat: number; lng: number }> }>,
+        isochrones: [] as Array<{
+          durationMinutes: number | undefined;
+          polygon: Array<{ lat: number; lng: number }>;
+        }>,
       };
     }
   },
