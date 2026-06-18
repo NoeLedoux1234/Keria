@@ -42,6 +42,7 @@ const TransportIcons: Record<string, React.ReactNode> = {
       fill="none"
       stroke="currentColor"
       strokeWidth="1.5"
+      aria-hidden="true"
     >
       <path d="M5 11l1.5-4.5a2 2 0 011.9-1.5h7.2a2 2 0 011.9 1.5L19 11" />
       <path d="M5 11v6a1 1 0 001 1h1a1 1 0 001-1v-1h8v1a1 1 0 001 1h1a1 1 0 001-1v-6" />
@@ -57,6 +58,7 @@ const TransportIcons: Record<string, React.ReactNode> = {
       fill="none"
       stroke="currentColor"
       strokeWidth="1.5"
+      aria-hidden="true"
     >
       <rect x="6" y="3" width="12" height="14" rx="2" />
       <path d="M6 12h12" />
@@ -72,6 +74,7 @@ const TransportIcons: Record<string, React.ReactNode> = {
       fill="none"
       stroke="currentColor"
       strokeWidth="1.5"
+      aria-hidden="true"
     >
       <circle cx="6" cy="17" r="3" />
       <circle cx="18" cy="17" r="3" />
@@ -87,6 +90,7 @@ const TransportIcons: Record<string, React.ReactNode> = {
       fill="none"
       stroke="currentColor"
       strokeWidth="1.5"
+      aria-hidden="true"
     >
       <circle cx="12" cy="4" r="2" />
       <path d="M12 6v5l3 4" />
@@ -399,6 +403,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2"
+                        aria-hidden="true"
                       >
                         <polyline points="20 6 9 17 4 12" />
                       </svg>
@@ -413,6 +418,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2"
+                        aria-hidden="true"
                       >
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                         <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
@@ -472,7 +478,16 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
                     whileHover={{ x: 4 }}
                   >
                     <div
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Sélectionner ${p.name}`}
                       onClick={() => handleSelectParticipant(p._id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleSelectParticipant(p._id);
+                        }
+                      }}
                       className="flex cursor-pointer items-center justify-between"
                     >
                       <div className="flex items-center gap-3">
@@ -521,6 +536,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
                           fill="none"
                           stroke="currentColor"
                           strokeWidth="2"
+                          aria-hidden="true"
                         >
                           <polygon points="3 11 22 2 13 21 11 13 3 11" />
                         </svg>

@@ -906,7 +906,11 @@ export function PlacesList({
                 </Button>
               </div>
 
-              {searchError && <p className="text-keria-error-light text-xs">{searchError}</p>}
+              {searchError && (
+                <p role="alert" aria-live="assertive" className="text-keria-error-light text-xs">
+                  {searchError}
+                </p>
+              )}
             </div>
           )}
 
@@ -931,12 +935,21 @@ export function PlacesList({
                 return (
                   <motion.li
                     key={place._id}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Voir les détails de ${place.name}`}
                     variants={{
                       hidden: { opacity: 0, y: 20 },
                       visible: { opacity: 1, y: 0 },
                     }}
                     whileHover={{ scale: 1.01 }}
                     onClick={() => setSelectedPlace(item)}
+                    onKeyDown={(e) => {
+                      if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) {
+                        e.preventDefault();
+                        setSelectedPlace(item);
+                      }
+                    }}
                     className={`cursor-pointer overflow-hidden rounded-lg border transition-all ${
                       isSelectedPlace
                         ? "border-keria-success/60 bg-keria-success/10 hover:border-keria-success"

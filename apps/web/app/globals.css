@@ -83,11 +83,11 @@
   }
 
   .glass-card {
-    @apply bg-keria-darker/60 backdrop-blur-md border border-keria-forest/30 shadow-xl;
+    @apply bg-keria-darker/60 border-keria-forest/30 border shadow-xl backdrop-blur-md;
   }
 
   .text-gold-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-keria-gold via-keria-cream to-keria-gold;
+    @apply from-keria-gold via-keria-cream to-keria-gold bg-gradient-to-r bg-clip-text text-transparent;
   }
 }
 
@@ -129,4 +129,15 @@
 
 .animate-pulse-soft {
   animation: pulse-soft 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
