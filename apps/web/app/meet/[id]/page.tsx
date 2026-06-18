@@ -23,7 +23,11 @@ const PlacesList = dynamic(
   () => import("@/components/places-list").then((m) => ({ default: m.PlacesList })),
   { ssr: false }
 );
-import { calculateMidpointWithMetrics, calculateMetricsForPoint } from "@meetpoint/geo";
+import {
+  calculateMidpointWithMetrics,
+  calculateMetricsForPoint,
+  haversineDistance,
+} from "@meetpoint/geo";
 import { api } from "../../../../../convex/_generated/api";
 import type { Id, Doc } from "../../../../../convex/_generated/dataModel";
 
@@ -200,6 +204,30 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
     selectedCity && participantLocations.length >= 2
       ? calculateMetricsForPoint(selectedCity.coordinates, participantLocations)
       : midpointResult;
+
+  const distanceSpread =
+    effectiveDestination && participantLocations.length >= 2
+      ? (() => {
+          const distances = participantLocations.map((location) =>
+            haversineDistance(location, effectiveDestination)
+          );
+          return {
+            minKm: Math.round(Math.min(...distances) * 10) / 10,
+            maxKm: Math.round(Math.max(...distances) * 10) / 10,
+          };
+        })()
+      : null;
+
+  const timeSpread = (() => {
+    const durations = routes
+      .map((route) => route.durationMinutes)
+      .filter((duration): duration is number => typeof duration === "number" && duration > 0);
+    if (durations.length < 2) return null;
+    return {
+      minMin: Math.round(Math.min(...durations)),
+      maxMin: Math.round(Math.max(...durations)),
+    };
+  })();
 
   const isCreator =
     participants?.find((p: Doc<"participants">) => p._id === currentParticipantId)?.isCreator ??
@@ -481,6 +509,35 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
                 <p className="font-display text-keria-cream text-2xl font-bold">
                   {maxTravelTime} min
                 </p>
+              </div>
+            )}
+
+            {(distanceSpread || timeSpread) && (
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                {distanceSpread && (
+                  <div className="bg-keria-darker/50 rounded p-3 text-center">
+                    <p className="text-keria-muted text-[10px] uppercase tracking-wider">
+                      Écart distance
+                    </p>
+                    <p className="font-display text-keria-cream text-xl font-bold">
+                      {distanceSpread.minKm === distanceSpread.maxKm
+                        ? `${distanceSpread.minKm} km`
+                        : `${distanceSpread.minKm}–${distanceSpread.maxKm} km`}
+                    </p>
+                  </div>
+                )}
+                {timeSpread && (
+                  <div className="bg-keria-darker/50 rounded p-3 text-center">
+                    <p className="text-keria-muted text-[10px] uppercase tracking-wider">
+                      Écart trajet
+                    </p>
+                    <p className="font-display text-keria-cream text-xl font-bold">
+                      {timeSpread.minMin === timeSpread.maxMin
+                        ? `${timeSpread.minMin} min`
+                        : `${timeSpread.minMin}–${timeSpread.maxMin} min`}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
