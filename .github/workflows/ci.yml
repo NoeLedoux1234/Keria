@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 jobs:
   quality:
@@ -25,6 +25,8 @@ jobs:
         run: pnpm lint
       - name: Type check
         run: pnpm type-check
+      - name: Type check (convex)
+        run: pnpm --filter @meetpoint/web exec tsc -p ../../convex/tsconfig.json --noEmit
       - name: Build
         run: pnpm build
         env:
