@@ -72,6 +72,7 @@ export function PreferencesInput({
           value={preferences}
           onChange={(e) => setPreferences(e.target.value)}
           rows={3}
+          aria-label="Décrivez la ville idéale selon vos envies"
           placeholder="Une ville sympa avec des bars et près d'un lac, de l'ambiance le soir…"
           className="border-keria-forest/30 bg-keria-darker text-keria-cream placeholder:text-keria-muted focus:border-keria-gold/50 focus:ring-keria-gold/30 w-full resize-none rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2"
         />
@@ -89,7 +90,11 @@ export function PreferencesInput({
           </Button>
         </motion.div>
 
-        {error && <p className="text-keria-error-light text-xs">{error}</p>}
+        {error && (
+          <p role="alert" aria-live="assertive" className="text-keria-error-light text-xs">
+            {error}
+          </p>
+        )}
       </CardContent>
     </Card>
   );
