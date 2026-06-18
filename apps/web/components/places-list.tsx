@@ -20,6 +20,9 @@ interface PlacesListProps {
   meetId: Id<"meets">;
   midpoint: Coordinates | null;
   participantId?: Id<"participants">;
+  isCreator?: boolean;
+  selectedPlaceId?: Id<"places">;
+  onSelectPlace?: (placeId: Id<"places">) => void | Promise<unknown>;
 }
 
 const CATEGORY_LABELS: Record<string, { label: string }> = {
@@ -284,6 +287,9 @@ function PlaceModal({
   upvotes,
   downvotes,
   canVote,
+  isCreator,
+  isSelected,
+  onSelectPlace,
 }: {
   place: Doc<"places">;
   isOpen: boolean;
@@ -294,9 +300,24 @@ function PlaceModal({
   upvotes: number;
   downvotes: number;
   canVote: boolean;
+  isCreator: boolean;
+  isSelected: boolean;
+  onSelectPlace?: (placeId: Id<"places">) => void | Promise<unknown>;
 }) {
   const [activeTab, setActiveTab] = useState<"info" | "reviews" | "hours">("info");
+  const [isSelecting, setIsSelecting] = useState(false);
   const categoryInfo = CATEGORY_LABELS[place.category] ?? { label: "Autre" };
+
+  const handleSelectPlace = async () => {
+    if (!onSelectPlace) return;
+
+    setIsSelecting(true);
+    try {
+      await onSelectPlace(place._id);
+    } finally {
+      setIsSelecting(false);
+    }
+  };
 
   const googleMapsUrl = place.externalId.startsWith("google-")
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name)}&query_place_id=${place.externalId.replace("google-", "")}`
@@ -580,6 +601,34 @@ function PlaceModal({
           </p>
         )}
 
+        {/* Sélection du lieu retenu */}
+        {isSelected ? (
+          <div className="bg-keria-success/15 border-keria-success/40 mt-4 flex items-center justify-center gap-2 rounded-lg border py-3">
+            <Badge variant="success" className="gap-1.5">
+              <svg
+                className="h-3.5 w-3.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                aria-hidden="true"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              Lieu retenu
+            </Badge>
+          </div>
+        ) : isCreator ? (
+          <Button
+            variant="primary"
+            onClick={handleSelectPlace}
+            isLoading={isSelecting}
+            className="mt-4 w-full"
+          >
+            Choisir ce lieu
+          </Button>
+        ) : null}
+
         {/* Lien Google Maps */}
         <a
           href={googleMapsUrl}
@@ -608,7 +657,14 @@ function PlaceModal({
   );
 }
 
-export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps) {
+export function PlacesList({
+  meetId,
+  midpoint,
+  participantId,
+  isCreator = false,
+  selectedPlaceId,
+  onSelectPlace,
+}: PlacesListProps) {
   const { ranking, isLoading } = usePlaces(meetId);
   const { votes, castVote } = useVotes(meetId);
 
@@ -745,6 +801,10 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
     return vote?.vote ?? null;
   };
 
+  const selectedPlaceItem = selectedPlaceId
+    ? ranking?.find(({ place }: PlaceRankingItem) => place._id === selectedPlaceId)
+    : undefined;
+
   return (
     <>
       {/* Modale de détails */}
@@ -759,6 +819,9 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
           upvotes={selectedPlace.upvotes}
           downvotes={selectedPlace.downvotes}
           canVote={!!participantId}
+          isCreator={isCreator}
+          isSelected={selectedPlace.place._id === selectedPlaceId}
+          onSelectPlace={onSelectPlace}
         />
       )}
 
@@ -771,6 +834,25 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
         </CardHeader>
 
         <CardContent className="space-y-4">
+          {selectedPlaceItem && (
+            <div className="bg-keria-success/15 border-keria-success/40 flex items-center gap-2 rounded-lg border p-3">
+              <svg
+                className="text-keria-success-light h-4 w-4 flex-shrink-0"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                aria-hidden="true"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <p className="text-keria-cream text-sm">
+                <span className="text-keria-success-light font-medium">Lieu retenu :</span>{" "}
+                {selectedPlaceItem.place.name}
+              </p>
+            </div>
+          )}
+
           {midpoint && (
             <div className="space-y-3">
               <div className="flex flex-wrap gap-2">
@@ -844,6 +926,7 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
                 const { place, score, upvotes, downvotes } = item;
                 const userVote = getUserVote(place._id);
                 const categoryInfo = CATEGORY_LABELS[place.category] ?? { label: "Autre" };
+                const isSelectedPlace = place._id === selectedPlaceId;
 
                 return (
                   <motion.li
@@ -854,7 +937,11 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
                     }}
                     whileHover={{ scale: 1.01 }}
                     onClick={() => setSelectedPlace(item)}
-                    className="border-keria-forest/30 bg-keria-forest/10 hover:border-keria-gold/50 hover:bg-keria-forest/20 cursor-pointer overflow-hidden rounded-lg border transition-all"
+                    className={`cursor-pointer overflow-hidden rounded-lg border transition-all ${
+                      isSelectedPlace
+                        ? "border-keria-success/60 bg-keria-success/10 hover:border-keria-success"
+                        : "border-keria-forest/30 bg-keria-forest/10 hover:border-keria-gold/50 hover:bg-keria-forest/20"
+                    }`}
                   >
                     {place.photoUrl && (
                       <div className="bg-keria-darker/50 relative h-32 w-full">
@@ -883,6 +970,21 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
                     <div className="p-3">
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0 flex-1">
+                          {isSelectedPlace && (
+                            <Badge variant="success" className="mb-1.5 gap-1.5">
+                              <svg
+                                className="h-3 w-3"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                aria-hidden="true"
+                              >
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                              Lieu retenu
+                            </Badge>
+                          )}
                           <div className="flex items-center gap-2">
                             <span className="text-keria-muted text-[10px] uppercase">
                               {categoryInfo.label}
