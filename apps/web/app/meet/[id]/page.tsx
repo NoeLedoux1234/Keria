@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useAction } from "convex/react";
 import { motion } from "framer-motion";
 import { Button, Badge } from "@meetpoint/ui";
+import { QRCodeSVG } from "qrcode.react";
 import dynamic from "next/dynamic";
 import { useMeet, useAiSuggestions } from "@/hooks";
 import { MapMarker, MapMidpoint, MapRoute } from "@/components/map";
@@ -130,14 +131,24 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
   const [isCalculatingRoutes, setIsCalculatingRoutes] = useState(false);
   const [routes, setRoutes] = useState<RouteData[]>([]);
   const [codeCopied, setCodeCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [canShare, setCanShare] = useState(false);
   const [aiCities, setAiCities] = useState<SuggestedCity[]>([]);
   const [selectedCity, setSelectedCity] = useState<SelectedCity | null>(meet?.selectedCity ?? null);
 
-  const handleCopyCode = () => {
+  useEffect(() => {
+    setCanShare(typeof navigator !== "undefined" && typeof navigator.share === "function");
+  }, []);
+
+  const handleCopyCode = async () => {
     if (!shareCode) return;
-    navigator.clipboard.writeText(shareCode);
-    setCodeCopied(true);
-    setTimeout(() => setCodeCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(shareCode);
+      setCodeCopied(true);
+      setTimeout(() => setCodeCopied(false), 2000);
+    } catch {
+      setCodeCopied(false);
+    }
   };
 
   useEffect(() => {
@@ -304,10 +315,42 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
     );
   }
 
-  const shareUrl = typeof window !== "undefined" ? `${window.location.origin}/join` : "";
+  const shareUrl =
+    typeof window !== "undefined" && shareCode
+      ? `${window.location.origin}/join?code=${shareCode}`
+      : "";
   const maxTravelTime = participants
     ? Math.max(...participants.map((p: Doc<"participants">) => p.travelTimeMinutes ?? 0))
     : 0;
+
+  const handleCopyLink = async () => {
+    if (!shareUrl) return;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch {
+      setLinkCopied(false);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!shareUrl) return;
+    if (canShare) {
+      try {
+        await navigator.share({
+          title: meet.name,
+          text: `Rejoignez « ${meet.name} » sur Keria`,
+          url: shareUrl,
+        });
+      } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") return;
+        await handleCopyLink();
+      }
+      return;
+    }
+    await handleCopyLink();
+  };
 
   return (
     <main className="bg-keria-darker relative flex h-screen flex-col lg:flex-row">
@@ -382,7 +425,23 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
               <p className="text-keria-gold mt-1 font-mono text-3xl font-bold tracking-[0.2em]">
                 {shareCode}
               </p>
-              <p className="text-keria-muted mt-2 text-[10px]">{shareUrl}</p>
+              <p className="text-keria-muted mt-2 break-all text-[10px]">{shareUrl}</p>
+
+              {shareUrl && (
+                <div className="mt-4 flex flex-col items-center gap-4">
+                  <div className="bg-keria-cream rounded p-3">
+                    <QRCodeSVG value={shareUrl} size={148} level="M" />
+                  </div>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    className="w-full text-[10px] uppercase tracking-wider"
+                    onClick={handleShare}
+                  >
+                    {linkCopied ? "Lien copié" : "Partager"}
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>

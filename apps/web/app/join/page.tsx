@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button, Input } from "@meetpoint/ui";
@@ -9,10 +9,25 @@ import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { PageBackground } from "@/components/page-background";
 
-export default function JoinPage() {
+function sanitizeCode(value: string) {
+  return value
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "")
+    .slice(0, 6);
+}
+
+function JoinForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const initialCode = searchParams.get("code");
+    if (initialCode) {
+      setCode(sanitizeCode(initialCode));
+    }
+  }, [searchParams]);
 
   const meet = useQuery(
     api.meets.getByShareCode,
@@ -34,11 +49,7 @@ export default function JoinPage() {
   }, [code.length, meet]);
 
   const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-      .toUpperCase()
-      .replace(/[^A-Z0-9]/g, "")
-      .slice(0, 6);
-    setCode(value);
+    setCode(sanitizeCode(e.target.value));
   };
 
   return (
@@ -143,5 +154,25 @@ export default function JoinPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+function JoinFallback() {
+  return (
+    <main className="bg-keria-darker relative flex min-h-screen items-center justify-center overflow-hidden">
+      <PageBackground />
+      <div className="relative z-10 flex flex-col items-center gap-4">
+        <div className="border-keria-gold h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+        <span className="text-keria-muted text-sm">Chargement...</span>
+      </div>
+    </main>
+  );
+}
+
+export default function JoinPage() {
+  return (
+    <Suspense fallback={<JoinFallback />}>
+      <JoinForm />
+    </Suspense>
   );
 }
