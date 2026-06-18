@@ -116,7 +116,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
   const shareCode = searchParams.get("code");
 
   const meetId = id as Id<"meets">;
-  const { meet, participants, isLoading, updateMidpoint } = useMeet(meetId);
+  const { meet, participants, isLoading, updateMidpoint, selectPlace } = useMeet(meetId);
   const calculateAllRoutes = useAction(api.routing.calculateAllRoutes);
   const { isEnabled, selectCity } = useAiSuggestions(meetId);
 
@@ -200,6 +200,14 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
     selectedCity && participantLocations.length >= 2
       ? calculateMetricsForPoint(selectedCity.coordinates, participantLocations)
       : midpointResult;
+
+  const isCreator =
+    participants?.find((p: Doc<"participants">) => p._id === currentParticipantId)?.isCreator ??
+    false;
+
+  const selectedPlaceId: Id<"places"> | undefined = meet?.selectedPlaceId as
+    | Id<"places">
+    | undefined;
 
   const handleFitAllParticipants = () => {
     if (!participants || participants.length === 0) return;
@@ -532,6 +540,9 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
           meetId={meetId}
           midpoint={selectedCity?.coordinates ?? midpointResult?.midpoint ?? null}
           participantId={currentParticipantId ?? undefined}
+          isCreator={isCreator}
+          selectedPlaceId={selectedPlaceId}
+          onSelectPlace={(placeId) => selectPlace({ meetId, placeId })}
         />
       </aside>
 
