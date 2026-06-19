@@ -10,6 +10,7 @@
 
 import type * as ai from "../ai.js";
 import type * as eventParticipants from "../eventParticipants.js";
+import type * as eventRouting from "../eventRouting.js";
 import type * as eventStages from "../eventStages.js";
 import type * as events from "../events.js";
 import type * as googlePlaces from "../googlePlaces.js";
@@ -31,6 +32,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   ai: typeof ai;
   eventParticipants: typeof eventParticipants;
+  eventRouting: typeof eventRouting;
   eventStages: typeof eventStages;
   events: typeof events;
   googlePlaces: typeof googlePlaces;

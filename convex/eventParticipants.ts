@@ -1,5 +1,43 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { validateCoordinates } from "./validation";
+
+export const setLogistics = mutation({
+  args: {
+    participantId: v.id("eventParticipants"),
+    location: v.object({
+      lat: v.number(),
+      lng: v.number(),
+    }),
+    address: v.optional(v.string()),
+    transportMode: v.union(
+      v.literal("driving"),
+      v.literal("walking"),
+      v.literal("cycling"),
+      v.literal("transit")
+    ),
+  },
+  handler: async (ctx, args) => {
+    const participant = await ctx.db.get(args.participantId);
+    if (!participant) {
+      throw new Error("Participant non trouvé");
+    }
+
+    validateCoordinates(args.location, "Localisation du participant");
+
+    const now = Date.now();
+
+    await ctx.db.patch(args.participantId, {
+      location: args.location,
+      address: args.address,
+      transportMode: args.transportMode,
+    });
+
+    await ctx.db.patch(participant.eventId, {
+      updatedAt: now,
+    });
+  },
+});
 
 export const join = mutation({
   args: {
