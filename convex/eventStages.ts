@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { requireEventEditToken } from "./events";
 
 function getStageType(
   order: number,
@@ -13,6 +14,7 @@ function getStageType(
 export const add = mutation({
   args: {
     eventId: v.id("events"),
+    editToken: v.string(),
     name: v.string(),
     description: v.optional(v.string()),
     location: v.object({
@@ -24,6 +26,8 @@ export const add = mutation({
     estimatedDurationMinutes: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    await requireEventEditToken(ctx, args.eventId, args.editToken);
+
     const existingStages = await ctx.db
       .query("eventStages")
       .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
@@ -75,6 +79,7 @@ export const add = mutation({
 export const update = mutation({
   args: {
     stageId: v.id("eventStages"),
+    editToken: v.string(),
     name: v.optional(v.string()),
     description: v.optional(v.string()),
     location: v.optional(
@@ -90,6 +95,8 @@ export const update = mutation({
   handler: async (ctx, args) => {
     const stage = await ctx.db.get(args.stageId);
     if (!stage) throw new Error("Stage not found");
+
+    await requireEventEditToken(ctx, stage.eventId, args.editToken);
 
     type StagePatch = Partial<{
       name: string;
@@ -159,10 +166,12 @@ export const update = mutation({
 });
 
 export const remove = mutation({
-  args: { stageId: v.id("eventStages") },
+  args: { stageId: v.id("eventStages"), editToken: v.string() },
   handler: async (ctx, args) => {
     const stage = await ctx.db.get(args.stageId);
     if (!stage) throw new Error("Stage not found");
+
+    await requireEventEditToken(ctx, stage.eventId, args.editToken);
 
     const allStages = await ctx.db
       .query("eventStages")
