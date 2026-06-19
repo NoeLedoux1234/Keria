@@ -13,6 +13,15 @@ const PLACE_CATEGORIES = {
 
 type PlaceCategory = keyof typeof PLACE_CATEGORIES;
 
+export type OverpassPlace = {
+  externalId: string;
+  name: string;
+  address: string;
+  location: { lat: number; lng: number };
+  category: string;
+  cuisine?: string;
+};
+
 // Explicit return type breaks the self-referential inference (TS7022/7023) caused
 // by these actions calling back into api.*/internal.*. `places` is consumed via
 // the reactive query on the client, so its element shape is left opaque here.
@@ -43,16 +52,15 @@ interface OverpassElement {
   };
 }
 
-export const _searchNearby = internalAction({
+export const _fetchOverpassPlaces = internalAction({
   args: {
-    meetId: v.id("meets"),
     lat: v.number(),
     lng: v.number(),
     radiusMeters: v.optional(v.number()),
     categories: v.optional(v.array(v.string())),
     limit: v.optional(v.number()),
   },
-  handler: async (ctx, args): Promise<OverpassSearchResult> => {
+  handler: async (_ctx, args): Promise<OverpassPlace[]> => {
     const radius = args.radiusMeters ?? 1000;
     const limit = args.limit ?? 15;
     const categories = (args.categories ?? ["restaurant", "cafe", "bar"]) as PlaceCategory[];
@@ -75,51 +83,74 @@ export const _searchNearby = internalAction({
       out center ${limit};
     `;
 
-    try {
-      const response = await fetch("https://overpass-api.de/api/interpreter", {
-        method: "POST",
-        body: `data=${encodeURIComponent(overpassQuery)}`,
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
+    const response = await fetch("https://overpass-api.de/api/interpreter", {
+      method: "POST",
+      body: `data=${encodeURIComponent(overpassQuery)}`,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Overpass API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const elements: OverpassElement[] = data.elements || [];
+
+    return elements
+      .filter((el) => el.tags?.name)
+      .map((el) => {
+        const lat = el.lat ?? el.center?.lat ?? 0;
+        const lon = el.lon ?? el.center?.lon ?? 0;
+
+        let category = "other";
+        if (el.tags?.amenity === "restaurant") category = "restaurant";
+        else if (el.tags?.amenity === "cafe") category = "cafe";
+        else if (el.tags?.amenity === "bar" || el.tags?.amenity === "pub") category = "bar";
+        else if (el.tags?.amenity === "fast_food") category = "fast_food";
+        else if (el.tags?.amenity === "cinema") category = "cinema";
+        else if (el.tags?.leisure === "park") category = "park";
+
+        const addressParts = [];
+        if (el.tags?.["addr:housenumber"]) addressParts.push(el.tags["addr:housenumber"]);
+        if (el.tags?.["addr:street"]) addressParts.push(el.tags["addr:street"]);
+        if (el.tags?.["addr:city"]) addressParts.push(el.tags["addr:city"]);
+        const address = addressParts.join(" ") || "Adresse non disponible";
+
+        return {
+          externalId: `osm-${el.type}-${el.id}`,
+          name: el.tags?.name || "Sans nom",
+          address,
+          location: { lat, lng: lon },
+          category,
+          cuisine: el.tags?.cuisine,
+        };
       });
+  },
+});
 
-      if (!response.ok) {
-        throw new Error(`Overpass API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const elements: OverpassElement[] = data.elements || [];
-
-      const places = elements
-        .filter((el) => el.tags?.name)
-        .map((el) => {
-          const lat = el.lat ?? el.center?.lat ?? 0;
-          const lon = el.lon ?? el.center?.lon ?? 0;
-
-          let category = "other";
-          if (el.tags?.amenity === "restaurant") category = "restaurant";
-          else if (el.tags?.amenity === "cafe") category = "cafe";
-          else if (el.tags?.amenity === "bar" || el.tags?.amenity === "pub") category = "bar";
-          else if (el.tags?.amenity === "fast_food") category = "fast_food";
-          else if (el.tags?.amenity === "cinema") category = "cinema";
-          else if (el.tags?.leisure === "park") category = "park";
-
-          const addressParts = [];
-          if (el.tags?.["addr:housenumber"]) addressParts.push(el.tags["addr:housenumber"]);
-          if (el.tags?.["addr:street"]) addressParts.push(el.tags["addr:street"]);
-          if (el.tags?.["addr:city"]) addressParts.push(el.tags["addr:city"]);
-          const address = addressParts.join(" ") || "Adresse non disponible";
-
-          return {
-            externalId: `osm-${el.type}-${el.id}`,
-            name: el.tags?.name || "Sans nom",
-            address,
-            location: { lat, lng: lon },
-            category,
-            cuisine: el.tags?.cuisine,
-          };
-        });
+export const _searchNearby = internalAction({
+  args: {
+    meetId: v.id("meets"),
+    lat: v.number(),
+    lng: v.number(),
+    radiusMeters: v.optional(v.number()),
+    categories: v.optional(v.array(v.string())),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args): Promise<OverpassSearchResult> => {
+    try {
+      const places: OverpassPlace[] = await ctx.runAction(
+        internal.searchPlaces._fetchOverpassPlaces,
+        {
+          lat: args.lat,
+          lng: args.lng,
+          radiusMeters: args.radiusMeters,
+          categories: args.categories,
+          limit: args.limit,
+        }
+      );
 
       for (const place of places) {
         await ctx.runMutation(api.places.add, {
