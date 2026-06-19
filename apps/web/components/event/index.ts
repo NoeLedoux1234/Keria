@@ -8,3 +8,5 @@ export * from "./event-lifecycle-controls";
 export * from "./event-stages-editor";
 export * from "./participant-logistics-form";
 export * from "./itinerary-timeline";
+export * from "./stage-place-vote";
+export * from "./stage-places-panel";
