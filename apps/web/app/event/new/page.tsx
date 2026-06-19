@@ -109,6 +109,7 @@ export default function NewEventPage() {
       });
 
       localStorage.setItem(`meetpoint-event-participant-${result.eventId}`, result.participantId);
+      localStorage.setItem(`meetpoint-event-edit-token-${result.eventId}`, result.editToken);
       router.push(`/event/${result.eventId}?code=${result.shareCode}`);
     } catch {
       setError("Erreur lors de la création de l'événement");
