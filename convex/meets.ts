@@ -1,5 +1,13 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import {
+  CREATOR_NAME_MAX,
+  DESCRIPTION_MAX,
+  MEET_NAME_MAX,
+  validateCoordinates,
+  validateOptionalText,
+  validateRequiredText,
+} from "./validation";
 
 const MAX_SHARE_CODE_ATTEMPTS = 10;
 
@@ -39,6 +47,11 @@ export const create = mutation({
     scheduledFor: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    const name = validateRequiredText(args.name, "Nom du rendez-vous", MEET_NAME_MAX);
+    const description = validateOptionalText(args.description, "Description", DESCRIPTION_MAX);
+    const creatorName = validateRequiredText(args.creatorName, "Nom du créateur", CREATOR_NAME_MAX);
+    validateCoordinates(args.creatorLocation, "Localisation du créateur");
+
     const now = Date.now();
 
     let shareCode = generateShareCode();
@@ -55,9 +68,9 @@ export const create = mutation({
     }
 
     const meetId = await ctx.db.insert("meets", {
-      name: args.name,
-      description: args.description,
-      creatorName: args.creatorName,
+      name,
+      description,
+      creatorName,
       shareCode,
       filters: args.filters ?? {},
       status: "pending",
@@ -68,7 +81,7 @@ export const create = mutation({
 
     await ctx.db.insert("participants", {
       meetId,
-      name: args.creatorName,
+      name: creatorName,
       location: args.creatorLocation,
       address: args.creatorAddress,
       transportMode: args.transportMode,

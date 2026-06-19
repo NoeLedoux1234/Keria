@@ -1,6 +1,7 @@
 import { action, internalAction, mutation, query } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
+import { AI_PREFERENCES_MAX, validateRequiredText } from "./validation";
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const ANTHROPIC_MODEL = "claude-haiku-4-5";
@@ -275,9 +276,11 @@ export const suggestCities = action({
     ),
   },
   handler: async (ctx, args): Promise<SuggestCitiesResult> => {
+    const preferences = validateRequiredText(args.preferences, "Préférences", AI_PREFERENCES_MAX);
+
     return await ctx.runAction(internal.ai._suggestCities, {
       participantLocations: args.participantLocations,
-      preferences: args.preferences,
+      preferences,
     });
   },
 });

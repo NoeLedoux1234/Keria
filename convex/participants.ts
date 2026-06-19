@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { PARTICIPANT_NAME_MAX, validateCoordinates, validateRequiredText } from "./validation";
 
 export const join = mutation({
   args: {
@@ -18,6 +19,9 @@ export const join = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    const name = validateRequiredText(args.name, "Nom du participant", PARTICIPANT_NAME_MAX);
+    validateCoordinates(args.location, "Localisation du participant");
+
     const meet = await ctx.db.get(args.meetId);
     if (!meet) {
       throw new Error("Meeting not found");
@@ -30,7 +34,7 @@ export const join = mutation({
     const existingParticipant = await ctx.db
       .query("participants")
       .withIndex("by_meet", (q) => q.eq("meetId", args.meetId))
-      .filter((q) => q.eq(q.field("name"), args.name))
+      .filter((q) => q.eq(q.field("name"), name))
       .first();
 
     if (existingParticipant) {
@@ -41,7 +45,7 @@ export const join = mutation({
 
     const participantId = await ctx.db.insert("participants", {
       meetId: args.meetId,
-      name: args.name,
+      name,
       location: args.location,
       address: args.address,
       transportMode: args.transportMode,
@@ -67,6 +71,8 @@ export const updateLocation = mutation({
     address: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    validateCoordinates(args.location, "Localisation du participant");
+
     const participant = await ctx.db.get(args.participantId);
     if (!participant) {
       throw new Error("Participant not found");

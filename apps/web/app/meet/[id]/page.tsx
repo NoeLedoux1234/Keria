@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useAction } from "convex/react";
 import { motion } from "framer-motion";
 import { Button, Badge } from "@meetpoint/ui";
+import { QRCodeSVG } from "qrcode.react";
 import dynamic from "next/dynamic";
 import { useMeet, useAiSuggestions } from "@/hooks";
 import { MapMarker, MapMidpoint, MapRoute } from "@/components/map";
@@ -23,7 +24,11 @@ const PlacesList = dynamic(
   () => import("@/components/places-list").then((m) => ({ default: m.PlacesList })),
   { ssr: false }
 );
-import { calculateMidpointWithMetrics, calculateMetricsForPoint } from "@meetpoint/geo";
+import {
+  calculateMidpointWithMetrics,
+  calculateMetricsForPoint,
+  haversineDistance,
+} from "@meetpoint/geo";
 import { api } from "../../../../../convex/_generated/api";
 import type { Id, Doc } from "../../../../../convex/_generated/dataModel";
 
@@ -37,6 +42,7 @@ const TransportIcons: Record<string, React.ReactNode> = {
       fill="none"
       stroke="currentColor"
       strokeWidth="1.5"
+      aria-hidden="true"
     >
       <path d="M5 11l1.5-4.5a2 2 0 011.9-1.5h7.2a2 2 0 011.9 1.5L19 11" />
       <path d="M5 11v6a1 1 0 001 1h1a1 1 0 001-1v-1h8v1a1 1 0 001 1h1a1 1 0 001-1v-6" />
@@ -52,6 +58,7 @@ const TransportIcons: Record<string, React.ReactNode> = {
       fill="none"
       stroke="currentColor"
       strokeWidth="1.5"
+      aria-hidden="true"
     >
       <rect x="6" y="3" width="12" height="14" rx="2" />
       <path d="M6 12h12" />
@@ -67,6 +74,7 @@ const TransportIcons: Record<string, React.ReactNode> = {
       fill="none"
       stroke="currentColor"
       strokeWidth="1.5"
+      aria-hidden="true"
     >
       <circle cx="6" cy="17" r="3" />
       <circle cx="18" cy="17" r="3" />
@@ -82,6 +90,7 @@ const TransportIcons: Record<string, React.ReactNode> = {
       fill="none"
       stroke="currentColor"
       strokeWidth="1.5"
+      aria-hidden="true"
     >
       <circle cx="12" cy="4" r="2" />
       <path d="M12 6v5l3 4" />
@@ -116,7 +125,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
   const shareCode = searchParams.get("code");
 
   const meetId = id as Id<"meets">;
-  const { meet, participants, isLoading, updateMidpoint } = useMeet(meetId);
+  const { meet, participants, isLoading, updateMidpoint, selectPlace } = useMeet(meetId);
   const calculateAllRoutes = useAction(api.routing.calculateAllRoutes);
   const { isEnabled, selectCity } = useAiSuggestions(meetId);
 
@@ -126,14 +135,24 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
   const [isCalculatingRoutes, setIsCalculatingRoutes] = useState(false);
   const [routes, setRoutes] = useState<RouteData[]>([]);
   const [codeCopied, setCodeCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [canShare, setCanShare] = useState(false);
   const [aiCities, setAiCities] = useState<SuggestedCity[]>([]);
   const [selectedCity, setSelectedCity] = useState<SelectedCity | null>(meet?.selectedCity ?? null);
 
-  const handleCopyCode = () => {
+  useEffect(() => {
+    setCanShare(typeof navigator !== "undefined" && typeof navigator.share === "function");
+  }, []);
+
+  const handleCopyCode = async () => {
     if (!shareCode) return;
-    navigator.clipboard.writeText(shareCode);
-    setCodeCopied(true);
-    setTimeout(() => setCodeCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(shareCode);
+      setCodeCopied(true);
+      setTimeout(() => setCodeCopied(false), 2000);
+    } catch {
+      setCodeCopied(false);
+    }
   };
 
   useEffect(() => {
@@ -200,6 +219,38 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
     selectedCity && participantLocations.length >= 2
       ? calculateMetricsForPoint(selectedCity.coordinates, participantLocations)
       : midpointResult;
+
+  const distanceSpread =
+    effectiveDestination && participantLocations.length >= 2
+      ? (() => {
+          const distances = participantLocations.map((location) =>
+            haversineDistance(location, effectiveDestination)
+          );
+          return {
+            minKm: Math.round(Math.min(...distances) * 10) / 10,
+            maxKm: Math.round(Math.max(...distances) * 10) / 10,
+          };
+        })()
+      : null;
+
+  const timeSpread = (() => {
+    const durations = routes
+      .map((route) => route.durationMinutes)
+      .filter((duration): duration is number => typeof duration === "number" && duration > 0);
+    if (durations.length < 2) return null;
+    return {
+      minMin: Math.round(Math.min(...durations)),
+      maxMin: Math.round(Math.max(...durations)),
+    };
+  })();
+
+  const isCreator =
+    participants?.find((p: Doc<"participants">) => p._id === currentParticipantId)?.isCreator ??
+    false;
+
+  const selectedPlaceId: Id<"places"> | undefined = meet?.selectedPlaceId as
+    | Id<"places">
+    | undefined;
 
   const handleFitAllParticipants = () => {
     if (!participants || participants.length === 0) return;
@@ -268,10 +319,42 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
     );
   }
 
-  const shareUrl = typeof window !== "undefined" ? `${window.location.origin}/join` : "";
+  const shareUrl =
+    typeof window !== "undefined" && shareCode
+      ? `${window.location.origin}/join?code=${shareCode}`
+      : "";
   const maxTravelTime = participants
     ? Math.max(...participants.map((p: Doc<"participants">) => p.travelTimeMinutes ?? 0))
     : 0;
+
+  const handleCopyLink = async () => {
+    if (!shareUrl) return;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch {
+      setLinkCopied(false);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!shareUrl) return;
+    if (canShare) {
+      try {
+        await navigator.share({
+          title: meet.name,
+          text: `Rejoignez « ${meet.name} » sur Keria`,
+          url: shareUrl,
+        });
+      } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") return;
+        await handleCopyLink();
+      }
+      return;
+    }
+    await handleCopyLink();
+  };
 
   return (
     <main className="bg-keria-darker relative flex h-screen flex-col lg:flex-row">
@@ -320,6 +403,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2"
+                        aria-hidden="true"
                       >
                         <polyline points="20 6 9 17 4 12" />
                       </svg>
@@ -334,6 +418,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2"
+                        aria-hidden="true"
                       >
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
                         <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
@@ -346,7 +431,23 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
               <p className="text-keria-gold mt-1 font-mono text-3xl font-bold tracking-[0.2em]">
                 {shareCode}
               </p>
-              <p className="text-keria-muted mt-2 text-[10px]">{shareUrl}</p>
+              <p className="text-keria-muted mt-2 break-all text-[10px]">{shareUrl}</p>
+
+              {shareUrl && (
+                <div className="mt-4 flex flex-col items-center gap-4">
+                  <div className="bg-keria-cream rounded p-3">
+                    <QRCodeSVG value={shareUrl} size={148} level="M" />
+                  </div>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    className="w-full text-[10px] uppercase tracking-wider"
+                    onClick={handleShare}
+                  >
+                    {linkCopied ? "Lien copié" : "Partager"}
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -377,7 +478,16 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
                     whileHover={{ x: 4 }}
                   >
                     <div
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Sélectionner ${p.name}`}
                       onClick={() => handleSelectParticipant(p._id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleSelectParticipant(p._id);
+                        }
+                      }}
                       className="flex cursor-pointer items-center justify-between"
                     >
                       <div className="flex items-center gap-3">
@@ -426,6 +536,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
                           fill="none"
                           stroke="currentColor"
                           strokeWidth="2"
+                          aria-hidden="true"
                         >
                           <polygon points="3 11 22 2 13 21 11 13 3 11" />
                         </svg>
@@ -473,6 +584,35 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
                 <p className="font-display text-keria-cream text-2xl font-bold">
                   {maxTravelTime} min
                 </p>
+              </div>
+            )}
+
+            {(distanceSpread || timeSpread) && (
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                {distanceSpread && (
+                  <div className="bg-keria-darker/50 rounded p-3 text-center">
+                    <p className="text-keria-muted text-[10px] uppercase tracking-wider">
+                      Écart distance
+                    </p>
+                    <p className="font-display text-keria-cream text-xl font-bold">
+                      {distanceSpread.minKm === distanceSpread.maxKm
+                        ? `${distanceSpread.minKm} km`
+                        : `${distanceSpread.minKm}–${distanceSpread.maxKm} km`}
+                    </p>
+                  </div>
+                )}
+                {timeSpread && (
+                  <div className="bg-keria-darker/50 rounded p-3 text-center">
+                    <p className="text-keria-muted text-[10px] uppercase tracking-wider">
+                      Écart trajet
+                    </p>
+                    <p className="font-display text-keria-cream text-xl font-bold">
+                      {timeSpread.minMin === timeSpread.maxMin
+                        ? `${timeSpread.minMin} min`
+                        : `${timeSpread.minMin}–${timeSpread.maxMin} min`}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
@@ -532,6 +672,9 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
           meetId={meetId}
           midpoint={selectedCity?.coordinates ?? midpointResult?.midpoint ?? null}
           participantId={currentParticipantId ?? undefined}
+          isCreator={isCreator}
+          selectedPlaceId={selectedPlaceId}
+          onSelectPlace={(placeId) => selectPlace({ meetId, placeId })}
         />
       </aside>
 

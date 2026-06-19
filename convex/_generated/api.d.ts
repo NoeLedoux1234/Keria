@@ -9,8 +9,12 @@
  */
 
 import type * as ai from "../ai.js";
+import type * as eventAi from "../eventAi.js";
 import type * as eventParticipants from "../eventParticipants.js";
+import type * as eventPlaces from "../eventPlaces.js";
+import type * as eventRouting from "../eventRouting.js";
 import type * as eventStages from "../eventStages.js";
+import type * as eventVotes from "../eventVotes.js";
 import type * as events from "../events.js";
 import type * as googlePlaces from "../googlePlaces.js";
 import type * as meets from "../meets.js";
@@ -19,6 +23,7 @@ import type * as places from "../places.js";
 import type * as routing from "../routing.js";
 import type * as routingInternal from "../routingInternal.js";
 import type * as searchPlaces from "../searchPlaces.js";
+import type * as validation from "../validation.js";
 import type * as votes from "../votes.js";
 
 import type {
@@ -29,8 +34,12 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   ai: typeof ai;
+  eventAi: typeof eventAi;
   eventParticipants: typeof eventParticipants;
+  eventPlaces: typeof eventPlaces;
+  eventRouting: typeof eventRouting;
   eventStages: typeof eventStages;
+  eventVotes: typeof eventVotes;
   events: typeof events;
   googlePlaces: typeof googlePlaces;
   meets: typeof meets;
@@ -39,6 +48,7 @@ declare const fullApi: ApiFromModules<{
   routing: typeof routing;
   routingInternal: typeof routingInternal;
   searchPlaces: typeof searchPlaces;
+  validation: typeof validation;
   votes: typeof votes;
 }>;
 

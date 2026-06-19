@@ -51,6 +51,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
               fill="none"
               stroke="currentColor"
               strokeWidth="1.5"
+              aria-hidden="true"
             >
               <path d="M12 9v4m0 4h.01" strokeLinecap="round" />
               <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
@@ -69,6 +70,8 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
           </motion.h1>
 
           <motion.p
+            role="alert"
+            aria-live="assertive"
             className="text-keria-muted mt-3 text-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { Space_Grotesk } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { LoadingScreenProvider } from "@/components/loading-screen-provider";
 import { Navigation } from "@/components/navigation";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -14,6 +15,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "KERIA - Trouvez le point de rencontre parfait",
   description:
     "Trouvez le point de rencontre le plus équitable entre plusieurs personnes. Simple, intelligent et élégant.",
@@ -25,7 +27,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "fr_FR",
     siteName: "KERIA",
+    url: siteUrl,
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#1e221a",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
