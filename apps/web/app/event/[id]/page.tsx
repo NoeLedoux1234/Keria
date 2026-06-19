@@ -6,10 +6,24 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Badge } from "@meetpoint/ui";
 import dynamic from "next/dynamic";
-import { useEvent, useEventParticipants } from "@/hooks";
+import { useEvent, useEventStages, useEventParticipants } from "@/hooks";
 import { MapStageMarker, MapStagePath } from "@/components/map";
-import { StagesList, RSVPButtons, ParticipantsRSVPList } from "@/components/event";
+import {
+  StagesList,
+  RSVPButtons,
+  ParticipantsRSVPList,
+  EventShareCard,
+  EventEditForm,
+  EventLifecycleControls,
+  EventStagesEditor,
+} from "@/components/event";
 import { PageBackground } from "@/components/page-background";
+import {
+  resolveDisplayStatus,
+  getStatusLabel,
+  getStatusBadgeVariant,
+  type EventStatus,
+} from "@/lib/event-status";
 import type { MapContainerHandle } from "@/components/map";
 import type { Id, Doc } from "../../../../../convex/_generated/dataModel";
 import type { RsvpStatus } from "@meetpoint/types";
@@ -27,7 +41,17 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
   const shareCode = searchParams.get("code");
 
   const eventId = id as Id<"events">;
-  const { event, stages, participants, rsvpCounts, isLoading } = useEvent(eventId);
+  const {
+    event,
+    stages,
+    participants,
+    rsvpCounts,
+    isLoading,
+    isEditor,
+    updateEvent,
+    updateStatus,
+  } = useEvent(eventId);
+  const { addStage, updateStage, removeStage } = useEventStages(eventId);
   const { rsvp } = useEventParticipants(eventId);
 
   const mapRef = useRef<MapContainerHandle>(null);
@@ -35,15 +59,21 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
     null
   );
   const [selectedStage, setSelectedStage] = useState<Doc<"eventStages"> | null>(null);
-  const [codeCopied, setCodeCopied] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem(`meetpoint-event-participant-${eventId}`);
-    if (stored && participants) {
-      const participant = participants.find((p: Doc<"eventParticipants">) => p._id === stored);
-      if (participant) {
-        setCurrentParticipantId(participant._id);
-      }
+    if (!participants) return;
+    const storageKey = `meetpoint-event-participant-${eventId}`;
+    const stored = localStorage.getItem(storageKey);
+    if (!stored) {
+      setCurrentParticipantId(null);
+      return;
+    }
+    const participant = participants.find((p: Doc<"eventParticipants">) => p._id === stored);
+    if (participant) {
+      setCurrentParticipantId(participant._id);
+    } else {
+      localStorage.removeItem(storageKey);
+      setCurrentParticipantId(null);
     }
   }, [eventId, participants]);
 
@@ -101,17 +131,15 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
     );
   }
 
-  const shareUrl = typeof window !== "undefined" ? `${window.location.origin}/join-event` : "";
   const currentParticipant = participants?.find(
     (p: Doc<"eventParticipants">) => p._id === currentParticipantId
   );
 
-  const handleCopyCode = () => {
-    if (!shareCode) return;
-    navigator.clipboard.writeText(shareCode);
-    setCodeCopied(true);
-    setTimeout(() => setCodeCopied(false), 2000);
-  };
+  const displayStatus = resolveDisplayStatus({
+    status: event.status as EventStatus,
+    startsAt: event.startsAt,
+    endsAt: event.endsAt,
+  });
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString("fr-FR", {
@@ -129,20 +157,12 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
     });
   };
 
-  const statusLabels: Record<string, string> = {
-    published: "Publié",
-    ongoing: "En cours",
-    completed: "Terminé",
-    cancelled: "Annulé",
-    draft: "Brouillon",
-  };
-
   return (
     <main className="bg-keria-darker relative flex h-screen flex-col lg:flex-row">
       <PageBackground />
 
       {/* Sidebar */}
-      <aside className="border-keria-forest/20 bg-keria-darker relative z-10 max-h-[50vh] w-full overflow-y-auto border-b p-5 lg:max-h-none lg:w-[380px] lg:overflow-visible lg:border-b-0 lg:border-r">
+      <aside className="border-keria-forest/20 bg-keria-darker relative z-10 max-h-[50vh] w-full overflow-y-auto border-b p-5 lg:h-screen lg:max-h-none lg:w-[380px] lg:overflow-y-auto lg:border-b-0 lg:border-r">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <Link
@@ -151,24 +171,13 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
           >
             KERIA
           </Link>
-          <Badge
-            variant={
-              event.status === "published"
-                ? "success"
-                : event.status === "ongoing"
-                  ? "warning"
-                  : event.status === "completed"
-                    ? "primary"
-                    : "danger"
-            }
-            className="text-[10px] uppercase"
-          >
-            {statusLabels[event.status]}
+          <Badge variant={getStatusBadgeVariant(displayStatus)} className="text-[10px] uppercase">
+            {getStatusLabel(displayStatus)}
           </Badge>
         </div>
 
         {/* Event info */}
-        <div className="mb-6">
+        <section className="mb-6">
           <h1 className="border-keria-gold font-display text-keria-cream border-l-2 pl-3 text-2xl font-bold">
             {event.name}
           </h1>
@@ -184,62 +193,46 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
             </p>
           </div>
 
-          {shareCode && (
-            <div className="border-keria-gold/30 bg-keria-gold/5 mt-4 rounded border p-4">
-              <div className="flex items-center justify-between">
-                <p className="text-keria-gold text-[10px] uppercase tracking-wider">
-                  Code de partage
-                </p>
-                <button
-                  onClick={handleCopyCode}
-                  className="text-keria-gold hover:bg-keria-gold/10 hover:text-keria-gold flex items-center gap-1 rounded px-2 py-1 text-[10px] uppercase tracking-wider transition-colors"
-                >
-                  {codeCopied ? (
-                    <>
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      Copié
-                    </>
-                  ) : (
-                    <>
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                      </svg>
-                      Copier
-                    </>
-                  )}
-                </button>
-              </div>
-              <p className="text-keria-gold mt-1 font-mono text-3xl font-bold tracking-[0.2em]">
-                {shareCode}
-              </p>
-              <p className="text-keria-muted mt-2 text-[10px]">{shareUrl}</p>
-            </div>
+          {isEditor && (
+            <EventEditForm name={event.name} description={event.description} onSave={updateEvent} />
           )}
-        </div>
+        </section>
+
+        {/* Lifecycle controls (creator only) */}
+        {isEditor && (
+          <section className="border-keria-forest/30 bg-keria-forest/10 mb-6 rounded border p-4">
+            <h2 className="text-keria-muted mb-3 text-xs font-medium uppercase tracking-wider">
+              Cycle de vie
+            </h2>
+            <EventLifecycleControls
+              status={event.status as EventStatus}
+              onChangeStatus={updateStatus}
+            />
+          </section>
+        )}
+
+        {/* Share card */}
+        {shareCode && (
+          <section className="mb-6">
+            <EventShareCard eventName={event.name} shareCode={shareCode} />
+          </section>
+        )}
 
         {/* Stages */}
-        <div className="mb-6">
+        <section className="mb-6">
           <h2 className="border-keria-gold text-keria-muted mb-3 border-l-2 pl-3 text-xs font-medium uppercase tracking-wider">
             Étapes ({stages?.length ?? 0})
           </h2>
-          {stages && stages.length > 0 ? (
+          {isEditor ? (
+            <EventStagesEditor
+              stages={stages ?? []}
+              onAddStage={addStage}
+              onUpdateStage={updateStage}
+              onRemoveStage={removeStage}
+              onStageClick={handleStageClick}
+              selectedStageId={selectedStage?._id}
+            />
+          ) : stages && stages.length > 0 ? (
             <StagesList
               stages={stages}
               onStageClick={handleStageClick}
@@ -248,11 +241,11 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
           ) : (
             <p className="text-keria-muted text-sm">Aucune étape</p>
           )}
-        </div>
+        </section>
 
         {/* Current participant RSVP */}
         {currentParticipant && (
-          <div className="border-keria-forest/30 bg-keria-forest/10 mb-6 rounded border p-4">
+          <section className="border-keria-forest/30 bg-keria-forest/10 mb-6 rounded border p-4">
             <h2 className="text-keria-muted mb-2 text-xs font-medium uppercase tracking-wider">
               Votre réponse
             </h2>
@@ -264,12 +257,12 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
               currentStatus={currentParticipant.rsvpStatus as RsvpStatus}
               onRSVP={handleRSVP}
             />
-          </div>
+          </section>
         )}
 
         {/* Join prompt */}
         {!currentParticipantId && participants && participants.length > 0 && (
-          <div className="border-keria-gold/30 bg-keria-gold/5 mb-6 rounded border p-4">
+          <section className="border-keria-gold/30 bg-keria-gold/5 mb-6 rounded border p-4">
             <p className="text-keria-muted text-sm">Vous n'êtes pas encore inscrit.</p>
             <a
               href={`/event/${eventId}/join${shareCode ? `?code=${shareCode}` : ""}`}
@@ -277,11 +270,11 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
             >
               Rejoindre l'événement
             </a>
-          </div>
+          </section>
         )}
 
         {/* Participants */}
-        <div>
+        <section>
           <h2 className="border-keria-gold text-keria-muted mb-3 border-l-2 pl-3 text-xs font-medium uppercase tracking-wider">
             Participants ({participants?.length ?? 0})
           </h2>
@@ -294,7 +287,7 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
           ) : (
             <p className="text-keria-muted text-sm">Aucun participant</p>
           )}
-        </div>
+        </section>
       </aside>
 
       {/* Map */}

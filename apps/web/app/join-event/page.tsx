@@ -1,17 +1,32 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button, Input } from "@meetpoint/ui";
 import { useEventByShareCode } from "@/hooks";
 import { PageBackground } from "@/components/page-background";
 
-export default function JoinEventPage() {
+function sanitizeCode(value: string) {
+  return value
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "")
+    .slice(0, 6);
+}
+
+function JoinEventForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const initialCode = searchParams.get("code");
+    if (initialCode) {
+      setCode(sanitizeCode(initialCode));
+    }
+  }, [searchParams]);
 
   const { event, isLoading } = useEventByShareCode(code.length === 6 ? code : undefined);
 
@@ -30,8 +45,7 @@ export default function JoinEventPage() {
   }, [code.length, isLoading, event]);
 
   const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toUpperCase().slice(0, 6);
-    setCode(value);
+    setCode(sanitizeCode(e.target.value));
   };
 
   return (
@@ -136,5 +150,25 @@ export default function JoinEventPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+function JoinEventFallback() {
+  return (
+    <main className="bg-keria-darker relative flex min-h-screen items-center justify-center overflow-hidden">
+      <PageBackground />
+      <div className="relative z-10 flex flex-col items-center gap-4">
+        <div className="border-keria-gold h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+        <span className="text-keria-muted text-sm">Chargement...</span>
+      </div>
+    </main>
+  );
+}
+
+export default function JoinEventPage() {
+  return (
+    <Suspense fallback={<JoinEventFallback />}>
+      <JoinEventForm />
+    </Suspense>
   );
 }
