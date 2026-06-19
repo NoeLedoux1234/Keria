@@ -92,7 +92,8 @@ export default defineSchema({
     .index("by_user", ["userId"]),
 
   places: defineTable({
-    meetId: v.id("meets"),
+    meetId: v.optional(v.id("meets")),
+    eventStageId: v.optional(v.id("eventStages")),
     externalId: v.string(),
 
     name: v.string(),
@@ -136,12 +137,15 @@ export default defineSchema({
     lastRefreshedAt: v.optional(v.number()),
   })
     .index("by_meet", ["meetId"])
-    .index("by_category", ["meetId", "category"]),
+    .index("by_category", ["meetId", "category"])
+    .index("by_stage", ["eventStageId"]),
 
   votes: defineTable({
-    meetId: v.id("meets"),
+    meetId: v.optional(v.id("meets")),
+    eventStageId: v.optional(v.id("eventStages")),
     placeId: v.id("places"),
     participantId: v.id("participants"),
+    eventParticipantId: v.optional(v.id("eventParticipants")),
 
     vote: v.union(v.literal("up"), v.literal("down")),
 
@@ -150,7 +154,9 @@ export default defineSchema({
     .index("by_meet", ["meetId"])
     .index("by_place", ["placeId"])
     .index("by_participant", ["participantId"])
-    .index("by_place_participant", ["placeId", "participantId"]),
+    .index("by_place_participant", ["placeId", "participantId"])
+    .index("by_stage", ["eventStageId"])
+    .index("by_stage_participant", ["eventStageId", "eventParticipantId"]),
 
   events: defineTable({
     name: v.string(),
@@ -165,6 +171,8 @@ export default defineSchema({
       v.literal("completed"),
       v.literal("cancelled")
     ),
+
+    editToken: v.optional(v.string()),
 
     startsAt: v.number(),
     endsAt: v.optional(v.number()),
@@ -204,6 +212,23 @@ export default defineSchema({
     userId: v.optional(v.string()),
     name: v.string(),
 
+    location: v.optional(
+      v.object({
+        lat: v.number(),
+        lng: v.number(),
+      })
+    ),
+    address: v.optional(v.string()),
+
+    transportMode: v.optional(
+      v.union(
+        v.literal("driving"),
+        v.literal("walking"),
+        v.literal("cycling"),
+        v.literal("transit")
+      )
+    ),
+
     rsvpStatus: v.union(
       v.literal("yes"),
       v.literal("no"),
@@ -218,4 +243,32 @@ export default defineSchema({
     .index("by_event", ["eventId"])
     .index("by_user", ["userId"])
     .index("by_event_rsvp", ["eventId", "rsvpStatus"]),
+
+  eventItineraries: defineTable({
+    eventId: v.id("events"),
+    eventParticipantId: v.id("eventParticipants"),
+
+    totalDurationMinutes: v.number(),
+    totalDistanceKm: v.number(),
+    recommendedDepartureAt: v.number(),
+
+    segments: v.array(
+      v.object({
+        fromStageId: v.optional(v.id("eventStages")),
+        toStageId: v.id("eventStages"),
+        durationMinutes: v.number(),
+        distanceKm: v.number(),
+        polyline: v.array(
+          v.object({
+            lat: v.number(),
+            lng: v.number(),
+          })
+        ),
+      })
+    ),
+
+    computedAt: v.number(),
+  })
+    .index("by_event", ["eventId"])
+    .index("by_participant", ["eventParticipantId"]),
 });
