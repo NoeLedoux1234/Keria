@@ -144,7 +144,7 @@ export default defineSchema({
     meetId: v.optional(v.id("meets")),
     eventStageId: v.optional(v.id("eventStages")),
     placeId: v.id("places"),
-    participantId: v.id("participants"),
+    participantId: v.optional(v.id("participants")),
     eventParticipantId: v.optional(v.id("eventParticipants")),
 
     vote: v.union(v.literal("up"), v.literal("down")),

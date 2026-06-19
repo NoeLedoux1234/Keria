@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { internalQuery, mutation, query } from "./_generated/server";
 import { requireEventEditToken } from "./events";
 
 function getStageType(
@@ -206,6 +206,13 @@ export const remove = mutation({
 });
 
 export const get = query({
+  args: { stageId: v.id("eventStages") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.stageId);
+  },
+});
+
+export const getInternal = internalQuery({
   args: { stageId: v.id("eventStages") },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.stageId);
