@@ -1,13 +1,13 @@
 "use client";
 
-import { use, useState, useEffect, useRef } from "react";
+import { use, useState, useEffect, useRef, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Badge } from "@meetpoint/ui";
 import dynamic from "next/dynamic";
-import { useEvent, useEventStages, useEventParticipants } from "@/hooks";
-import { MapStageMarker, MapStagePath } from "@/components/map";
+import { useEvent, useEventStages, useEventParticipants, useEventItinerary } from "@/hooks";
+import { MapStageMarker, MapStagePath, MapRoute } from "@/components/map";
 import {
   StagesList,
   RSVPButtons,
@@ -16,6 +16,8 @@ import {
   EventEditForm,
   EventLifecycleControls,
   EventStagesEditor,
+  ParticipantLogisticsForm,
+  ItineraryTimeline,
 } from "@/components/event";
 import { PageBackground } from "@/components/page-background";
 import {
@@ -26,7 +28,7 @@ import {
 } from "@/lib/event-status";
 import type { MapContainerHandle } from "@/components/map";
 import type { Id, Doc } from "../../../../../convex/_generated/dataModel";
-import type { RsvpStatus } from "@meetpoint/types";
+import type { RsvpStatus, TransportMode } from "@meetpoint/types";
 
 const MapContainer = dynamic(
   () => import("@/components/map/map-container").then((m) => ({ default: m.MapContainer })),
@@ -34,6 +36,8 @@ const MapContainer = dynamic(
 );
 
 type StageType = "departure" | "intermediate" | "arrival";
+
+const PARTICIPANT_ROUTE_COLOR = "#c9a227";
 
 export default function EventPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -57,6 +61,10 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
   const mapRef = useRef<MapContainerHandle>(null);
   const [currentParticipantId, setCurrentParticipantId] = useState<Id<"eventParticipants"> | null>(
     null
+  );
+  const { itinerary, isCalculating, setLogistics, calculate } = useEventItinerary(
+    eventId,
+    currentParticipantId
   );
   const [selectedStage, setSelectedStage] = useState<Doc<"eventStages"> | null>(null);
 
@@ -105,6 +113,27 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
     mapRef.current?.fitBounds(locations, 80);
   };
 
+  const currentParticipant = participants?.find(
+    (p: Doc<"eventParticipants">) => p._id === currentParticipantId
+  );
+
+  const hasLogistics = Boolean(currentParticipant?.location && currentParticipant?.transportMode);
+
+  const itineraryRoutes = useMemo(() => {
+    if (!itinerary || !currentParticipant) return [];
+    const drawableSegments = itinerary.segments.filter((segment) => segment.polyline.length > 0);
+    if (drawableSegments.length === 0) return [];
+
+    return drawableSegments.map((segment) => ({
+      participantId: `${currentParticipant._id}-${segment.toStageId}`,
+      participantName: currentParticipant.name,
+      color: PARTICIPANT_ROUTE_COLOR,
+      polyline: segment.polyline,
+      durationMinutes: segment.durationMinutes,
+      distanceKm: segment.distanceKm,
+    }));
+  }, [itinerary, currentParticipant]);
+
   if (isLoading) {
     return (
       <main className="bg-keria-darker relative flex min-h-screen items-center justify-center">
@@ -130,10 +159,6 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
       </main>
     );
   }
-
-  const currentParticipant = participants?.find(
-    (p: Doc<"eventParticipants">) => p._id === currentParticipantId
-  );
 
   const displayStatus = resolveDisplayStatus({
     status: event.status as EventStatus,
@@ -260,6 +285,27 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
           </section>
         )}
 
+        {/* Current participant logistics & itinerary */}
+        {currentParticipant && stages && stages.length > 0 ? (
+          <section className="mb-6 space-y-4">
+            <h2 className="border-keria-gold text-keria-muted border-l-2 pl-3 text-xs font-medium uppercase tracking-wider">
+              Votre itinéraire
+            </h2>
+            <ParticipantLogisticsForm
+              participantId={currentParticipant._id}
+              eventId={eventId}
+              initialLocation={currentParticipant.location}
+              initialAddress={currentParticipant.address}
+              initialTransportMode={currentParticipant.transportMode as TransportMode | undefined}
+              hasLogistics={hasLogistics}
+              isCalculating={isCalculating}
+              onSubmit={setLogistics}
+              onCalculate={calculate}
+            />
+            {itinerary ? <ItineraryTimeline itinerary={itinerary} stages={stages} /> : null}
+          </section>
+        ) : null}
+
         {/* Join prompt */}
         {!currentParticipantId && participants && participants.length > 0 && (
           <section className="border-keria-gold/30 bg-keria-gold/5 mb-6 rounded border p-4">
@@ -306,6 +352,8 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
           initialCenter={stages?.[0]?.location ?? { lat: 48.8566, lng: 2.3522 }}
           initialZoom={10}
         >
+          {itineraryRoutes.length > 0 && <MapRoute routes={itineraryRoutes} />}
+
           {stages && stages.length >= 2 && (
             <MapStagePath
               stages={stages.map((s: Doc<"eventStages">) => ({

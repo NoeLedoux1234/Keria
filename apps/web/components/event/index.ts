@@ -6,3 +6,5 @@ export * from "./event-share-card";
 export * from "./event-edit-form";
 export * from "./event-lifecycle-controls";
 export * from "./event-stages-editor";
+export * from "./participant-logistics-form";
+export * from "./itinerary-timeline";
