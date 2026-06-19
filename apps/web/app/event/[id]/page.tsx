@@ -2,12 +2,14 @@
 
 import { use, useState, useEffect, useRef, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
+import { useQuery } from "convex/react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Badge } from "@meetpoint/ui";
 import dynamic from "next/dynamic";
 import { useEvent, useEventStages, useEventParticipants, useEventItinerary } from "@/hooks";
-import { MapStageMarker, MapStagePath, MapRoute } from "@/components/map";
+import { MapStageMarker, MapStagePath, MapRoute, MapMarker } from "@/components/map";
+import { api } from "../../../../../convex/_generated/api";
 import {
   StagesList,
   RSVPButtons,
@@ -18,6 +20,7 @@ import {
   EventStagesEditor,
   ParticipantLogisticsForm,
   ItineraryTimeline,
+  StagePlacesPanel,
 } from "@/components/event";
 import { PageBackground } from "@/components/page-background";
 import {
@@ -67,6 +70,11 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
     currentParticipantId
   );
   const [selectedStage, setSelectedStage] = useState<Doc<"eventStages"> | null>(null);
+
+  const selectedStagePlaces = useQuery(
+    api.eventPlaces.listByStage,
+    selectedStage ? { eventStageId: selectedStage._id } : "skip"
+  );
 
   useEffect(() => {
     if (!participants) return;
@@ -268,6 +276,15 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
           )}
         </section>
 
+        {/* Suggested places & vote for the selected stage */}
+        {selectedStage && (
+          <StagePlacesPanel
+            key={selectedStage._id}
+            stage={selectedStage}
+            currentParticipantId={currentParticipantId}
+          />
+        )}
+
         {/* Current participant RSVP */}
         {currentParticipant && (
           <section className="border-keria-forest/30 bg-keria-forest/10 mb-6 rounded border p-4">
@@ -373,6 +390,15 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
               order={stage.order}
               scheduledAt={stage.scheduledAt}
               onClick={() => handleStageClick(stage)}
+            />
+          ))}
+
+          {selectedStagePlaces?.map((place: Doc<"places">) => (
+            <MapMarker
+              key={place._id}
+              coordinates={place.location}
+              label={place.name}
+              color="gold"
             />
           ))}
         </MapContainer>
