@@ -9,6 +9,7 @@
  */
 
 import type * as ai from "../ai.js";
+import type * as eventAi from "../eventAi.js";
 import type * as eventParticipants from "../eventParticipants.js";
 import type * as eventPlaces from "../eventPlaces.js";
 import type * as eventRouting from "../eventRouting.js";
@@ -33,6 +34,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   ai: typeof ai;
+  eventAi: typeof eventAi;
   eventParticipants: typeof eventParticipants;
   eventPlaces: typeof eventPlaces;
   eventRouting: typeof eventRouting;

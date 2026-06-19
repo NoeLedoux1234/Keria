@@ -10,3 +10,4 @@ export * from "./participant-logistics-form";
 export * from "./itinerary-timeline";
 export * from "./stage-place-vote";
 export * from "./stage-places-panel";
+export * from "./itinerary-assistant";

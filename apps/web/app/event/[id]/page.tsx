@@ -21,6 +21,7 @@ import {
   ParticipantLogisticsForm,
   ItineraryTimeline,
   StagePlacesPanel,
+  ItineraryAssistant,
 } from "@/components/event";
 import { PageBackground } from "@/components/page-background";
 import {
@@ -320,6 +321,13 @@ export default function EventPage({ params }: { params: Promise<{ id: string }> 
               onCalculate={calculate}
             />
             {itinerary ? <ItineraryTimeline itinerary={itinerary} stages={stages} /> : null}
+          </section>
+        ) : null}
+
+        {/* AI itinerary assistant */}
+        {stages && stages.length > 0 ? (
+          <section className="mb-6">
+            <ItineraryAssistant eventId={eventId} />
           </section>
         ) : null}
 

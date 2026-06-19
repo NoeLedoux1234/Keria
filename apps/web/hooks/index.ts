@@ -6,3 +6,4 @@ export * from "./use-event";
 export * from "./use-event-itinerary";
 export * from "./use-event-places";
 export * from "./use-ai-suggestions";
+export * from "./use-event-ai";
