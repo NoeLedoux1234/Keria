@@ -9,6 +9,9 @@ const LATITUDE_MAX = 90;
 const LONGITUDE_MIN = -180;
 const LONGITUDE_MAX = 180;
 
+const EDIT_TOKEN_LENGTH = 24;
+const EDIT_TOKEN_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
 type Coordinates = {
   lat: number;
   lng: number;
@@ -50,4 +53,12 @@ export function validateCoordinates(coords: Coordinates, label: string): void {
   if (!isLatValid || !isLngValid) {
     throw new Error(`Coordonnées invalides pour « ${label} ».`);
   }
+}
+
+export function generateEditToken(): string {
+  let token = "";
+  for (let i = 0; i < EDIT_TOKEN_LENGTH; i++) {
+    token += EDIT_TOKEN_ALPHABET.charAt(Math.floor(Math.random() * EDIT_TOKEN_ALPHABET.length));
+  }
+  return token;
 }

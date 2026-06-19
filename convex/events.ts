@@ -1,7 +1,23 @@
 import { v } from "convex/values";
+import type { Doc, Id } from "./_generated/dataModel";
+import type { MutationCtx } from "./_generated/server";
 import { mutation, query } from "./_generated/server";
+import { generateEditToken } from "./validation";
 
 const MAX_SHARE_CODE_ATTEMPTS = 10;
+
+type PublicEvent = Omit<Doc<"events">, "editToken">;
+
+export async function requireEventEditToken(
+  ctx: MutationCtx,
+  eventId: Id<"events">,
+  providedToken: string
+): Promise<void> {
+  const event = await ctx.db.get(eventId);
+  if (!event || event.editToken === undefined || event.editToken !== providedToken) {
+    throw new Error("Action non autorisée");
+  }
+}
 
 function generateEventShareCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -62,6 +78,8 @@ export const create = mutation({
 
     const sortedStages = [...args.stages].sort((a, b) => a.scheduledAt - b.scheduledAt);
 
+    const editToken = generateEditToken();
+
     const eventId = await ctx.db.insert("events", {
       name: args.name,
       description: args.description,
@@ -70,6 +88,7 @@ export const create = mutation({
       status: "published",
       startsAt: sortedStages[0]!.scheduledAt,
       endsAt: sortedStages[sortedStages.length - 1]!.scheduledAt,
+      editToken,
       createdAt: now,
       updatedAt: now,
     });
@@ -99,24 +118,39 @@ export const create = mutation({
       joinedAt: now,
     });
 
-    return { eventId, shareCode, participantId };
+    return { eventId, shareCode, participantId, editToken };
   },
 });
 
 export const get = query({
   args: { id: v.id("events") },
-  handler: async (ctx, args) => {
-    return await ctx.db.get(args.id);
+  handler: async (ctx, args): Promise<PublicEvent | null> => {
+    const event = await ctx.db.get(args.id);
+    if (!event) return null;
+    const { editToken, ...rest } = event;
+    return rest;
+  },
+});
+
+export const verifyEditToken = query({
+  args: { eventId: v.id("events"), editToken: v.string() },
+  handler: async (ctx, args): Promise<boolean> => {
+    const event = await ctx.db.get(args.eventId);
+    if (!event || event.editToken === undefined) return false;
+    return event.editToken === args.editToken;
   },
 });
 
 export const getByShareCode = query({
   args: { shareCode: v.string() },
-  handler: async (ctx, args) => {
-    return await ctx.db
+  handler: async (ctx, args): Promise<PublicEvent | null> => {
+    const event = await ctx.db
       .query("events")
       .withIndex("by_share_code", (q) => q.eq("shareCode", args.shareCode.toUpperCase()))
       .first();
+    if (!event) return null;
+    const { editToken, ...rest } = event;
+    return rest;
   },
 });
 
@@ -163,10 +197,13 @@ export const countByRsvp = query({
 export const update = mutation({
   args: {
     eventId: v.id("events"),
+    editToken: v.string(),
     name: v.optional(v.string()),
     description: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await requireEventEditToken(ctx, args.eventId, args.editToken);
+
     const updates: Partial<{ name: string; description: string; updatedAt: number }> = {
       updatedAt: Date.now(),
     };
@@ -181,6 +218,7 @@ export const update = mutation({
 export const updateStatus = mutation({
   args: {
     eventId: v.id("events"),
+    editToken: v.string(),
     status: v.union(
       v.literal("draft"),
       v.literal("published"),
@@ -190,6 +228,8 @@ export const updateStatus = mutation({
     ),
   },
   handler: async (ctx, args) => {
+    await requireEventEditToken(ctx, args.eventId, args.editToken);
+
     await ctx.db.patch(args.eventId, {
       status: args.status,
       updatedAt: Date.now(),
@@ -198,8 +238,10 @@ export const updateStatus = mutation({
 });
 
 export const remove = mutation({
-  args: { eventId: v.id("events") },
+  args: { eventId: v.id("events"), editToken: v.string() },
   handler: async (ctx, args) => {
+    await requireEventEditToken(ctx, args.eventId, args.editToken);
+
     const stages = await ctx.db
       .query("eventStages")
       .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
