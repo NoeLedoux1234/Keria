@@ -29,27 +29,29 @@ Date : 2026-06-19 (jour de soutenance). Repo : `meetpoint` — GitHub `NoeLedoux
 
 > ⚠️ PR3/PR4/PR5/PR6 touchent toutes `apps/web/app/meet/[id]/page.tsx` → **à merger séquentiellement** (rebrancher sur `develop` à jour après chaque merge).
 
-| PR | Branche (suggérée) | Contenu | Fichiers |
-|----|--------------------|---------|----------|
-| PR1 | `chore/ci-convex-typecheck` | Étape CI `tsc -p convex/tsconfig.json --noEmit` + déclencher CI sur `develop` et PR | `.github/workflows/ci.yml` |
-| PR2 | `fix/backend-input-validation` | Bornage longueurs (name, description, creatorName, participant name, preferences IA) + validation coords | new `convex/validation.ts`, `convex/meets.ts`, `convex/participants.ts`, `convex/ai.ts` |
-| PR3 | `feat/select-place-flow` | Bouton « Choisir ce lieu » (créateur) dans `PlaceModal` + bandeau « Lieu retenu » | `apps/web/components/places-list.tsx`, `apps/web/app/meet/[id]/page.tsx` |
-| PR4 | `feat/fairness-min-max` | Écart absolu min/max (km via `haversineDistance` de `@meetpoint/geo`, minutes via `routes`) dans le bloc « Point de rencontre » | `apps/web/app/meet/[id]/page.tsx` |
-| PR5 | `feat/native-share` | `navigator.share` + lien profond `/join?code=CODE` + QR (`qrcode.react`) | meet page (bloc partage ~lignes 304-351), `apps/web/app/join/page.tsx`, `apps/web/package.json` |
-| PR6 | `feat/a11y` | `aria-live`/`role=alert` erreurs, clavier (`role=button`/`tabIndex`/`onKeyDown`) items cliquables, `prefers-reduced-motion` | `error.tsx`, `global-error.tsx`, `places-list.tsx`, meet page, `page-background.tsx`, `preferences-input.tsx` |
-| PR7 | `feat/seo-pwa` | `app/robots.ts`, `app/sitemap.ts`, `app/manifest.ts`, `app/opengraph-image.tsx` (next/og), `metadataBase`/viewport/themeColor | `apps/web/app/layout.tsx` + nouveaux fichiers |
+| PR  | Branche (suggérée)             | Contenu                                                                                                                         | Fichiers                                                                                                      |
+| --- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| PR1 | `chore/ci-convex-typecheck`    | Étape CI `tsc -p convex/tsconfig.json --noEmit` + déclencher CI sur `develop` et PR                                             | `.github/workflows/ci.yml`                                                                                    |
+| PR2 | `fix/backend-input-validation` | Bornage longueurs (name, description, creatorName, participant name, preferences IA) + validation coords                        | new `convex/validation.ts`, `convex/meets.ts`, `convex/participants.ts`, `convex/ai.ts`                       |
+| PR3 | `feat/select-place-flow`       | Bouton « Choisir ce lieu » (créateur) dans `PlaceModal` + bandeau « Lieu retenu »                                               | `apps/web/components/places-list.tsx`, `apps/web/app/meet/[id]/page.tsx`                                      |
+| PR4 | `feat/fairness-min-max`        | Écart absolu min/max (km via `haversineDistance` de `@meetpoint/geo`, minutes via `routes`) dans le bloc « Point de rencontre » | `apps/web/app/meet/[id]/page.tsx`                                                                             |
+| PR5 | `feat/native-share`            | `navigator.share` + lien profond `/join?code=CODE` + QR (`qrcode.react`)                                                        | meet page (bloc partage ~lignes 304-351), `apps/web/app/join/page.tsx`, `apps/web/package.json`               |
+| PR6 | `feat/a11y`                    | `aria-live`/`role=alert` erreurs, clavier (`role=button`/`tabIndex`/`onKeyDown`) items cliquables, `prefers-reduced-motion`     | `error.tsx`, `global-error.tsx`, `places-list.tsx`, meet page, `page-background.tsx`, `preferences-input.tsx` |
+| PR7 | `feat/seo-pwa`                 | `app/robots.ts`, `app/sitemap.ts`, `app/manifest.ts`, `app/opengraph-image.tsx` (next/og), `metadataBase`/viewport/themeColor   | `apps/web/app/layout.tsx` + nouveaux fichiers                                                                 |
 
 ## 4. 🚧 BLOCAGE ACTUEL — à régler en premier
 
 **`pnpm install` (resync après le pull) échoue / se fige.** Tâche d'install en arrière-plan finie en **exit 255**, log vide. `node_modules` périmé, **`turbo` non installé** → impossible de lancer `lint`/`type-check`/`test`/`build`, donc impossible de valider avant merge.
 
 **Pour débloquer (au reprise) :**
+
 ```bash
 cd meetpoint
 corepack pnpm install            # (sans --frozen-lockfile si ça coince)
 # si ça hang : vérifier réseau/registry, store pnpm ; au besoin supprimer node_modules puis réinstaller
 corepack pnpm lint && corepack pnpm type-check && corepack pnpm test   # baseline verte
 ```
+
 (N.B. ne pas tuer de process node sans accord — une commande `Stop-Process` a déjà été refusée ; relancer l'install proprement.)
 
 ## 5. Faits techniques utiles (déjà vérifiés)
@@ -65,7 +67,7 @@ corepack pnpm lint && corepack pnpm type-check && corepack pnpm test   # baselin
 ## 6. État git au moment du handoff
 
 - Branche `develop` créée (= `main`) et poussée sur origin. **Aucun commit de PR encore créé.**
-- Working tree : seulement des fichiers non suivis pré-existants (docs/, presentation/, rendu-etape*.zip).
+- Working tree : seulement des fichiers non suivis pré-existants (docs/, presentation/, rendu-etape\*.zip).
 
 ## 7. Hors-code laissé à l'utilisateur
 

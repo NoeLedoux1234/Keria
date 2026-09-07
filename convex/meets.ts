@@ -79,7 +79,7 @@ export const create = mutation({
       updatedAt: now,
     });
 
-    await ctx.db.insert("participants", {
+    const participantId = await ctx.db.insert("participants", {
       meetId,
       name: creatorName,
       location: args.creatorLocation,
@@ -89,7 +89,7 @@ export const create = mutation({
       joinedAt: now,
     });
 
-    return { meetId, shareCode };
+    return { meetId, shareCode, participantId };
   },
 });
 
