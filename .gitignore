@@ -41,3 +41,6 @@ apps/web/convex
 # Misc
 *.tsbuildinfo
 *.log
+
+# Claude Code (local, personnel)
+.claude/settings.local.json
