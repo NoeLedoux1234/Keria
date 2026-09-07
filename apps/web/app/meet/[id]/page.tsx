@@ -109,6 +109,14 @@ const COLOR_HEX: Record<string, string> = {
   error: "#a65a4a",
 };
 
+const STATUS_LABELS: Record<string, string> = {
+  draft: "Brouillon",
+  pending: "En cours",
+  confirmed: "Confirmé",
+  completed: "Terminé",
+  cancelled: "Annulé",
+};
+
 interface RouteData {
   participantId: string;
   participantName: string;
@@ -374,7 +382,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
             variant={meet.status === "pending" ? "warning" : "success"}
             className="text-[10px] uppercase"
           >
-            {meet.status}
+            {STATUS_LABELS[meet.status] ?? meet.status}
           </Badge>
         </div>
 
@@ -527,7 +535,7 @@ export default function MeetPage({ params }: { params: Promise<{ id: string }> }
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
-                        className="bg-keria-gold text-keria-darker hover:bg-keria-gold-light mt-3 flex items-center justify-center gap-2 rounded px-3 py-2 text-[10px] font-medium uppercase tracking-wider transition-colors"
+                        className="bg-keria-gold text-keria-darker hover:bg-keria-gold-dark mt-3 flex items-center justify-center gap-2 rounded px-3 py-2 text-[10px] font-medium uppercase tracking-wider transition-colors"
                       >
                         <svg
                           width="12"

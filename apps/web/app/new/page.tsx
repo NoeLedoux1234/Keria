@@ -141,6 +141,9 @@ export default function NewMeetPage() {
         transportMode,
       });
 
+      // Le createur est deja un participant : on retient son identite pour qu'il
+      // puisse voter sans avoir a se selectionner dans la liste.
+      localStorage.setItem(`meetpoint-participant-${result.meetId}`, result.participantId);
       router.push(`/meet/${result.meetId}?code=${result.shareCode}`);
     } catch {
       setError("Erreur lors de la création du MeetPoint");

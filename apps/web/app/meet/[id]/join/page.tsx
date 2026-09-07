@@ -132,7 +132,7 @@ export default function JoinMeetPage({ params }: { params: Promise<{ id: string 
     setIsSubmitting(true);
 
     try {
-      await join({
+      const participantId = await join({
         meetId,
         name: name.trim(),
         location: coordinates,
@@ -140,6 +140,9 @@ export default function JoinMeetPage({ params }: { params: Promise<{ id: string 
         transportMode,
       });
 
+      // Retenir qui vient de rejoindre : sans cela il faut cliquer sur son propre
+      // nom dans la liste avant de pouvoir voter.
+      localStorage.setItem(`meetpoint-participant-${meetId}`, participantId);
       router.push(`/meet/${meetId}`);
     } catch {
       setError("Erreur lors de l'inscription");
