@@ -141,6 +141,7 @@ export default function NewMeetPage() {
         transportMode,
       });
 
+      localStorage.setItem(`meetpoint-participant-${result.meetId}`, result.participantId);
       router.push(`/meet/${result.meetId}?code=${result.shareCode}`);
     } catch {
       setError("Erreur lors de la création du MeetPoint");

@@ -66,7 +66,7 @@ export const create = mutation({
       updatedAt: now,
     });
 
-    await ctx.db.insert("participants", {
+    const participantId = await ctx.db.insert("participants", {
       meetId,
       name: args.creatorName,
       location: args.creatorLocation,
@@ -76,7 +76,7 @@ export const create = mutation({
       joinedAt: now,
     });
 
-    return { meetId, shareCode };
+    return { meetId, shareCode, participantId };
   },
 });
 
@@ -152,6 +152,11 @@ export const selectPlace = mutation({
     placeId: v.id("places"),
   },
   handler: async (ctx, args) => {
+    const place = await ctx.db.get(args.placeId);
+    if (!place || place.meetId !== args.meetId) {
+      throw new Error("Ce lieu n'appartient pas à ce MeetPoint");
+    }
+
     await ctx.db.patch(args.meetId, {
       selectedPlaceId: args.placeId,
       status: "confirmed",

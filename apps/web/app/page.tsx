@@ -219,7 +219,7 @@ export default function HomePage() {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/new"
-                className="border-keria-gold bg-keria-gold font-display text-keria-darker hover:bg-keria-gold-light inline-block min-w-[200px] border px-8 py-4 text-center text-xs font-semibold uppercase tracking-[0.2em] transition-all"
+                className="border-keria-gold bg-keria-gold font-display text-keria-darker hover:bg-keria-gold-dark inline-block min-w-[200px] border px-8 py-4 text-center text-xs font-semibold uppercase tracking-[0.2em] transition-all"
               >
                 MeetPoint
               </Link>
@@ -410,7 +410,7 @@ export default function HomePage() {
           >
             <Link
               href="/new"
-              className="border-keria-gold bg-keria-gold font-display text-keria-darker hover:bg-keria-gold-light inline-block border px-16 py-5 text-xs font-semibold uppercase tracking-[0.25em] transition-all"
+              className="border-keria-gold bg-keria-gold font-display text-keria-darker hover:bg-keria-gold-dark inline-block border px-16 py-5 text-xs font-semibold uppercase tracking-[0.25em] transition-all"
             >
               Commencer
             </Link>

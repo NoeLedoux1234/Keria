@@ -21,9 +21,21 @@ interface PlacesListProps {
   meetId: Id<"meets">;
   midpoint: Coordinates | null;
   participantId?: Id<"participants">;
+  /** Lieu retenu pour le MeetPoint, s'il a deja ete choisi. */
+  selectedPlaceId?: string;
+  /** Seul le createur du MeetPoint peut arreter le choix final. */
+  canSelect?: boolean;
+  onSelectPlace?: (placeId: Id<"places">) => Promise<void>;
 }
 
-export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps) {
+export function PlacesList({
+  meetId,
+  midpoint,
+  participantId,
+  selectedPlaceId,
+  canSelect = false,
+  onSelectPlace,
+}: PlacesListProps) {
   const { ranking, isLoading } = usePlaces(meetId);
   const { votes, castVote } = useVotes(meetId);
   const { isSearching, searchError, setSearchError, search } = usePlaceSearch(meetId);
@@ -43,6 +55,16 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
       await castVote({ meetId, placeId, participantId, vote });
     } catch {
       setSearchError("Erreur lors du vote");
+    }
+  };
+
+  const handleSelectPlace = async (placeId: Id<"places">) => {
+    if (!onSelectPlace) return;
+
+    try {
+      await onSelectPlace(placeId);
+    } catch {
+      setSearchError("Impossible de retenir ce lieu");
     }
   };
 
@@ -72,6 +94,9 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
           upvotes={selectedPlace.upvotes}
           downvotes={selectedPlace.downvotes}
           canVote={!!participantId}
+          isSelected={selectedPlace.place._id === selectedPlaceId}
+          canSelect={canSelect}
+          onSelect={() => handleSelectPlace(selectedPlace.place._id)}
         />
       )}
 
@@ -157,6 +182,7 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
                 const { place, score, upvotes, downvotes } = item;
                 const userVote = getUserVote(place._id);
                 const categoryInfo = CATEGORY_LABELS[place.category] ?? { label: "Autre" };
+                const isSelected = place._id === selectedPlaceId;
 
                 return (
                   <motion.li
@@ -167,7 +193,11 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
                     }}
                     whileHover={{ scale: 1.01 }}
                     onClick={() => setSelectedPlace(item)}
-                    className="border-keria-forest/30 bg-keria-forest/10 hover:border-keria-gold/50 hover:bg-keria-forest/20 cursor-pointer overflow-hidden rounded-lg border transition-all"
+                    className={`cursor-pointer overflow-hidden rounded-lg border transition-all ${
+                      isSelected
+                        ? "border-keria-gold bg-keria-gold/10"
+                        : "border-keria-forest/30 bg-keria-forest/10 hover:border-keria-gold/50 hover:bg-keria-forest/20"
+                    }`}
                   >
                     {place.photoUrl && (
                       <div className="bg-keria-darker/50 relative h-32 w-full">
@@ -261,6 +291,24 @@ export function PlacesList({ meetId, midpoint, participantId }: PlacesListProps)
                             Vous avez voté {userVote === "up" ? "Pour" : "Contre"}
                           </span>
                         </div>
+                      )}
+
+                      {isSelected ? (
+                        <div className="bg-keria-gold text-keria-darker mt-3 rounded px-3 py-2 text-center text-[10px] font-medium uppercase tracking-wider">
+                          Lieu retenu
+                        </div>
+                      ) : (
+                        canSelect && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              void handleSelectPlace(place._id);
+                            }}
+                            className="border-keria-gold/50 text-keria-gold hover:bg-keria-gold hover:text-keria-darker mt-3 w-full rounded border px-3 py-2 text-[10px] font-medium uppercase tracking-wider transition-colors"
+                          >
+                            Choisir ce lieu
+                          </button>
+                        )
                       )}
                     </div>
                   </motion.li>

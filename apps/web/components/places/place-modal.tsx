@@ -19,6 +19,11 @@ interface PlaceModalProps {
   upvotes: number;
   downvotes: number;
   canVote: boolean;
+  /** Ce lieu est celui retenu pour le MeetPoint. */
+  isSelected?: boolean;
+  /** Seul le createur peut arreter le choix final. */
+  canSelect?: boolean;
+  onSelect?: () => void;
 }
 
 function googleMapsUrlFor(place: Doc<"places">): string {
@@ -37,6 +42,9 @@ export function PlaceModal({
   upvotes,
   downvotes,
   canVote,
+  isSelected = false,
+  canSelect = false,
+  onSelect,
 }: PlaceModalProps) {
   const [activeTab, setActiveTab] = useState<"info" | "reviews" | "hours">("info");
   const categoryInfo = CATEGORY_LABELS[place.category] ?? { label: "Autre" };
@@ -318,6 +326,24 @@ export function PlaceModal({
           <p className="text-keria-gold mt-4 text-center text-sm">
             Sélectionnez-vous dans la liste des participants pour voter
           </p>
+        )}
+
+        {/* Choix final du createur */}
+        {isSelected ? (
+          <div className="bg-keria-gold text-keria-darker mt-4 rounded-lg px-4 py-3 text-center text-sm font-medium">
+            Lieu retenu pour ce MeetPoint
+          </div>
+        ) : (
+          canSelect &&
+          onSelect && (
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={onSelect}
+              className="border-keria-gold text-keria-gold hover:bg-keria-gold hover:text-keria-darker mt-4 w-full rounded-lg border px-4 py-3 text-sm font-medium transition-colors"
+            >
+              Choisir ce lieu pour le groupe
+            </motion.button>
+          )
         )}
 
         {/* Lien Google Maps */}
