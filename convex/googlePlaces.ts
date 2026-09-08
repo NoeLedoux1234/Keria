@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { action, internalAction } from "./_generated/server";
 import { api, internal } from "./_generated/api";
+import { hasSearchAreaMoved, isSameSearchArea } from "./searchArea";
 
 const GOOGLE_PLACES_BASE_URL = "https://places.googleapis.com/v1/places";
 
@@ -137,8 +138,17 @@ export const _searchNearby = internalAction({
   handler: async (ctx, args): Promise<PlaceSearchResult> => {
     const meet = await ctx.runQuery(api.meets.get, { id: args.meetId });
     const now = Date.now();
+    const searchArea = { lat: args.lat, lng: args.lng };
+    const previousArea = meet?.lastSearchedLocation;
 
-    if (meet?.lastSearchedAt && now - meet.lastSearchedAt < CACHE_TTL_MS) {
+    // Le cache est indexé sur la zone et pas seulement sur la réunion : sans
+    // cette condition, un changement de ville renvoie les lieux de la ville
+    // précédente pendant toute la durée de vie du cache.
+    if (
+      isSameSearchArea(previousArea, searchArea) &&
+      meet?.lastSearchedAt &&
+      now - meet.lastSearchedAt < CACHE_TTL_MS
+    ) {
       const cached = await ctx.runQuery(api.places.listByMeet, { meetId: args.meetId });
       if (cached.length > 0) {
         return {
@@ -250,6 +260,13 @@ export const _searchNearby = internalAction({
         };
       });
 
+      // La zone a changé : les lieux stockés et leurs votes portent sur une
+      // autre ville. On ne purge qu'après une réponse valide, pour ne pas
+      // vider la liste sur un appel en échec.
+      if (hasSearchAreaMoved(previousArea, searchArea)) {
+        await ctx.runMutation(api.places.clearByMeet, { meetId: args.meetId });
+      }
+
       for (const place of places) {
         await ctx.runMutation(api.places.add, {
           meetId: args.meetId,
@@ -271,7 +288,10 @@ export const _searchNearby = internalAction({
         });
       }
 
-      await ctx.runMutation(api.meets.updateLastSearchedAt, { meetId: args.meetId });
+      await ctx.runMutation(api.meets.updateLastSearchedAt, {
+        meetId: args.meetId,
+        location: searchArea,
+      });
 
       return {
         success: true,

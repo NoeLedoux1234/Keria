@@ -174,8 +174,21 @@ export const selectPlace = mutation({
 });
 
 export const updateLastSearchedAt = mutation({
-  args: { meetId: v.id("meets") },
+  args: {
+    meetId: v.id("meets"),
+    location: v.optional(
+      v.object({
+        lat: v.number(),
+        lng: v.number(),
+      })
+    ),
+  },
   handler: async (ctx, args) => {
-    await ctx.db.patch(args.meetId, { lastSearchedAt: Date.now() });
+    // La zone n'est écrite que si elle est fournie : patcher avec undefined
+    // supprimerait le champ et invaliderait le cache à chaque recherche.
+    await ctx.db.patch(args.meetId, {
+      lastSearchedAt: Date.now(),
+      ...(args.location ? { lastSearchedLocation: args.location } : {}),
+    });
   },
 });

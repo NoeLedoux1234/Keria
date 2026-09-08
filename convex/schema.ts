@@ -59,6 +59,12 @@ export default defineSchema({
     updatedAt: v.number(),
 
     lastSearchedAt: v.optional(v.number()),
+    lastSearchedLocation: v.optional(
+      v.object({
+        lat: v.number(),
+        lng: v.number(),
+      })
+    ),
   })
     .index("by_creator", ["creatorName"])
     .index("by_share_code", ["shareCode"])

@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { action, internalAction } from "./_generated/server";
 import { api, internal } from "./_generated/api";
+import { hasSearchAreaMoved } from "./searchArea";
 
 const PLACE_CATEGORIES = {
   restaurant: ["amenity=restaurant"],
@@ -141,6 +142,10 @@ export const _searchNearby = internalAction({
   },
   handler: async (ctx, args): Promise<OverpassSearchResult> => {
     try {
+      const meet = await ctx.runQuery(api.meets.get, { id: args.meetId });
+      const searchArea = { lat: args.lat, lng: args.lng };
+      const previousArea = meet?.lastSearchedLocation;
+
       const places: OverpassPlace[] = await ctx.runAction(
         internal.searchPlaces._fetchOverpassPlaces,
         {
@@ -152,6 +157,12 @@ export const _searchNearby = internalAction({
         }
       );
 
+      // Même règle que pour Google : la liste précédente n'a plus de sens
+      // dès que la zone de recherche a bougé.
+      if (hasSearchAreaMoved(previousArea, searchArea)) {
+        await ctx.runMutation(api.places.clearByMeet, { meetId: args.meetId });
+      }
+
       for (const place of places) {
         await ctx.runMutation(api.places.add, {
           meetId: args.meetId,
@@ -162,6 +173,11 @@ export const _searchNearby = internalAction({
           category: place.category,
         });
       }
+
+      await ctx.runMutation(api.meets.updateLastSearchedAt, {
+        meetId: args.meetId,
+        location: searchArea,
+      });
 
       return {
         success: true,
