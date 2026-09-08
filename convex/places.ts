@@ -130,5 +130,17 @@ export const clearByMeet = mutation({
 
       await ctx.db.delete(place._id);
     }
+
+    // Le lieu retenu vient d'être supprimé : conserver la référence et le
+    // statut « confirmé » afficherait une réunion validée sur un lieu qui
+    // n'existe plus. Ici, patcher avec undefined supprime bien le champ.
+    const meet = await ctx.db.get(args.meetId);
+    if (meet?.selectedPlaceId) {
+      await ctx.db.patch(args.meetId, {
+        selectedPlaceId: undefined,
+        status: meet.status === "confirmed" ? "pending" : meet.status,
+        updatedAt: Date.now(),
+      });
+    }
   },
 });

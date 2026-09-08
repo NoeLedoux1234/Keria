@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useRef, useId } from "react";
+import { useState, useRef, useEffect, useId } from "react";
 import { useAction } from "convex/react";
 import { motion } from "framer-motion";
 import { Button, Card, CardHeader, CardTitle, CardContent, Badge, Modal } from "@meetpoint/ui";
+import { haversineDistance, SEARCH_AREA_TOLERANCE_KM } from "@meetpoint/geo";
 import { api } from "../../../convex/_generated/api";
 import { usePlaces, useVotes } from "@/hooks";
 import type { Id, Doc } from "../../../convex/_generated/dataModel";
@@ -773,6 +774,36 @@ export function PlacesList({
       setIsSearching(false);
     }
   };
+
+  // handleSearch est recréé à chaque rendu. On en garde la dernière version
+  // dans une ref pour que l'effet ci-dessous ne dépende que des coordonnées.
+  const searchRef = useRef(handleSearch);
+  useEffect(() => {
+    searchRef.current = handleSearch;
+  });
+
+  // La zone de recherche suit le point de rendez-vous. Quand il change (ville
+  // choisie via l'assistant, participant ajouté ou retiré), la liste affichée
+  // porte encore sur l'ancienne zone : on relance la recherche. Uniquement si
+  // une liste existe déjà, sinon l'appel serait facturé sans rien rafraîchir.
+  const lastSearchedArea = useRef<Coordinates | null>(null);
+  const areaLat = midpoint?.lat ?? null;
+  const areaLng = midpoint?.lng ?? null;
+  const hasPlaces = (ranking?.length ?? 0) > 0;
+
+  useEffect(() => {
+    if (areaLat === null || areaLng === null) return;
+
+    const nextArea = { lat: areaLat, lng: areaLng };
+    const previousArea = lastSearchedArea.current;
+    lastSearchedArea.current = nextArea;
+
+    if (!previousArea) return;
+    if (haversineDistance(previousArea, nextArea) <= SEARCH_AREA_TOLERANCE_KM) return;
+    if (!hasPlaces) return;
+
+    void searchRef.current(false);
+  }, [areaLat, areaLng, hasPlaces]);
 
   const handleVote = async (placeId: Id<"places">, vote: "up" | "down") => {
     if (!participantId) return;

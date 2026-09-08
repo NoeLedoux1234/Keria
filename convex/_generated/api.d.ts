@@ -22,6 +22,7 @@ import type * as participants from "../participants.js";
 import type * as places from "../places.js";
 import type * as routing from "../routing.js";
 import type * as routingInternal from "../routingInternal.js";
+import type * as searchArea from "../searchArea.js";
 import type * as searchPlaces from "../searchPlaces.js";
 import type * as validation from "../validation.js";
 import type * as votes from "../votes.js";
@@ -47,6 +48,7 @@ declare const fullApi: ApiFromModules<{
   places: typeof places;
   routing: typeof routing;
   routingInternal: typeof routingInternal;
+  searchArea: typeof searchArea;
   searchPlaces: typeof searchPlaces;
   validation: typeof validation;
   votes: typeof votes;
